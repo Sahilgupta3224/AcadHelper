@@ -85,12 +85,12 @@ const userSchema = new mongoose.Schema({
             default: Date.now
         }
     }],
-    submissions:{
-
-    },
+    submissions:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Submission"
+    }],
     phone: String,
     gender: String,
-    Address: String,
     Branch: String,
     forgotPasswordToken: String,
     forgotPasswordTokenExpiry: Date,
