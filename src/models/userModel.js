@@ -17,6 +17,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    avatar:{
+        type: String,
+    },
     isVerfied: {
         type: Boolean,
         default: false,
@@ -82,6 +85,9 @@ const userSchema = new mongoose.Schema({
             default: Date.now
         }
     }],
+    submissions:{
+
+    },
     phone: String,
     gender: String,
     Address: String,
@@ -92,6 +98,6 @@ const userSchema = new mongoose.Schema({
     verifyTokenExpiry: Date,
 },{timestamps: true})
 
-const User = mongoose.models.users || mongoose.model("users", userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User;
