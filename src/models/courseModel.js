@@ -11,12 +11,10 @@ const courseSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    Assignments:[{
-        assignmentId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Assignment"
-        },
-        dueDate: Date
+    chapters:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Chapter"
+        
     }],
     instructors: [{
         type: mongoose.Schema.Types.ObjectId,
