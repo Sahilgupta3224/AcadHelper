@@ -33,14 +33,17 @@ export async function POST(request:NextRequest){
         const {code,userId} = await request.json()
         await connect()
         const courseExist = await Course.findOne({CourseCode:code})
+
         if(!courseExist){
-            return NextResponse.json({error:"Course code is invalid"},{status:500})
+            return NextResponse.json({error:"Course code is invalid"},{status:400})
         }
 
         const userExist = await User.findById(userId)
         if(!userExist){
-            return NextResponse.json({error:"User does not exist"},{status:500})
+            return NextResponse.json({error:"User does not exist"},{status:400})
         }
+
+        if(userExist.Courses.includes(courseExist._id))return NextResponse.json({error:"You have already joined this course"},{status:400})
 
         const course = await Course.findOneAndUpdate({CourseCode:code},{$push:{StudentsEnrolled:userId}},{new:true})
 
