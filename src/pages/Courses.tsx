@@ -12,7 +12,7 @@ export default function Courses() {
   const ass = ['ass1','ass2','lec1']
   return (
     <Layout>
-      <div className='bg-red-400'>Course 1</div>
+    <div className='bg-red-400'>Course 1</div>
     <Box sx={{ minHeight: 352, minWidth: 250 }}>
       <SimpleTreeView>
         {
