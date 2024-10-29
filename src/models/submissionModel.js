@@ -1,4 +1,4 @@
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 
 const submissionSchema = new mongoose.Schema({
     User:{
@@ -16,6 +16,7 @@ const submissionSchema = new mongoose.Schema({
         default: Date.now,
         required:true
     },
+    // This is for checking whether the submitted solution is approved or not
     isVerified:{
         type:Boolean,
         default:false
