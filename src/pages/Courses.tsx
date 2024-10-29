@@ -1,19 +1,29 @@
-// import dynamic from 'next/dynamic';
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
+import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import Layout from '@/components/layout';
-// const Layout = dynamic(() => import('@/components/layout'), { ssr: false });
-import '../app/globals.css';
 
-const Course = () => {
+export default function Courses() {
+  //Chapters in a course
+  const chapters:String[] = ['ch1','ch2','ch3']
+
+  //Assignments in a chapter
+  const ass = ['ass1','ass2','lec1']
   return (
-    <Layout key="courses">
-      <div className="bg-white min-h-screen p-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">Hi there</h1>
-        <div className="bg-red-100 p-4 rounded-lg shadow-md">
-          <p className="text-lg bg-red text-gray-700">Good job!</p>
-        </div>
-      </div>
+    <Layout>
+    <div className='bg-red-400'>Course 1</div>
+    <Box sx={{ minHeight: 352, minWidth: 250 }}>
+      <SimpleTreeView>
+        {
+           chapters.map(chapter=>(
+          <TreeItem itemId={`${chapter}`} label={`${chapter}`}>
+            {ass.map(a=>(<TreeItem itemId={`${a}`} label={`${a}`} />))}
+          </TreeItem>
+           ))
+        }
+      </SimpleTreeView>
+    </Box>
     </Layout>
-  )
+  );
 }
-
-export default Course

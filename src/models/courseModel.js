@@ -1,4 +1,4 @@
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 
 const courseSchema = new mongoose.Schema({
     name: {
@@ -11,12 +11,10 @@ const courseSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    Assignments:[{
-        assignmentId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Assignment"
-        },
-        dueDate: Date
+    chapters:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Chapter"
+        
     }],
     Admins: [{
         type: mongoose.Schema.Types.ObjectId,
