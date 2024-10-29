@@ -1,8 +1,8 @@
+"use client"
 import Navbar from './Navbar'
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import AppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
@@ -14,10 +14,16 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-
+import { useRouter } from 'next/navigation';
+import { SimpleTreeView, TreeItem } from '@mui/x-tree-view';
 const drawerWidth = 240;
 
 export default function Layout({ children }:{children:React.ReactNode}) {
+  const router = useRouter();
+
+  const handleNavigation = () => {
+    router.push('/courses/Courses'); // Navigate to the Courses page
+  };
   return (
     <Box sx={{ display: 'flex'}}>
       <CssBaseline />
@@ -33,9 +39,15 @@ export default function Layout({ children }:{children:React.ReactNode}) {
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
           <List>
-            {['Courses', 'Groups', 'Leaderboard', 'Schedule'].map((text, index) => (
+                <SimpleTreeView sx={{padding:"10px"}}>
+                  <TreeItem itemId='Courses' label="Courses" >
+                    <TreeItem itemId='Course1' label="Course1"/>
+                  </TreeItem>
+                </SimpleTreeView>
+                <Divider/>
+            {['Groups', 'Leaderboard', 'Schedule'].map((text, index) => (
               <ListItem key={text} disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={handleNavigation}>
                   <ListItemIcon>
                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                   </ListItemIcon>

@@ -13,9 +13,10 @@ import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import MailIcon from '@mui/icons-material/Mail';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
+import Popover from '@mui/material/Popover';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -61,6 +62,8 @@ export default function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
+  const [challengeAnchorEl, setChallengeAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+  
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -124,7 +127,7 @@ export default function Navbar() {
       <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="error">
-            <MailIcon />
+            <LocalFireDepartmentIcon/>
           </Badge>
         </IconButton>
         <p>Messages</p>
@@ -156,6 +159,20 @@ export default function Navbar() {
     </Menu>
   );
 
+  // Challenges popover
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setChallengeAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setChallengeAnchorEl(null);
+  };
+
+  const open = Boolean(challengeAnchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
+  //Notifications popover
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1,backgroundColor:'white',color:'black',borderBottom: '1px solid #e0e0e0' }} elevation={0}>
@@ -170,11 +187,23 @@ export default function Navbar() {
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+            <IconButton size="large" aria-label="show 4 new mails" color="inherit" onClick={handleClick}>
               <Badge badgeContent={4} color="error">
-                <MailIcon />
+                <LocalFireDepartmentIcon/>
               </Badge>
             </IconButton>
+            <Popover
+              id={id}
+              open={open}
+              anchorEl={challengeAnchorEl}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+            >
+            <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
+           </Popover>
             <IconButton
               size="large"
               aria-label="show 17 new notifications"
