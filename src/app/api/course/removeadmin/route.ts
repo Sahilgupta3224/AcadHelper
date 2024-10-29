@@ -12,9 +12,9 @@ export async function POST(request: NextRequest) {
         if(!userId || !adminId || !courseId){
             return NextResponse.json({ error: "ID is required" }, { status: 400 });
         }
-        const updatedcourse = await Course.findByIdAndUpdate(courseId,{$push:{Admins:userId}},{new:true});
-        const updateduser = await User.findByIdAndUpdate(userId,{$push:{CoursesAsAdmin:courseId}},{new:true});
-        return NextResponse.json({ message: "admin made successfully"}, { status: 200 });
+        const updatedcourse = await Course.findByIdAndUpdate(courseId,{$pull:{Admins:userId}},{new:true});
+        const updateduser = await User.findByIdAndUpdate(userId,{$pull:{CoursesAsAdmin:courseId}},{new:true});
+        return NextResponse.json({ message: "admin removed successfully"}, { status: 200 });
     } catch (error: any) {
         console.error("Error", error);
         return NextResponse.json({ error: error.message }, { status: 500 });

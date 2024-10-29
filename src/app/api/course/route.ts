@@ -55,27 +55,7 @@ export async function POST(request:NextRequest){
         return NextResponse.json({error:error.message},{status:500})
     }
 }
-//create course
-// export async function POST(request: NextRequest) {
-//     try {
-//         const reqBody = await request.json();
-//         const { name, description, userId, CourseCode } = reqBody;
-//         console.log(reqBody);
-//         const newCourse = new Course({
-//             name,
-//             description,
-//             CourseCode,
-//             Admins: [userId],
-//         });
-//         const newuser = await User.findByIdAndUpdate(userId,{$push:{CoursesAsAdmin: newCourse._id}},{new:true});
-//         await newCourse.save();
-//         return NextResponse.json({ message: "Course created successfully", course: newCourse }, { status: 201 });
 
-//     } catch (error: any) {
-//         console.error("Error creating course:", error);
-//         return NextResponse.json({ error: error.message }, { status: 500 });
-//     }
-// }
 // delete course
 export async function DELETE(request:NextRequest){
     try{
@@ -99,4 +79,4 @@ export async function DELETE(request:NextRequest){
     }
 }
 
-//make admin,add chapters,delete chapters,kick user, make announcements,remove admin,get all students of a course
+//make announcements,get all students of a course
