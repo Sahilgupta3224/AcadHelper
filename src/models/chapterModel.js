@@ -1,4 +1,4 @@
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 
 const chapterSchema = new mongoose.Schema({
     name: {
@@ -9,7 +9,6 @@ const chapterSchema = new mongoose.Schema({
     assignments:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Assignment"
-        
     }],
     courseId: {
         type:mongoose.Schema.Types.ObjectId,

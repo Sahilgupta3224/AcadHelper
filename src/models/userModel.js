@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     avatar:{
         type: String,
     },
-    isVerfied: {
+    isVerified: {
         type: Boolean,
         default: false,
     },

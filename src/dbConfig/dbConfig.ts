@@ -1,8 +1,16 @@
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-dotenv.config();
+
 export async function connect() {
     try {
+
+        const connectionsState=mongoose.connection.readyState 
+
+            if(connectionsState===1)
+            {
+                console.log("Connections already exists")
+                return;
+            }
+
         mongoose.connect(process.env.MONGO_URI!);
         const connection = mongoose.connection;
 
