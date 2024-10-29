@@ -36,6 +36,9 @@ const userSchema = new mongoose.Schema({
         enrolledAt: {
             type: Date,
             default: Date.now
+        },
+        color:{
+           type: String
         }
     }],
     pendingAssignments:[{
@@ -93,6 +96,12 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course"
     }],
+    tasks:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Task"
+        }
+    ],
     phone: String,
     gender: String,
     Branch: String,
@@ -100,7 +109,7 @@ const userSchema = new mongoose.Schema({
     forgotPasswordTokenExpiry: Date,
     verifyToken: String,
     verifyTokenExpiry: Date,
-},{timestamps: true})
+    },{timestamps: true})
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 

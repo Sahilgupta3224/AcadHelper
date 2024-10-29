@@ -12,7 +12,7 @@ export async function GET(request:NextRequest,context:{params:any}){
 
         const course = await Course.findOne({_id:courseId})
 
-        if(!course)return NextResponse.json({error:"Course not found"},{status:500})
+        if(!course)return NextResponse.json({error:"Course not found"},{status:400})
 
         return NextResponse.json({course,success:true})
 
