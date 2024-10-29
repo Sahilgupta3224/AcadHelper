@@ -89,6 +89,10 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Submission"
     }],
+    CoursesAsAdmin:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course"
+    }],
     phone: String,
     gender: String,
     Branch: String,
