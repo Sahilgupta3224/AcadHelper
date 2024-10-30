@@ -7,7 +7,7 @@ import {Types} from 'mongoose'
 import { NextResponse } from 'next/server'
 
 
-// Approve a submission
+// Remove a submission
 export const PATCH = async (request:Request)=>{
     try {
         
@@ -89,48 +89,43 @@ export const PATCH = async (request:Request)=>{
         //check whether the submission already exists
      
         
-        const findSubmission=await Submission.findById(submissionId)
+        const findSubmission=await Submission.findByIdAndDelete(submissionId)
 
         if(!findSubmission)
         {
             return new NextResponse(JSON.stringify({message:"Submission doesn't exist"}))
         }
 
-         //user who made the submission
-         const user=findSubmission.User
+        //user who made the submission
+        const user=findSubmission.User
         
-        //approving the submission
-        findSubmission.isVerified=true
-        
-        //saving
-        await findSubmission.save() 
 
-        //update the user's submission array and add the submission Id to it
-        user.submissions.push(findSubmission)
-
-        // add the assignment to completed field in user
-        const TimeOfSubmission=findSubmission.gradedAt
-
-        // making sure to remove the assignment from the pending status
+        //update the user's submission array and remove the submission Id from it
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        user.pendingAssignments =user.pendingAssignments.filter((assign:any)=>(assign.assignmentId!==assignmentId))
-        const obj={
-            assignmentId,
-            completedAt:TimeOfSubmission
-        }
-        user.completedAssignments.push(obj)
+        user.submissions=user.submissions.filter((submission:any)=>(submission._id!==submissionId))
+
+  
+
+        // making sure to add the assignment again to the pending status
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        user.pendingAssignments.push({
+                assignmentId,
+                dueDate: assignment.DueDate
+        })
+       
 
         await user.save() //save user 
 
 
         //adding the new submission to the submissions array field in assignment 
 
-        assignment.submissions.push(submissionId)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        assignment.submissions=assignment.submissions.filter((submission:any)=>(submission!==submissionId))
         await assignment.save() 
 
 
         
-        return new NextResponse(JSON.stringify({message:"Successfully submission approved",submission:findSubmission,assignment,user}),{status:200})
+        return new NextResponse(JSON.stringify({message:"Successfully submission removed",submission:findSubmission,assignment,user}),{status:200})
 
 
 
