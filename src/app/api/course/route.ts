@@ -33,14 +33,17 @@ export async function POST(request:NextRequest){
         const {code,userId} = await request.json()
         await connect()
         const courseExist = await Course.findOne({CourseCode:code})
+
         if(!courseExist){
-            return NextResponse.json({error:"Course code is invalid"},{status:500})
+            return NextResponse.json({error:"Course code is invalid"},{status:400})
         }
 
         const userExist = await User.findById(userId)
         if(!userExist){
-            return NextResponse.json({error:"User does not exist"},{status:500})
+            return NextResponse.json({error:"User does not exist"},{status:400})
         }
+
+        if(userExist.Courses.includes(courseExist._id))return NextResponse.json({error:"You have already joined this course"},{status:400})
 
         const course = await Course.findOneAndUpdate({CourseCode:code},{$push:{StudentsEnrolled:userId}},{new:true})
 
@@ -52,3 +55,28 @@ export async function POST(request:NextRequest){
         return NextResponse.json({error:error.message},{status:500})
     }
 }
+
+// delete course
+export async function DELETE(request:NextRequest){
+    try{
+        const { searchParams } = new URL(request.url);
+        const courseId = searchParams.get("Id");
+        if (!courseId) {
+        return NextResponse.json({ error: "Course ID is required" }, { status: 400 });
+        }
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return NextResponse.json({ error: "Course not found" }, { status: 404 });
+        }
+        await Course.findByIdAndDelete(courseId);
+        // i need to pull pending assignments of that courses from all users too
+
+        return NextResponse.json({ message: "Course and related data deleted successfully" }, { status: 200 });
+    }
+    catch(error: any){
+        console.error("Error creating course:", error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+//make announcements,get all students of a course

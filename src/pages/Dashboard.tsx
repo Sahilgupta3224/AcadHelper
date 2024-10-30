@@ -1,5 +1,6 @@
 import Layout from '@/components/layout'
 import React from 'react'
+import '../app/globals.css';
 
 const Dashboard = () => {
   return (

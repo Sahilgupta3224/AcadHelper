@@ -16,22 +16,32 @@ const courseSchema = new mongoose.Schema({
         ref: "Chapter"
         
     }],
-    instructors: [{
+    Admins: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
+    }],
+    CourseCode: {
+        type: String,
+        unique: true,
+        required: true,
+    },
+    Announcements: [{
+        title: String,
+        message: String,
+        postedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
+        postedAt: {
+            type: Date,
+            default: Date.now,
+        },
     }],
     StudentsEnrolled:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     }],
-    startDate: {
-        type: Date,
-        required: true
-    },
-    endDate: {
-        type: Date
-    },
 },{timestamps: true})
 
 const Course = mongoose.models.Course || mongoose.model("Course", courseSchema);

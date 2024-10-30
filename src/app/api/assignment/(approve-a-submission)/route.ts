@@ -13,10 +13,9 @@ export const PATCH = async (request:Request)=>{
         
         const {userId,assignmentId,submissionId}=await request.json() 
 
-
         await connect()
-
-        //input validation 
+        
+        //input validation
         if(!userId || !assignmentId || !submissionId)
         {
             return new NextResponse(JSON.stringify({message:"Enter all the credentials"}),{status:404})
