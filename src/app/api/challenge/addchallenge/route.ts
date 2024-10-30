@@ -1,5 +1,5 @@
-import Challenge from "@/models/challengeModel";
-import { NextRequest, NextResponse } from "next/server";
+// import Challenge from "@/models/challengeModel";
+import { NextRequest } from "next/server";
 
 export async function addChallenge(request: NextRequest) {
     try {
@@ -10,6 +10,7 @@ export async function addChallenge(request: NextRequest) {
             message: "Challenge created successfully",
             data: savedChallenge,
         };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         console.error("Error creating challenge:", error);
         return {

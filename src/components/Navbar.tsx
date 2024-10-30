@@ -12,6 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
+import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -60,8 +61,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-    React.useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =React.useState<null | HTMLElement>(null);
   const [challengeAnchorEl, setChallengeAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   
 
@@ -102,6 +102,7 @@ export default function Navbar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
+
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
     </Menu>
@@ -204,6 +205,10 @@ export default function Navbar() {
             >
             <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
            </Popover>
+            <IconButton>
+              <DirectionsRunIcon sx={{ fontSize: 30, color: 'black', stroke: 'black', strokeWidth: 1 }} />
+            </IconButton>
+
             <IconButton
               size="large"
               aria-label="show 17 new notifications"
