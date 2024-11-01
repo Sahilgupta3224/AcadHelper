@@ -11,7 +11,7 @@ import {
   sampleAssignments,
   sampleChapters,
   UserLoggedIn,
-} from "./Sample Data/Sample";
+} from "../utils/Sample Data/Sample";
 import Link from "next/link";
 import {
   FormControl,

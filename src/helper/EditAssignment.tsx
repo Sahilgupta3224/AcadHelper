@@ -29,6 +29,10 @@ export default function EditAssignmentModal({
   handleClose,
   assignmentData,
   // onSave,
+}:{
+  open:any,
+  handleClose:any,
+  assignmentDate:any 
 }):any {
   const [dueDate, setDueDate] = React.useState<Dayjs | null>(assignmentData.dueDate || null);
   const [fileName, setFileName] = React.useState<string>(assignmentData.fileName || "");
@@ -75,7 +79,7 @@ export default function EditAssignmentModal({
             label="Due Date"
             value={dueDate}
             onChange={(newDate) => setDueDate(newDate)}
-            renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
+            renderInput={(params:any) => <TextField {...params} fullWidth margin="normal" />}
           />
         </LocalizationProvider>
 

@@ -5,19 +5,20 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Popover from '@mui/material/Popover';
+import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
+import LoginModal from '@/helper/AuthModal';
+
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -49,7 +50,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: 'inherit',
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
@@ -61,9 +61,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =React.useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
   const [challengeAnchorEl, setChallengeAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-  
+  const [openLogin,setOpenLogin]=React.useState(false)
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -85,6 +85,11 @@ export default function Navbar() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const handleOpen=()=>{
+    console.log("Open Login modal")
+    setOpenLogin(true)
+  }
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -102,9 +107,11 @@ export default function Navbar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem className='flex flex-col justify-center' onClick={handleOpen}>
+        <Button variant="outlined" color="inherit" >Login</Button>
+      </MenuItem>
     </Menu>
   );
 
@@ -126,19 +133,15 @@ export default function Navbar() {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+        <IconButton size="large" color="inherit">
           <Badge badgeContent={4} color="error">
-            <LocalFireDepartmentIcon/>
+            <LocalFireDepartmentIcon />
           </Badge>
         </IconButton>
         <p>Messages</p>
       </MenuItem>
       <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
+        <IconButton size="large" color="inherit">
           <Badge badgeContent={17} color="error">
             <NotificationsIcon />
           </Badge>
@@ -146,21 +149,17 @@ export default function Navbar() {
         <p>Notifications</p>
       </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
+        <IconButton size="large" color="inherit">
           <AccountCircle />
         </IconButton>
         <p>Profile</p>
       </MenuItem>
+      <MenuItem className='flex flex-col justify-center' onClick={handleOpen}>
+        <Button variant="outlined" color="inherit" >Login</Button>
+      </MenuItem>
     </Menu>
   );
 
-  // Challenges popover
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setChallengeAnchorEl(event.currentTarget);
   };
@@ -172,11 +171,9 @@ export default function Navbar() {
   const open = Boolean(challengeAnchorEl);
   const id = open ? 'simple-popover' : undefined;
 
-  //Notifications popover
-
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1,backgroundColor:'white',color:'black',borderBottom: '1px solid #e0e0e0' }} elevation={0}>
+    <Box sx={{display:"flex",flexDirection:"column" , flexGrow: 1,justifyContent:"center" }}>
+      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: 'white', color: 'black', borderBottom: '1px solid #e0e0e0' }} elevation={0}>
         <Toolbar>
           <Typography
             variant="h6"
@@ -188,9 +185,9 @@ export default function Navbar() {
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit" onClick={handleClick}>
+            <IconButton size="large" color="inherit" onClick={handleClick}>
               <Badge badgeContent={4} color="error">
-                <LocalFireDepartmentIcon/>
+                <LocalFireDepartmentIcon />
               </Badge>
             </IconButton>
             <Popover
@@ -203,17 +200,12 @@ export default function Navbar() {
                 horizontal: 'left',
               }}
             >
-            <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
-           </Popover>
+              <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
+            </Popover>
             <IconButton>
               <DirectionsRunIcon sx={{ fontSize: 30, color: 'black', stroke: 'black', strokeWidth: 1 }} />
             </IconButton>
-
-            <IconButton
-              size="large"
-              aria-label="show 17 new notifications"
-              color="inherit"
-            >
+            <IconButton size="large" color="inherit">
               <Badge badgeContent={17} color="error">
                 <NotificationsIcon />
               </Badge>
@@ -229,6 +221,7 @@ export default function Navbar() {
             >
               <AccountCircle />
             </IconButton>
+            <Button variant="outlined" color="inherit" sx={{ ml: 2 }} onClick={handleOpen}>Login</Button>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -244,6 +237,8 @@ export default function Navbar() {
           </Box>
         </Toolbar>
       </AppBar>
+      <LoginModal open={openLogin} handleClose={() => setOpenLogin(false)} />
+
       {renderMobileMenu}
       {renderMenu}
     </Box>
