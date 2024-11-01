@@ -33,15 +33,18 @@ const challengeSchema = new mongoose.Schema({
         required: true,
         min: 0
     },
-    participants: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
-    }
+    },
+    courseId:{
+        type:mongoose.Schema.Types.ObjectId
+    },
+    submissions:[{
+        file:{type:String},
+        userId:{type:mongoose.Schema.Types.ObjectId}
+    }]
 }, { timestamps: true });
 
 const Challenge = mongoose.models.challenge || mongoose.model("challenge", challengeSchema);

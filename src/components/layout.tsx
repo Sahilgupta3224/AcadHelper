@@ -22,7 +22,7 @@ export default function Layout({ children }:{children:React.ReactNode}) {
   const router = useRouter();
 
   const handleNavigation = () => {
-    router.push('/Courses'); // Navigate to the Courses page
+    router.push('/Groups'); // Navigate to the Courses page
   };
   return (
     <Box sx={{ display: 'flex'}}>
