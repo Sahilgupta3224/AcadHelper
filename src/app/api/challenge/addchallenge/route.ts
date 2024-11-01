@@ -1,9 +1,10 @@
 // import Challenge from "@/models/challengeModel";
 import { NextRequest } from "next/server";
 
-export async function addChallenge(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
-        const newChallenge = await request.json()
+        const {newChallengeData} = await request.json()
+        const newChallenge = new Challenge(newChallengeData)
         const savedChallenge = await newChallenge.save();
         return {
             success: true,

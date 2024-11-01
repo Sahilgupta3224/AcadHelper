@@ -21,8 +21,8 @@ const drawerWidth = 240;
 export default function Layout({ children }:{children:React.ReactNode}) {
   const router = useRouter();
 
-  const handleNavigation = () => {
-    router.push('/Courses'); // Navigate to the Courses page
+  const handleNavigation = (text:string) => {
+    router.push(`/${text}`); // Navigate to the Courses page
   };
   return (
     <Box sx={{ display: 'flex'}}>
@@ -41,13 +41,13 @@ export default function Layout({ children }:{children:React.ReactNode}) {
           <List>
                 <SimpleTreeView sx={{padding:"10px"}}>
                   <TreeItem itemId='Courses' label="Courses" >
-                    <TreeItem itemId='Course1' label="Course1"/>
+                    <TreeItem itemId='Course1' label="Course1" onClick={()=>{router.push(`/Courses`)}}/>
                   </TreeItem>
                 </SimpleTreeView>
                 <Divider/>
             {['Groups', 'Leaderboard',"Virtual Room", 'Schedule'].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton onClick={handleNavigation}>
+              <ListItem key={text} disablePadding  onClick={()=>handleNavigation(text)}>
+                <ListItemButton>
                   <ListItemIcon>
                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                   </ListItemIcon>
