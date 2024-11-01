@@ -14,13 +14,17 @@ import {
 } from "./Sample Data/Sample";
 import Link from "next/link";
 import {
+  FilledTextFieldProps,
   FormControl,
   IconButton,
   InputLabel,
   MenuItem,
   Modal,
+  OutlinedTextFieldProps,
   Select,
+  StandardTextFieldProps,
   TextField,
+  TextFieldVariants,
   Typography,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -28,6 +32,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import EditAssignmentModal from "@/helper/EditAssignment";
 import sidebarDrawer from "@/helper/SidebarDrawer";
 import SidebarDrawer from "@/helper/SidebarDrawer";
+import { Dayjs } from "dayjs";
 
 //interface for Chapter
 
@@ -39,9 +44,9 @@ export default function Courses() {
   const [selectedChapter, setSelectedChapter] = React.useState(null);
   const [selectedAssignment, setSelectedAssignment] = React.useState(null);
   const [assignmentType, setAssignmentType] = React.useState("normal");
-  const [dueDate, setDueDate] = React.useState(null);
+  const [dueDate, setDueDate] = React.useState<Dayjs | null>(null);
   const [fileName, setFileName] = React.useState("");
-  const [file, setFile] = React.useState(null);
+  const [file, setFile] = React.useState<File|null>(null);
   const [open, setOpen] = React.useState(false);
   const [openEdit,setOpenEdit]=React.useState(false);
 
@@ -62,9 +67,12 @@ export default function Courses() {
     setDrawerOpen(open);
   };
 
-  const handleFileUpload = (event) => {
-    setFile(event.target.files[0]);
-    setFileName(event.target.files[0]?.name || "");
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const uploadedFile = event.target.files[0];
+      setFile(uploadedFile);
+      setFileName(uploadedFile.name);
+    }
   };
 
   // Sample data
@@ -168,7 +176,7 @@ export default function Courses() {
                                   label="Due Date"
                                   value={dueDate}
                                   onChange={(newDate) => setDueDate(newDate)}
-                                  renderInput={(params) => (
+                                  renderInput={(params: React.JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<OutlinedTextFieldProps | FilledTextFieldProps | StandardTextFieldProps, "variant">) => (
                                     <TextField {...params} fullWidth margin="normal" />
                                   )}
                                 />
