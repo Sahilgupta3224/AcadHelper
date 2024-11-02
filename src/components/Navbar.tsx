@@ -18,6 +18,7 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Popover from '@mui/material/Popover';
+import Fire from './fire'
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -128,7 +129,7 @@ export default function Navbar() {
       <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="error">
-            <LocalFireDepartmentIcon/>
+            <Fire/>
           </Badge>
         </IconButton>
         <p>Messages</p>
@@ -190,7 +191,7 @@ export default function Navbar() {
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton size="large" aria-label="show 4 new mails" color="inherit" onClick={handleClick}>
               <Badge badgeContent={4} color="error">
-                <LocalFireDepartmentIcon/>
+                <Fire/>
               </Badge>
             </IconButton>
             <Popover

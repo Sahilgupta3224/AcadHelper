@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 
 connect()
 
+
+
 export async function POST(request: NextRequest){
     try {
 
@@ -16,7 +18,6 @@ export async function POST(request: NextRequest){
         if(!user){
             return NextResponse.json({error: "User does not exist"}, {status: 400})
         }
-        console.log("user exists");
         const validPassword = await bcryptjs.compare(password, user.password)
         if(!validPassword){
             return NextResponse.json({error: "Invalid password"}, {status: 400})

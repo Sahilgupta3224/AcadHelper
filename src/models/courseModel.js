@@ -42,6 +42,10 @@ const courseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     }],
+    challenges:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "challenge"
+    }]
 },{timestamps: true})
 
 const Course = mongoose.models.Course || mongoose.model("Course", courseSchema);

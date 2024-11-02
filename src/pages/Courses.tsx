@@ -11,7 +11,7 @@ import {
   sampleAssignments,
   sampleChapters,
   UserLoggedIn,
-} from "./Sample Data/Sample";
+} from '@/pages/SampleData/Sample.ts'
 import Link from "next/link";
 import {
   FilledTextFieldProps,
