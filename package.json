@@ -11,6 +11,7 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@mui/base": "^5.0.0-beta.61",
     "@mui/icons-material": "^6.1.5",
     "@mui/material": "^6.1.5",
     "@mui/x-date-pickers": "^7.22.0",
@@ -25,7 +26,8 @@
     "next": "15.0.1",
     "nodemailer": "^6.9.15",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.4.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

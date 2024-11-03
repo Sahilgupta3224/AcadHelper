@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import "../app/globals.css";
 
@@ -53,6 +54,7 @@ const Input: React.FC<InputProps> = ({ type, id, name, label, placeholder, autof
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
 
   const handleLogin = async () => {
     try {
@@ -63,6 +65,7 @@ const LoginForm: React.FC = () => {
 
       if (response.status === 200) {
         console.log("Login successful:", response.data);
+        router.push('/Dashboard');
       } else {
         console.error("Login failed");
       }
