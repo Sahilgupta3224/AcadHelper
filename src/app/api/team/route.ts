@@ -31,6 +31,7 @@ export async function POST(request:NextRequest){
     try{
        const {team,userId} = await request.json()
        await connect()
+       team.Members[0] = {memberId:new mongoose.Types.ObjectId(userId)}
        if(mongoose.Types.ObjectId.isValid(userId)){
        let newTeam = new Team(team)
        newTeam = await newTeam.save()
@@ -38,7 +39,7 @@ export async function POST(request:NextRequest){
        const user = await User.findByIdAndUpdate(userId,{$push:{teams:{teamId:newTeam._id,joinedAt:Date.now()}}},{new:true})
 
        if(!user)return NextResponse.json({error:"User does not exist"},{status:400})
-       
+    //    console.log(user)
        return NextResponse.json({teams:user.teams,team:newTeam,success:true},{status:200})
        }else{
         return NextResponse.json({error:"Invalid user"},{status:500})

@@ -19,6 +19,7 @@ import Popover from '@mui/material/Popover';
 import Fire from './fire'
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import LoginModal from '@/components/AuthModal';
+import Notification from './Notification';
 
 
 
@@ -202,11 +203,7 @@ export default function Navbar() {
             <IconButton>
               <DirectionsRunIcon sx={{ fontSize: 30, color: 'black', stroke: 'black', strokeWidth: 1 }} />
             </IconButton>
-            <IconButton size="large" color="inherit">
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+            <Notification/>
             <IconButton
               size="large"
               edge="end"
