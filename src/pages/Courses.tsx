@@ -29,8 +29,8 @@ import {
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import EditAssignmentModal from "@/helper/EditAssignment";
-import SidebarDrawer from "@/helper/SidebarDrawer";
+import EditAssignmentModal from "@/components/EditAssignment";
+import SidebarDrawer from "@/components/SidebarDrawer";
 import { Dayjs } from "dayjs";
 
 //interface for Chapter

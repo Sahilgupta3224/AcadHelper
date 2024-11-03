@@ -11,6 +11,8 @@ export async function GET(request:NextRequest){
        await connect()
        const user = await User.findById(userId)
 
+       console.log("User Id fetched",userId)
+
        if(!user)return NextResponse.json({error:"User does not exist"},{status:400})
 
        const taskIdList = user.tasks

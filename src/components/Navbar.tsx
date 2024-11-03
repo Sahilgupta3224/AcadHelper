@@ -17,7 +17,8 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Popover from '@mui/material/Popover';
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
-import LoginModal from '@/helper/AuthModal';
+import LoginModal from '@/components/AuthModal';
+
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -64,7 +65,7 @@ export default function Navbar() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
   const [challengeAnchorEl, setChallengeAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [openLogin,setOpenLogin]=React.useState(false)
-
+  // const {notifications,setNotifications}=AppWrapper()
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -109,9 +110,7 @@ export default function Navbar() {
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <MenuItem className='flex flex-col justify-center' onClick={handleOpen}>
-        <Button variant="outlined" color="inherit" >Login</Button>
-      </MenuItem>
+      
     </Menu>
   );
 
@@ -142,7 +141,7 @@ export default function Navbar() {
       </MenuItem>
       <MenuItem>
         <IconButton size="large" color="inherit">
-          <Badge badgeContent={17} color="error">
+          <Badge badgeContent={5} color="error">
             <NotificationsIcon />
           </Badge>
         </IconButton>

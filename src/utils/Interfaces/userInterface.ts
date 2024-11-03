@@ -1,54 +1,48 @@
-import { Types } from "mongoose";
+// import { Types } from "mongoose";
 
-interface CourseInfo {
-  courseId: Types.ObjectId;
-  enrolledAt: Date;
-  color?: string;
-}
+// interface CourseInfo {
+//   courseId: Types.ObjectId;
+//   enrolledAt: Date;
+//   color?: string;
+// }
 
-interface AssignmentInfo {
-  assignmentId: Types.ObjectId;
-  dueDate?: Date;
-  completedAt?: Date;
-}
+// interface AssignmentInfo {
+//   assignmentId: Types.ObjectId;
+//   dueDate?: Date;
+//   completedAt?: Date;
+// }
 
-interface TeamInfo {
-  teamId: Types.ObjectId;
-  joinedAt?: Date;
-  invitedAt?: Date;
-}
+// interface TeamInfo {
+//   teamId: Types.ObjectId;
+//   joinedAt?: Date;
+//   invitedAt?: Date;
+// }
 
-interface ChallengeInfo {
-  challengeId: Types.ObjectId;
-  solvedAt: Date;
-}
-
-interface User {
-  _id: Types.ObjectId;
+// interface ChallengeInfo {
+//   challengeId: Types.ObjectId;
+//   solvedAt: Date;
+// }
+// userInterface.ts
+export interface User {
+  _id: string;
   username: string;
   email: string;
-  password: string;
-  avatar?: string;
-  isVerified: boolean;
   isAdmin: boolean;
-  Courses: CourseInfo[];
-  pendingAssignments: AssignmentInfo[];
-  completedAssignments: AssignmentInfo[];
-  teams: TeamInfo[];
-  pendingInvites: TeamInfo[];
-  challengessolved: ChallengeInfo[];
-  submissions: Types.ObjectId[];
-  CoursesAsAdmin: Types.ObjectId[];
-  tasks: Types.ObjectId[];
-  phone?: string;
-  gender?: string;
-  Branch?: string;
-  forgotPasswordToken?: string;
-  forgotPasswordTokenExpiry?: Date;
-  verifyToken?: string;
-  verifyTokenExpiry?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  isVerified: boolean;
+  password: string;
+  Courses: string[];
+  CoursesAsAdmin: string[];
+  challengessolved: string[];
+  completedAssignments: string[];
+  pendingAssignments: string[];
+  pendingInvites: string[];
+  submissions: string[];
+  tasks: string[];
+  teams: string[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
+
 
 export default User;

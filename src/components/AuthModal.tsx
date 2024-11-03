@@ -1,14 +1,14 @@
-"use client"
+"use client";
 import { Box, Modal, Typography, TextField, Button, IconButton, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import React, { useState } from 'react';
 import CloseIcon from "@mui/icons-material/Close";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import GoogleIcon from "@mui/icons-material/Google"; 
-import { useAppWrapper } from "@/context";
+import { useStore } from "@/store"; // Import Zustand store
 import axios from "axios";
 import { toast } from 'react-toastify'; 
-import { useRouter } from "next/router"; 
+import { useRouter } from 'next/navigation';
 
 interface LoginModalProps {
   open: boolean;
@@ -16,12 +16,12 @@ interface LoginModalProps {
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
-  const [username, setUsername] = useState("");
+  const [username, setTheUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null); // State for email error
-  const { user, setUser } = useAppWrapper();
+  const { user, setUser } = useStore(); // Get user and setUser from Zustand store
   const [authType, setAuthType] = useState("login"); 
   const router = useRouter(); 
 
@@ -50,24 +50,27 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
         setEmailError(null); // Clear email error if valid
       }
 
-      const storedUser=localStorage.getItem("user")
+      const storedUser = localStorage.getItem("user");
       if (storedUser) {
         toast.info("You are already logged in!");
-        console.log("logged in")
-        router.push('/Leaderboard'); // Redirect to the leaderboard page
         return; // Exit the function early
       }
 
       try {
         const response = await axios.post("/api/auth/login", objData);
         const userData = response.data.user;
-        setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData));
+
+        setUser(userData); // Set user in Zustand store
+        console.log(user)
         toast.success("Logged in successfully!");
-        console.log("Logged in ")
-        handleClose();
         router.push('/Leaderboard');
-      } catch (error) {
+        handleClose();
+        // Clear fields
+        setEmail('');
+        setPassword('');
+        setTheUsername('');
+      } catch (error: any) {
         console.error("Error while logging in:", error);
         const errorMessage = error.response?.data?.message || "Error while logging in. Please try again.";
         toast.error(errorMessage);
@@ -90,12 +93,16 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
       try {
         const response = await axios.post("/api/auth/signup", reqData);
         const userD = response.data;
-        setUser(userD);
+        setUser(userD); // Set user in Zustand store
         toast.success("Signed up successfully!");
         localStorage.setItem("user", JSON.stringify(userD));
-        handleClose();
         router.push('/Leaderboard');
-      } catch (error) {
+        handleClose();
+        // Clear fields
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+      } catch (error: any) {
         console.error("Error while signing up:", error);
         const errorMessage = error.response?.data?.message || "Error while signing up. Please try again.";
         toast.error(errorMessage);
@@ -106,7 +113,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
   const handleGoogleSignIn = async () => {
     try {
       // Perform Google sign-in logic here
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error during Google sign-in:", error);
       const errorMessage = error.response?.data?.message || "An error occurred during Google sign-in.";
       toast.error(errorMessage);
@@ -166,7 +173,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
               label="Username"
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setTheUsername(e.target.value)}
               autoComplete="off"
             />
           )}
@@ -192,7 +199,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="off"
           />
-          
 
           {authType === "signup" && (
             <TextField
@@ -208,9 +214,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
 
           <Button variant="outlined" color="primary" fullWidth onClick={handleSave}>
             {authType === "login" ? "Login" : "Sign Up"}
-          </Button>
-          <Button variant="outlined" color="primary" fullWidth onClick={()=>toast.success("HELLO")}>
-            Click
           </Button>
 
           <Box display="flex" justifyContent="space-between" width="100%" marginTop={2}>
