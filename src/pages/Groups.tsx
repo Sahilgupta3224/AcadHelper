@@ -1,3 +1,4 @@
+"use client"
 import Layout from '@/components/layout'
 import {useEffect, useState} from 'react';
 import Card from '@mui/material/Card';
@@ -15,6 +16,8 @@ import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
 import {useRouter} from 'next/navigation';
 import Link from 'next/link';
+import { useStore } from "@/store";
+import toast, { Toaster } from 'react-hot-toast';
 
 const style = {
     position: 'absolute',
@@ -29,9 +32,9 @@ const style = {
   };
 const Groups = () => {
     const router = useRouter()
-
+    const {user,setUser} = useStore()
     const [groups,setGroups] = useState([])
-    const [groupInput,setGroupInput] = useState({leader:"user-id",maxteamsize:5,teamname:"",description:""})
+    const [groupInput,setGroupInput] = useState({leader:user?._id,maxteamsize:5,teamname:"",description:""})
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -40,50 +43,60 @@ const Groups = () => {
         setGroupInput(prev => ({ ...prev, [name]: value }));
     };
 
-    // Fetching all groups of a user
-    // useEffect(()=>{
-    //     const fetchGroups = async()=>{
-    //      try{
-    //        const userId="tempuserid"
-    //        const {data} = await axios.get("/api/team",{params:{userId:userId}})
-    //        if(data.success){
-    //          setGroups(data.teams)
-    //        }
-    //      }catch(error){
-    //        console.error("Error fetching groups:", error);
-    //      }
-    //     }
-    //     fetchGroups()
-    //  },[])
+    console.log(user)
+    console.log(groupInput)
 
-    const handleAddGroup = async() => {
+    // Fetching all groups of a user
+    useEffect(()=>{
+        const fetchGroups = async()=>{
+         try{
+          if(!user._id){
+            toast.error("User not logged in")
+            return
+          }
+           const {data} = await axios.get("/api/team",{params:{userId:user._id}})
+           if(data.success){
+             setGroups(data.teams)
+           }
+         }catch(error){
+          //  console.error("Error fetching groups:", error);
+           toast.error(error.response.data.error)
+         }
+        }
+        fetchGroups()
+     },[])
+     console.log("Groups",groups)
+
+    const handleAddGroup = async(e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault()
         try {
           if(!groupInput.teamname){
-            alert("Group name cannot be empty")
+            toast.error("Group name cannot be empty")
             return
         }
           if(!groupInput.maxteamsize){
-            alert("Maximum group size cannot be empty")
+            toast.error("Maximum group size cannot be empty")
             return
         }
           if (isNaN(groupInput.maxteamsize) || groupInput.maxteamsize <= 0) {
-                alert("Maximum group size must be a positive number");
+                toast.error("Maximum group size must be a positive number");
                 return;
            }
           
-          const userId = "your-user-id"; // Use actual user ID here
-    
-          const {data} = await axios.post("/api/team",{team:groupInput,userId:userId})
+
+          const {data} = await axios.post("/api/team",{team:groupInput,userId:user?._id})
     
           if (data.success) {
             setGroups(data.teams)
-            setGroupInput({leader:"user-id",maxteamsize:5,teamname:"",description:""});
+            console.log(data)
+            setGroupInput({leader:user?._id,maxteamsize:5,teamname:"",description:""});
             router.refresh(); // Optionally refresh or update groups display
     
           } else {
             console.error(data.error || "Group addition failed");
           }
         } catch (error) {
+          toast.error(error.response.data.error)
           console.error("Error adding group", error);
         }
       };
@@ -92,22 +105,27 @@ const Groups = () => {
     <Layout>
         <div className="font-bold text-2xl m-4">Groups</div>
         <div className='grid grid-cols-3'>
-           <Link href="/123/GroupPage"> <Card sx={{ maxWidth: 345,margin:"2rem" }}>
-            <CardMedia
-                sx={{ height: 140 }}
-                image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqGK3diR3Zi-mnOXEaj-3ewmFyRYVxGzVzZw&s"
-                title="green iguana"
-            />
-            <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                Group 1
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                 Khanak, Sahil, Shikhar
-                </Typography>
-            </CardContent>
-            </Card>
-            </Link>
+          {groups?.map(group=>(
+            <>
+              <Link href="/123/GroupPage"> <Card sx={{ maxWidth: 345,margin:"2rem" }}>
+              <CardMedia
+                  sx={{ height: 140 }}
+                  image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqGK3diR3Zi-mnOXEaj-3ewmFyRYVxGzVzZw&s"
+                  title="green iguana"
+              />
+              <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                  {group.teamname}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  {group.description}
+                  </Typography>
+              </CardContent>
+              </Card>
+              </Link>
+            </>
+          ))}
+           
         </div>
         <Fab color="primary" aria-label="add" sx={{
             position: 'absolute',
@@ -130,19 +148,20 @@ const Groups = () => {
             Add Group 
           </Typography>
           <div className='flex my-4'>
-          <TextField id="outlined-basic-name" label="Group Name" variant="outlined" sx={{marginRight:"1rem"}}
+          <TextField id="outlined-basic-name" label="Group Name" name="teamname" variant="outlined" sx={{marginRight:"1rem"}}
           onChange={handleInputChange}
           />
-          <TextField id="outlined-basic-name" label="Size limit" variant="outlined"
+          <TextField id="outlined-basic-name" label="Size limit" name="maxteamsize" variant="outlined"
           onChange = {handleInputChange}
           />
           </div>
-          <TextField id="outlined-basic-desc" label="Group Description" variant="outlined" multiline rows={4} sx={{width:"100%"}}
+          <TextField id="outlined-basic-desc" label="Group Description" name="description" variant="outlined" multiline rows={4} sx={{width:"100%"}}
           onChange={handleInputChange}/>
-          <div className='w-full mt-4 flex justify-end' onClick = {handleAddGroup}><Button>Add</Button></div>
+          <div className='w-full mt-4 flex justify-end' ><Button type="button" onClick = {handleAddGroup}>Add</Button></div>
         </Box>
       </Modal>
     </div>
+    <Toaster />
     
     </Layout>
   );

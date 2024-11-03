@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import "../app/globals.css";
+import { useStore } from "@/store";
+
 
 interface ButtonProps {
   value: string;
@@ -54,6 +56,7 @@ const Input: React.FC<InputProps> = ({ type, id, name, label, placeholder, autof
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const {user,setUser} = useStore()
   const router = useRouter();
 
   const handleLogin = async () => {
@@ -65,6 +68,8 @@ const LoginForm: React.FC = () => {
 
       if (response.status === 200) {
         console.log("Login successful:", response.data);
+        localStorage.setItem("user",JSON.stringify(response.data.user))
+        setUser(response.data.user)
         router.push('/Dashboard');
       } else {
         console.error("Login failed");
