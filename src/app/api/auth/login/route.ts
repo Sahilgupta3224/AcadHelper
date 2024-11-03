@@ -4,12 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-connect()
 
 
 
 export async function POST(request: NextRequest){
     try {
+        await connect()
 
         const reqBody = await request.json()
         const {email, password} = reqBody;
@@ -31,6 +31,7 @@ export async function POST(request: NextRequest){
         const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET!, {expiresIn: "1d"})
         const response = NextResponse.json({
             message: "Login successful",
+            user,
             success: true,
         })
         response.cookies.set("token", token, {
@@ -38,6 +39,7 @@ export async function POST(request: NextRequest){
         })
         return response;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         return NextResponse.json({error: error.message}, {status: 500})
     }
