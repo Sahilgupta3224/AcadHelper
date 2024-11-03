@@ -5,6 +5,7 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { Pomodoro } from './Pomodoro';
 import Layout from '@/components/layout';
+import { Settings } from './Settings';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -49,6 +50,7 @@ export default function GroupPage() {
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Pomodoro Timer" {...a11yProps(0)} />
           <Tab label="Challenges" {...a11yProps(1)} />
+          <Tab label="Settings" {...a11yProps(2)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
@@ -57,6 +59,9 @@ export default function GroupPage() {
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         Group Challenges
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={2}>
+        <Settings/>
       </CustomTabPanel>
     </Box>
     </Layout>
