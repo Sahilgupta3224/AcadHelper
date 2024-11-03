@@ -176,12 +176,7 @@ export default function Navbar() {
     <Box sx={{display:"flex",flexDirection:"column" , flexGrow: 1,justifyContent:"center" }}>
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: 'white', color: 'black', borderBottom: '1px solid #e0e0e0' }} elevation={0}>
         <Toolbar>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
-          >
+          <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' } }}>
             AcadHelper
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
@@ -195,7 +190,7 @@ export default function Navbar() {
             <Popover
               id={id}
               open={open}
-              anchorEl={challengeAnchorEl}
+              anchorEl={anchorEl}
               onClose={handleClose}
               anchorOrigin={{
                 vertical: 'bottom',
@@ -216,9 +211,9 @@ export default function Navbar() {
               size="large"
               edge="end"
               aria-label="account of current user"
-              aria-controls={menuId}
+              aria-controls={undefined} 
               aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
+              onClick={handleClick} 
               color="inherit"
             >
               <AccountCircle />
@@ -229,9 +224,9 @@ export default function Navbar() {
             <IconButton
               size="large"
               aria-label="show more"
-              aria-controls={mobileMenuId}
+              aria-controls={undefined} 
               aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
+              onClick={handleClick}
               color="inherit"
             >
               <MoreIcon />
