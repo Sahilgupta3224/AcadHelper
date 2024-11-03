@@ -1,6 +1,8 @@
 import Challenge from "@/models/challengeModel";
 import Course from "@/models/courseModel";
 import { NextRequest,NextResponse} from "next/server";
+import {connect} from '@/dbConfig/dbConfig'
+connect()
 
 export async function POST(request: NextRequest) {
     try {

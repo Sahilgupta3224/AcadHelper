@@ -10,6 +10,9 @@ const challengeSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    challengeDoc:{
+        type:String,
+    },
     type: {
         type: String,
         enum: ['individual', 'team'],
@@ -43,8 +46,8 @@ const challengeSchema = new mongoose.Schema({
         required:true
     },
     submissions:[{
-        file:{type:String},
-        userId:{type:mongoose.Schema.Types.ObjectId}
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Submission",
     }]
 }, { timestamps: true });
 

@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import '../app/globals.css'
+import '../../app/globals.css'
 
 const Groups = () => {
   const [isMounted, setIsMounted] = React.useState(false);

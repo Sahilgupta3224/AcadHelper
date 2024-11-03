@@ -9,7 +9,10 @@ const submissionSchema = new mongoose.Schema({
     Assignment:{
         type:mongoose.Schema.Types.ObjectId,
         ref: "assignment",
-        required:true
+    },
+    Challenge:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref: "challenge",
     },
     submittedAt:{
         type:Date,

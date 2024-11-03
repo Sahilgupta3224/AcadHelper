@@ -60,18 +60,25 @@ const SignupForm: React.FC = () => {
       const response = await axios.post('/api/auth/signup', {
         email,
         password,
-        username
+        username,
       });
-
+  
       if (response.status === 200) {
-        console.log("signup successful:", response.data);
-      } else {
-        console.error("singup failed");
+        console.log("Signup successful:", response.data);
       }
     } catch (error) {
-      console.error("Error during signin:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 400) {
+          alert("User already exists");
+        } else {
+          console.error("Signup failed with status:", error.response.status);
+        }
+      } else {
+        console.error("Error during signup:", error);
+      }
     }
   };
+  
 
   return (
     <div className="bg-gray-200 flex justify-center items-center h-screen w-screen">

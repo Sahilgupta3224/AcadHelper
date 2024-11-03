@@ -14,7 +14,6 @@ const courseSchema = new mongoose.Schema({
     chapters:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Chapter"
-        
     }],
     Admins: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -45,6 +44,10 @@ const courseSchema = new mongoose.Schema({
     challenges:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "challenge"
+    }],
+    assignments:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "assignment"
     }]
 },{timestamps: true})
 
