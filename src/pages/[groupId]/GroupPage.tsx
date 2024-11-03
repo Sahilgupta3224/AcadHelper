@@ -6,6 +6,8 @@ import Box from '@mui/material/Box';
 import { Pomodoro } from './Pomodoro';
 import Layout from '@/components/layout';
 import { Settings } from './Settings';
+import { useParams } from 'next/navigation'
+
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -38,7 +40,7 @@ function a11yProps(index: number) {
 
 export default function GroupPage() {
   const [value, setValue] = React.useState(0);
-
+  const params = useParams<{ groupId:string }>()
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };

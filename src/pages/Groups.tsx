@@ -34,7 +34,7 @@ const Groups = () => {
     const router = useRouter()
     const {user,setUser} = useStore()
     const [groups,setGroups] = useState([])
-    const [groupInput,setGroupInput] = useState({leader:user?._id,maxteamsize:5,teamname:"",description:""})
+    const [groupInput,setGroupInput] = useState({leader:user?._id,maxteamsize:5,teamname:"",description:"",Members:[]})
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -82,6 +82,10 @@ const Groups = () => {
                 toast.error("Maximum group size must be a positive number");
                 return;
            }
+           if(!Number.isInteger(Number(groupInput.maxteamsize))){
+            toast.error("Maximum group size must be a positive integer");
+            return;
+           }
           
 
           const {data} = await axios.post("/api/team",{team:groupInput,userId:user?._id})
@@ -107,7 +111,7 @@ const Groups = () => {
         <div className='grid grid-cols-3'>
           {groups?.map(group=>(
             <>
-              <Link href="/123/GroupPage"> <Card sx={{ maxWidth: 345,margin:"2rem" }}>
+              <Link href={`/${group._id}/GroupPage`}> <Card sx={{ maxWidth: 345,margin:"2rem" }}>
               <CardMedia
                   sx={{ height: 140 }}
                   image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqGK3diR3Zi-mnOXEaj-3ewmFyRYVxGzVzZw&s"

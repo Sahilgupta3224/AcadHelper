@@ -52,23 +52,23 @@ const Dashboard = () => {
   const [age, setAge] = React.useState('');
   const [progress,setProgress] = useState(60)
 
-  // useEffect(()=>{
-  //    const fetchTasks = async()=>{
-  //     try{
-  //       const userId="tempuserid"
-  //       const {data} = await axios.get("/api/task",{params:{userId:userId}})
-  //       if(data.success){
-  //         setTasks(data.tasks)
-  //         let len=data.tasks.length
-  //         let array = data.tasks.filter((task:Task)=>task.completed==true)
-  //         setProgress(array.length*100/len)
-  //       }
-  //     }catch(error){
-  //       console.error("Error adding task:", error);
-  //     }
-  //    }
-  //    fetchTasks()
-  // },[])
+  useEffect(()=>{
+     const fetchTasks = async()=>{
+      try{
+        const userId="tempuserid"
+        const {data} = await axios.get("/api/task",{params:{userId:userId}})
+        if(data.success){
+          setTasks(data.tasks)
+          let len=data.tasks.length
+          let array = data.tasks.filter((task:Task)=>task.completed==true)
+          setProgress(array.length*100/len)
+        }
+      }catch(error){
+        console.error("Error adding task:", error);
+      }
+     }
+     fetchTasks()
+  },[])
 
   const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
@@ -137,112 +137,169 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      {/* <Box sx={{ padding: 2 }}>
-        <Typography variant="h4" gutterBottom>
-          Task Management Dashboard
-        </Typography>
+      <div className='flex w-full'>
+        <div className='tasks'>
+          <div className='bg-gradient-to-r from-blue-200 to-cyan-200 m-4 w-[500px] rounded-md p-4 flex justify-between text-slate-800 font-bold text-xl'>
+          <div>
+          <div>Hi Khanak</div>
+          <div>0 Tasks due today</div>
+          </div>
+          <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+              <CircularProgress variant="determinate" value={progress} size="60px"/>
+              <Box
+                sx={{
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  position: 'absolute',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  component="div"
+                  sx={{ color: 'text.secondary' }}
+                >{`${progress}%`}</Typography>
+              </Box>
+            </Box>
+          </div>
+          
+          <div className='m-4 w-[500px]'>
+          <input 
+          placeholder="Add Task" 
+          name="title"
+          value={taskInput.title}
+          onChange={handleInputChange}
+          className='bg-slate-200 p-2 rounded-md w-[87%] text-slate-600 outline-none'
+          ></input>
+          <button className='bg-slate-200 p-2 rounded-full h-10 w-10 ml-2' onClick={handleAddTask}>+</button>
+          </div>
+          <select 
+          name="course" 
+          value={taskInput.course}
+          onChange={handleInputChange}
+          className='p-2 ml-4 mb-4 bg-slate-200 rounded-md'>
+            <option value="" disabled>Select Course</option>
+            <option value="volvo">Course 1</option>
+            <option value="saab">Course 2</option>
+            <option value="opel">Course 3</option>
+            <option value="audi">Course 4</option>
+          </select>
+          <select 
+          name="color" 
+          value={taskInput.color}
+          onChange={handleInputChange}
+          className='p-2 mb-4 mx-2 bg-slate-200 rounded-md'>
+            <option value="black">⚫</option>
+            <option value="red">🔴</option>
+            <option value="yellow">🟡</option>
+            <option value="green">🟢</option>
+            <option value="purple">🟣</option>
+            <option value="blue">🔵</option>
+          </select>
+          <input 
+          type='date' 
+          name="dueDate"
+          value={taskInput.dueDate}
+          onChange={handleInputChange}
+          className='bg-slate-200 p-1 rounded-md'
+          ></input>
+          <div className='border-l-4 border-l-red-400  hover:bg-slate-100 w-[500px] p-2 ml-4 cursor-pointer' onClick={handleOpen}>
+          <div className='flex'>
+          <input type="checkbox"></input>
+          <div className='px-2'>Task 1</div>
+          </div>
 
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Grid container spacing={2}>
-            {["pending", "completed"].map((status) => (
-              <Grid item xs={6} key={status}>
-                <Typography variant="h6">
-                  {status === "pending" ? "Pending Tasks" : "Completed Tasks"}
-                </Typography>
+          <div className='px-6 flex justify-between'>
+            <div className='flex'>
+            <div className='text-sm mr-4'>Course</div>
+            
+            </div>
+            <div className='text-sm'>Due 1 Nov 2024</div>
+            </div>
+          </div>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <TextField id="standard-basic" label="" variant="standard" defaultValue="Task1"/>
+              <div className='flex'>
+              <FormControl variant="standard" sx={{ m: 1, minWidth: 100, color:"black" }}>
+                <InputLabel id="demo-simple-select-standard-label">Course</InputLabel>
+                <Select
+                  labelId="demo-simple-select-standard-label"
+                  id="demo-simple-select-standard"
+                  value={age}
+                  onChange={handleChange}
+                  label="Color"
+                  defaultValue="Course 1"
+                >
+                  <MenuItem value="None">
+                    <em>None</em>
+                  </MenuItem>
+                  <MenuItem value={10}>Ten</MenuItem>
+                  <MenuItem value={20}>Twenty</MenuItem>
+                  <MenuItem value={30}>Thirty</MenuItem>
+                </Select>
+               </FormControl>
+               <FormControl variant="standard" sx={{ m: 1, minWidth: 120, color:"black" }}>
+                <InputLabel id="demo-simple-select-standard-label">Color</InputLabel>
+                <Select
+                  labelId="demo-simple-select-standard-label"
+                  id="demo-simple-select-standard"
+                  value={age}
+                  onChange={handleChange}
+                  label="Color"
+                  defaultValue="Course 1"
+                >
+                  <MenuItem value="None">
+                    <em>None</em>
+                  </MenuItem>
+                  <MenuItem value={10}>Ten</MenuItem>
+                  <MenuItem value={20}>Twenty</MenuItem>
+                  <MenuItem value={30}>Thirty</MenuItem>
+                </Select>
+               </FormControl>
+               <input 
+                  type='date' 
+                  name="dueDate"
+                  value={taskInput.dueDate}
+                  onChange={handleInputChange}
+                  className='p-1 rounded-md'
+                ></input>
+                </div>
+                <TextField
+                  id="standard-multiline-static"
+                  label="Description"
+                  multiline
+                  rows={4}
+                  defaultValue="Default Value"
+                  variant="standard"
+                  sx={{width:400}}
+                />
+              <div className='flex justify-between my-4'>
+              <Button variant="outlined" startIcon={<DeleteIcon />} color="error">
+                  Delete
+              </Button>
+              <Button variant="outlined" startIcon={<EditIcon />}>
+                  Edit
+              </Button>
+              </div>
 
-                <Droppable droppableId={status}>
-                  {(provided) => (
-                    <Box
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      sx={{
-                        minHeight: 200,
-                        padding: 1,
-                        backgroundColor: "#f4f4f4",
-                        borderRadius: 1,
-                      }}
-                    >
-                      {tasks
-                        .filter((task) => task.status === status)
-                        .map((task, index) => (
-                          <Draggable key={task.id} draggableId={task.id} index={index}>
-                            {(provided) => (
-                              <Paper
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                sx={{
-                                  padding: 2,
-                                  marginBottom: 1,
-                                  backgroundColor: "#ffffff",
-                                  display: "flex",
-                                  flexDirection: "column",
-                                }}
-                              >
-                                <Typography variant="subtitle1">
-                                  {task.title}
-                                </Typography>
-                                {isEditing === task.id ? (
-                                  <TextField
-                                    fullWidth
-                                    variant="outlined"
-                                    size="small"
-                                    value={editText}
-                                    onChange={(e) => setEditText(e.target.value)}
-                                  />
-                                ) : (
-                                  <Typography variant="body2">
-                                    {task.description}
-                                  </Typography>
-                                )}
-
-                                <Box
-                                  display="flex"
-                                  justifyContent="flex-end"
-                                  gap={1}
-                                  mt={1}
-                                >
-                                  {isEditing === task.id ? (
-                                    <Button
-                                      size="small"
-                                      variant="contained"
-                                      onClick={() => handleSaveEdit(task.id)}
-                                    >
-                                      Save
-                                    </Button>
-                                  ) : (
-                                    <IconButton
-                                      onClick={() => handleEdit(task)}
-                                      size="small"
-                                    >
-                                      <Edit fontSize="small" />
-                                    </IconButton>
-                                  )}
-                                  <IconButton
-                                    onClick={() => handleDelete(task.id)}
-                                    size="small"
-                                  >
-                                    <Delete fontSize="small" />
-                                  </IconButton>
-                                </Box>
-                              </Paper>
-                            )}
-                          </Draggable>
-                        ))}
-                      {provided.placeholder}
-                    </Box>
-                  )}
-                </Droppable>
-              </Grid>
-            ))}
-          </Grid>
-        </DragDropContext>
-      </Box> */}
-       <DndExample />
-
+            </Box>
+          </Modal>
+          
+        </div>
+        {/* <Timer/> */}
+        </div>
     </Layout>
-  );
+  )
 }
 
-export default Dashboard;
- 
+export default Dashboard
