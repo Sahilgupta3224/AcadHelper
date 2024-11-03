@@ -1,7 +1,5 @@
-// src/store.ts
-import {create} from 'zustand';
+import { create } from 'zustand';
 
-// Define the User type
 interface User {
   _id: string;
   username: string;
@@ -9,21 +7,20 @@ interface User {
   isAdmin: boolean;
   isVerified: boolean;
   password: string;
-  Courses: string[]; // Assuming Courses is an array of strings
-  CoursesAsAdmin: string[]; // Assuming CoursesAsAdmin is an array of strings
-  challengessolved: string[]; // Assuming challengessolved is an array of strings
-  completedAssignments: string[]; // Assuming completedAssignments is an array of strings
-  pendingAssignments: string[]; // Assuming pendingAssignments is an array of strings
-  pendingInvites: string[]; // Assuming pendingInvites is an array of strings
-  submissions: string[]; // Assuming submissions is an array of strings
-  tasks: string[]; // Assuming tasks is an array of strings
-  teams: string[]; // Assuming teams is an array of strings
+  Courses: string[];
+  CoursesAsAdmin: string[];
+  challengessolved: string[];
+  completedAssignments: string[];
+  pendingAssignments: string[];
+  pendingInvites: string[];
+  submissions: string[];
+  tasks: string[];
+  teams: string[];
   createdAt: string;
   updatedAt: string;
   __v: number;
 }
 
-// Define the store type
 interface Store {
   user: User;
   setUser: (newUser: User) => void;
@@ -51,8 +48,24 @@ const defaultUser: User = {
   __v: 0,
 };
 
-// Create the Zustand store
+// Function to get the initial user data from localStorage
+const getUserFromLocalStorage = (): User => {
+  if(typeof window==='undefined')return defaultUser
+  const userData = localStorage.getItem("user");
+  return userData ? JSON.parse(userData) : defaultUser;
+};
+
+// Create the Zustand store with localStorage persistence
 export const useStore = create<Store>((set) => ({
-  user: defaultUser,
-  setUser: (newUser: User) => set({ user: newUser }),
+  user: getUserFromLocalStorage(),
+  setUser: (newUser: User) => {
+    set({ user: newUser });
+    if(typeof window!=="undefined")localStorage.setItem("user", JSON.stringify(newUser));
+  },
 }));
+
+// Clear localStorage on user logout
+export const clearUser = () => {
+  useStore.setState({ user: defaultUser });
+  localStorage.removeItem("user");
+};

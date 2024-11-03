@@ -1,26 +1,139 @@
-"use client";
-import React, { useState } from "react";
-import Layout from "@/components/layout"; // Update this path if layout is elsewhere
-// import Box from "@mui/material/Box";
-// import Paper from "@mui/material/Paper";
-// import Typography from "@mui/material/Typography";
-// import Button from "@mui/material/Button";
-// import IconButton from "@mui/material/IconButton";
-// import TextField from "@mui/material/TextField";
-// import { Edit, Delete } from "@mui/icons-material";
-// import Grid from "@mui/material/Grid";
-// import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import DndExample from "@/components/DndExample";
+"use client"
+import Layout from '@/components/layout'
+import React, { useEffect, useState } from 'react'
+import '../app/globals.css';
+import Checkbox from '@mui/material/Checkbox';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import axios from 'axios';
+import {useRouter} from "next/navigation"
+import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import mongoose from 'mongoose';
+import Timer from '@/components/Timer';
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  // width: 400,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+};
 
-// const initialTasks = [
-//   { id: "1", title: "Task 1", description: "Pending task 1", status: "pending" },
-//   { id: "2", title: "Task 2", description: "Pending task 2", status: "pending" },
-//   { id: "3", title: "Task 3", description: "Completed task 1", status: "completed" },
-// ];
+interface Task {
+  _id:mongoose.Schema.Types.ObjectId,
+  title:String,
+  completed:Boolean,
+  color:String,
+  course:String,
+  dueDate:Date
+}
+const Dashboard = () => {
+  const router = useRouter()
 
-function Dashboard() {
- 
+  const [taskInput,setTaskInput] = useState({title:"",color:"",course:"",dueDate:""})
+  //CHANGE ITS INITIAL STATE TO REFLECT SELECTED TASK DETAILS
+  const [editInput,setEditInput] = useState({title:"",color:"",course:"",dueDate:""})
+  const [tasks, setTasks] = useState([]);
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [age, setAge] = React.useState('');
+  const [progress,setProgress] = useState(60)
+
+  // useEffect(()=>{
+  //    const fetchTasks = async()=>{
+  //     try{
+  //       const userId="tempuserid"
+  //       const {data} = await axios.get("/api/task",{params:{userId:userId}})
+  //       if(data.success){
+  //         setTasks(data.tasks)
+  //         let len=data.tasks.length
+  //         let array = data.tasks.filter((task:Task)=>task.completed==true)
+  //         setProgress(array.length*100/len)
+  //       }
+  //     }catch(error){
+  //       console.error("Error adding task:", error);
+  //     }
+  //    }
+  //    fetchTasks()
+  // },[])
+
+  const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
+    const { name, value } = e.target;
+    setTaskInput(prev => ({ ...prev, [name]: value }));
+  };
+
+    // EDIT TASK INPUT
+    const handleChange = (e: { target: { name: any; value: any; }; }) => {
+      const { name, value } = e.target;
+      setEditInput(prev => ({ ...prev, [name]: value }));
+    };
+    
+
+  const handleAddTask = async() => {
+    try {
+      // if(!taskInput.title)alert("Title cannot be empty")
+      const userId = "your-user-id"; // Use actual user ID here
+
+      const {data} = await axios.post("/api/task",{task:taskInput,userId:userId})
+
+      if (data.success) {
+        setTaskInput({ title: "", color: "", course: "", dueDate: "" });
+        router.refresh(); // Optionally refresh or update tasks display
+
+      } else {
+        console.error(data.error || "Task addition failed");
+      }
+    } catch (error) {
+      console.error("Error adding task:", error);
+    }
+  };
+
+  const handleEditTask = async() => {
+    try {
+
+      const {data} = await axios.put("/api/task",{task:editInput})
+
+      if (data.success) {
+        setEditInput({ title: "", color: "", course: "", dueDate: "" });
+        router.refresh(); // Optionally refresh or update tasks display
+
+      } else {
+        console.error(data.error || "Task edit failed");
+      }
+    } catch (error) {
+      console.error("Error editing task:", error);
+    }
+  };
+
+  const handleDeleteTask = async(id:mongoose.Schema.Types.ObjectId) => {
+    try {
+      const userID="replace-with-user-id"
+      const {data} = await axios.delete("/api/task",{params:{taskId:id,userId:userID}})
+
+      if (data.success) {
+        setEditInput({ title: "", color: "", course: "", dueDate: "" });
+        router.refresh(); // Optionally refresh or update tasks display
+
+      } else {
+        console.error(data.error || "Task edit failed");
+      }
+    } catch (error) {
+      console.error("Error editing task:", error);
+    }
+  };
 
   return (
     <Layout>
