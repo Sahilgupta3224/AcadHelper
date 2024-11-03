@@ -40,8 +40,10 @@ export async function POST(request:NextRequest){
 
 // Delete a team
 export async function DELETE(request:NextRequest){
+
     try{
-        const {teamId} = await request.json()
+        const {searchParams} = new URL(request.url)
+        const teamId = searchParams.get('teamId') 
         await connect()
 
         const deletedTeam = await Team.findByIdAndDelete(teamId)

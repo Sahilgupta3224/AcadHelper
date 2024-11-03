@@ -14,16 +14,12 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link'
 import { SimpleTreeView, TreeItem } from '@mui/x-tree-view';
 const drawerWidth = 240;
 
 export default function Layout({ children }:{children:React.ReactNode}) {
-  const router = useRouter();
 
-  const handleNavigation = () => {
-    router.push('/Groups'); // Navigate to the Courses page
-  };
   return (
     <Box sx={{ display: 'flex'}}>
       <CssBaseline />
@@ -39,20 +35,16 @@ export default function Layout({ children }:{children:React.ReactNode}) {
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
           <List>
-                <SimpleTreeView sx={{padding:"10px"}}>
-                  <TreeItem itemId='Courses' label="Courses" >
-                    <TreeItem itemId='Course1' label="Course1"/>
-                  </TreeItem>
-                </SimpleTreeView>
-                <Divider/>
-            {['Groups', 'Leaderboard',"Virtual Room", 'Schedule'].map((text, index) => (
+            {['Groups', 'Courses','Leaderboard',"Focus", 'Schedule'].map((text, index) => (
               <ListItem key={text} disablePadding>
-                <ListItemButton onClick={handleNavigation}>
+              <Link href={`/${text}`} style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}>
+                <ListItemButton>
                   <ListItemIcon>
                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                   </ListItemIcon>
                   <ListItemText primary={text} />
                 </ListItemButton>
+              </Link>
               </ListItem>
             ))}
           </List>

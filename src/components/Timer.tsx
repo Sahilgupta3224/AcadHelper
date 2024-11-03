@@ -1,14 +1,12 @@
-"use client"
-import Layout from '@/components/layout'
+import React from 'react'
 import {ChangeEvent, useState,KeyboardEvent, useEffect} from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { Container, Typography, TextField, Button, List, ListItem, ListItemText, IconButton, Checkbox } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import '../../app/globals.css';
+import '../app/globals.css';
 import Modal from '@mui/material/Modal';
-
 
 const style = {
     position: 'absolute',
@@ -22,10 +20,6 @@ const style = {
     p: 4,
   };
 
-interface Task {
-    text: string;
-    completed: boolean;
-  }
 function a11yProps(index: number) {
     return {
       id: `simple-tab-${index}`,
@@ -53,12 +47,9 @@ function a11yProps(index: number) {
       </div>
     );
   }
-  
-export const Pomodoro = () => {
-    const [value, setValue] = useState(0);
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const [newTask, setNewTask] = useState<string>("");
 
+const Timer = () => {
+    const [value, setValue] = useState(0);
     const [timer,setTimer] = useState({pomodoro:25,short:5,long:15})
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -71,6 +62,30 @@ export const Pomodoro = () => {
     };
     const [isActive, setIsActive] = useState({pomodoro:false,short:false,long:false}); // Timer status (active or not)
     const [paused,setPaused] = useState<boolean>(true) // Pause status
+
+    // Load timer settings from localStorage on initial render
+    useEffect(() => {
+        const savedTime = localStorage.getItem('time');
+        const savedIsActive = localStorage.getItem('isActive');
+        const savedPaused = localStorage.getItem('paused');
+
+        if (savedTime) {
+        setTime(JSON.parse(savedTime));
+        }
+        if (savedIsActive) {
+        setIsActive(JSON.parse(savedIsActive));
+        }
+        if (savedPaused) {
+        setPaused(JSON.parse(savedPaused));
+        }
+    }, []);
+
+    // Save timer settings to localStorage whenever they change
+    useEffect(() => {
+        localStorage.setItem('time', JSON.stringify(time));
+        localStorage.setItem('isActive', JSON.stringify(isActive));
+        localStorage.setItem('paused', JSON.stringify(paused));
+    }, [time, isActive, paused]);
 
     // Convert minutes input to seconds and start the timer
     const startTimer = () => {
@@ -149,46 +164,13 @@ export const Pomodoro = () => {
         const secs = seconds % 60;
         return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setValue(newValue);
+      };
 
-
-  // Function to add a new task
-  const addTask = () => {
-    if (newTask.trim()) {
-      setTasks([...tasks, { text: newTask, completed: false }]);
-      setNewTask("");
-    }
-  };
-
-  // Function to toggle task completion
-  const toggleComplete = (index: number) => {
-    setTasks(
-      tasks.map((task, i) =>
-        i === index ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-
-  // Function to delete a task
-  const deleteTask = (index: number) => {
-    console.log("Deleting task at index:", index); // Log the index
-    setTasks(prevTasks => {
-      const updatedTasks = prevTasks.filter((_, i) => i !== index);
-      console.log("Updated tasks after deletion:", updatedTasks); // Log updated tasks
-      return updatedTasks;
-    });
-  };
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
   return (
-  <>
-    <div className='text-center'>
-    <div className='text-xl m-1'>Welcome to Virtual Room</div>
-    <div className='text-xl'>Stay Focused and increase your productivity</div>
-    </div>
-    <div className='flex justify-center'>
-        <div className='bg-gradient-to-r from-blue-200 to-cyan-200 rounded-md w-[50%] m-6'>
+    <div className='pomodoro'>
+           <div className='bg-gradient-to-r from-blue-200 to-cyan-200 rounded-md h-[100vh] w-[100%]'>
           <Box sx={{ }}>
           <div className='w-full flex justify-center'>
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
@@ -200,7 +182,7 @@ export const Pomodoro = () => {
           </Box>
           <CustomTabPanel value={value} index={0}>
               <div className='flex justify-center'>
-                  <div className='h-36 w-36 m-2 rounded-full bg-sky-100 p-10 flex justify-center items-center text-4xl font-bold text-slate-800'>
+                  <div className='h-96 w-96 m-2 rounded-full bg-sky-100 p-10 flex justify-center items-center text-6xl font-bold text-slate-800'>
                   {/* {timer.pomodoro}:00 */}
                   {formatTime(time.pomodoro)}
                   </div>
@@ -214,7 +196,7 @@ export const Pomodoro = () => {
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
           <div className='flex justify-center'>
-                  <div className='h-36 w-36 m-2 rounded-full bg-sky-100 p-10 flex justify-center items-center text-4xl font-bold text-slate-800'>
+                  <div className='h-96 w-96 m-2 rounded-full bg-sky-100 p-10 flex justify-center items-center text-6xl font-bold text-slate-800'>
                   {formatTime(time.short)}
                   </div>
               </div>
@@ -226,7 +208,7 @@ export const Pomodoro = () => {
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
           <div className='flex justify-center'>
-                  <div className='h-36 w-36 m-2 rounded-full bg-sky-100 p-10 flex justify-center items-center text-4xl font-bold text-slate-800'>
+                  <div className='h-96 w-96 m-2 rounded-full bg-sky-100 p-10 flex justify-center items-center text-6xl font-bold text-slate-800'>
                   {formatTime(time.long)}
                   </div>
               </div>
@@ -237,59 +219,8 @@ export const Pomodoro = () => {
                   </div>
           </CustomTabPanel>
         </div>
-    </div>
-    <Container maxWidth="sm">
-      <TextField
-        fullWidth
-        variant="outlined"
-        label="New Task"
-        value={newTask}
-        onChange={(e) => setNewTask(e.target.value)}
-        onKeyPress={(e) => e.key === 'Enter' && addTask()}
-        margin="normal"
-      />
-      <Button variant="contained" color="primary" onClick={addTask} fullWidth>
-        Add Task
-      </Button>
-      <List>
-        {tasks.map((task, index) => (
-          <ListItem key={index}>
-            <Checkbox checked={task.completed} tabIndex={-1} disableRipple  onClick={() => toggleComplete(index)}/>
-            <ListItemText
-              primary={task.text}
-              style={{ textDecoration: task.completed ? 'line-through' : 'none' }}
-            />
-            <IconButton edge="end" onClick={() => deleteTask(index)}>
-              <DeleteIcon />
-            </IconButton>
-          </ListItem>
-        ))}
-      </List>
-    </Container>
-    <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-           Set Timer 
-          </Typography>
-          <div className='flex my-4 justify-center'>
-          <TextField id="outlined-basic-name" name="pomodoro" label="Pomodoro" variant="outlined" defaultValue={timer.pomodoro} sx={{marginRight:"2rem",width:"6rem"}}
-          onChange={handleTimerChange}
-          />
-          <TextField id="outlined-basic-name" name="short" label="Short Break" variant="outlined" defaultValue={timer.short} sx={{marginRight:"2rem",width:"6rem"}}
-          onChange = {handleTimerChange}
-          />
-          <TextField id="outlined-basic-desc" name="long" label="Long Break" variant="outlined" defaultValue={timer.long} sx={{width:"6rem"}}
-          onChange={handleTimerChange}/>
-          </div>
-
-          {/* <div className='w-full mt-4 flex justify-end'><Button onClick={handle}>Edit</Button></div> */}
-        </Box>
-      </Modal>
-  </>
+        </div>
   )
 }
+
+export default Timer

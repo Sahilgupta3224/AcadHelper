@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import "../app/globals.css";
+import { useRouter } from 'next/navigation';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface ButtonProps {
   value: string;
@@ -54,6 +56,8 @@ const SignupForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setusername] = useState('');
+  const router = useRouter();
+
 
   const handleSignup = async () => {
     try {
@@ -65,11 +69,13 @@ const SignupForm: React.FC = () => {
 
       if (response.status === 200) {
         console.log("signup successful:", response.data);
+        router.push('/Dashboard');
       } else {
         console.error("singup failed");
       }
     } catch (error) {
-      console.error("Error during signin:", error);
+      // console.error("Error during signin:", error);
+      toast.error(error?.response?.data?.error || "Signup failed");
     }
   };
 
@@ -110,6 +116,7 @@ const SignupForm: React.FC = () => {
           <Button value="Submit" onClick={handleSignup} />
         </form>
       </div>
+         <Toaster />
     </div>
   );
 };

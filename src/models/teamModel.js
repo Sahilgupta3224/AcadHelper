@@ -45,7 +45,7 @@ const teamSchema = new mongoose.Schema({
         type:String
     },
     pendingInvites:{
-        type:Array,
+        type:[String]
     }
 },{timestamps: true})
 

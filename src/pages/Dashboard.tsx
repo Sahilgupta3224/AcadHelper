@@ -18,6 +18,7 @@ import InputLabel from '@mui/material/InputLabel';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import mongoose from 'mongoose';
+import Timer from '@/components/Timer';
 
 const style = {
   position: 'absolute',
@@ -136,8 +137,9 @@ const Dashboard = () => {
 
   return (
     <Layout>
-        <div className=''>
-          <div className='bg-blue-300 m-4 w-96 rounded-md p-4 flex justify-between text-slate-200 font-bold text-xl'>
+      <div className='flex w-full'>
+        <div className='tasks'>
+          <div className='bg-gradient-to-r from-blue-200 to-cyan-200 m-4 w-[500px] rounded-md p-4 flex justify-between text-slate-800 font-bold text-xl'>
           <div>
           <div>Hi Khanak</div>
           <div>0 Tasks due today</div>
@@ -165,7 +167,7 @@ const Dashboard = () => {
             </Box>
           </div>
           
-          <div className='m-4 w-96'>
+          <div className='m-4 w-[500px]'>
           <input 
           placeholder="Add Task" 
           name="title"
@@ -205,7 +207,7 @@ const Dashboard = () => {
           onChange={handleInputChange}
           className='bg-slate-200 p-1 rounded-md'
           ></input>
-          <div className='border-l-4 border-l-red-400  hover:bg-slate-100 w-96 p-2 ml-4 cursor-pointer' onClick={handleOpen}>
+          <div className='border-l-4 border-l-red-400  hover:bg-slate-100 w-[500px] p-2 ml-4 cursor-pointer' onClick={handleOpen}>
           <div className='flex'>
           <input type="checkbox"></input>
           <div className='px-2'>Task 1</div>
@@ -293,6 +295,8 @@ const Dashboard = () => {
             </Box>
           </Modal>
           
+        </div>
+        {/* <Timer/> */}
         </div>
     </Layout>
   )

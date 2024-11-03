@@ -6,7 +6,7 @@ import Leaderboard from "@/pages/Leaderboard";
 export default function Home() {
   return (
     <>
-      <Leaderboard/>
+      <Dashboard/>
     </>
   );
 }
