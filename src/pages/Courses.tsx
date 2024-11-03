@@ -11,7 +11,7 @@ import {
   sampleAssignments,
   sampleChapters,
   UserLoggedIn,
-} from '@/pages/SampleData/Sample.ts'
+} from "../utils/Sample Data/Sample";
 import Link from "next/link";
 import {
   FilledTextFieldProps,
@@ -29,9 +29,8 @@ import {
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import EditAssignmentModal from "@/helper/EditAssignment";
-import sidebarDrawer from "@/helper/SidebarDrawer";
-import SidebarDrawer from "@/helper/SidebarDrawer";
+import EditAssignmentModal from "@/components/EditAssignment";
+import SidebarDrawer from "@/components/SidebarDrawer";
 import { Dayjs } from "dayjs";
 
 //interface for Chapter
