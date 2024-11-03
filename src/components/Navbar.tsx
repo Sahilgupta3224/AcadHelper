@@ -16,6 +16,7 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Popover from '@mui/material/Popover';
+import Fire from './fire'
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import LoginModal from '@/components/AuthModal';
 
@@ -134,6 +135,7 @@ export default function Navbar() {
       <MenuItem>
         <IconButton size="large" color="inherit">
           <Badge badgeContent={4} color="error">
+            <Fire/>
             <LocalFireDepartmentIcon />
           </Badge>
         </IconButton>
@@ -186,6 +188,7 @@ export default function Navbar() {
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton size="large" color="inherit" onClick={handleClick}>
               <Badge badgeContent={4} color="error">
+                {/* <Fire/> */}
                 <LocalFireDepartmentIcon />
               </Badge>
             </IconButton>

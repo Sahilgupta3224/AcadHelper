@@ -28,7 +28,7 @@ const drawerWidth = 240;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [selectedCourse, setSelectedCourse] = React.useState("");
+  // const [selectedCourse, setSelectedCourse] = React.useState("");
 
   const handleNavigation = (text: string) => {
     router.push(`/${text}`);

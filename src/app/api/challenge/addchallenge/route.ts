@@ -1,17 +1,26 @@
-// import Challenge from "@/models/challengeModel";
-import { NextRequest } from "next/server";
+import Challenge from "@/models/challengeModel";
+import Course from "@/models/courseModel";
+import { NextRequest,NextResponse} from "next/server";
 
 export async function POST(request: NextRequest) {
     try {
         const {newChallengeData} = await request.json()
+        const courseId = newChallengeData.courseId
+        const course = await Course.findById(courseId)
+        if(!course){
+            return NextResponse.json({
+                success: false,
+                message: "Invalid Course",
+            }, { status: 404 });
+        }
         const newChallenge = new Challenge(newChallengeData)
         const savedChallenge = await newChallenge.save();
-        return {
+        const upcourse = await Course.findByIdAndUpdate(courseId,{$push:{challenges:savedChallenge._id}},{new:true});
+        return NextResponse.json({
             success: true,
             message: "Challenge created successfully",
             data: savedChallenge,
-        };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        });
     } catch (error: any) {
         console.error("Error creating challenge:", error);
         return {

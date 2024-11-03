@@ -17,7 +17,7 @@ const challengeSchema = new mongoose.Schema({
     },
     frequency: {
         type: String,
-        enum: ['daily','weekly','custom'],
+        enum: ['daily','weekly'],
         required: true
     },
     startDate: {
@@ -30,8 +30,8 @@ const challengeSchema = new mongoose.Schema({
     },
     points: {
         type: Number,
-        required: true,
-        min: 0
+        min: 0,
+        default:0
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
@@ -39,7 +39,8 @@ const challengeSchema = new mongoose.Schema({
         required: true
     },
     courseId:{
-        type:mongoose.Schema.Types.ObjectId
+        type:mongoose.Schema.Types.ObjectId,
+        required:true
     },
     submissions:[{
         file:{type:String},

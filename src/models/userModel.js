@@ -68,13 +68,15 @@ const userSchema = new mongoose.Schema({
             default: Date.now
         }
     }],
-    pendingInvites:[{
-        teamId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Team"
+    inbox:[{
+        type: {
+            type: String
         },
-        invitedAt: {
-            type: Date,
+        message: {
+            type: String
+        },
+        date: {
+            type:Date,
             default: Date.now
         }
     }],

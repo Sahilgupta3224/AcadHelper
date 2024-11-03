@@ -5,10 +5,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import GoogleIcon from "@mui/icons-material/Google"; 
-import { useStore } from "@/store"; // Import Zustand store
 import axios from "axios";
 import { toast } from 'react-toastify'; 
 import { useRouter } from 'next/navigation';
+import {useStore} from '@/store'
 
 interface LoginModalProps {
   open: boolean;
@@ -62,7 +62,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
         localStorage.setItem("user", JSON.stringify(userData));
 
         setUser(userData); // Set user in Zustand store
-        console.log(user)
+        console.log("User check",user)
         toast.success("Logged in successfully!");
         router.push('/Leaderboard');
         handleClose();
