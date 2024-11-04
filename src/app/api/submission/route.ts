@@ -1,6 +1,7 @@
 import Challenge from "@/models/challengeModel";
 import User from "@/models/userModel";
 import Submission from "@/models/submissionModel";
+import Assignment from "@/models/assignmentModel";
 import { NextRequest, NextResponse } from "next/server";
 import {connect} from '@/dbConfig/dbConfig'
 
@@ -9,28 +10,34 @@ connect()
 export async function POST(request: NextRequest) {
     try {
         const data = await request.json();
-        const { User, Assignment, Challenge, documentLink } = data;
-        if (!User || !documentLink) {
+        const { user, assignment, challenge, documentLink } = data;
+        if (!user || !documentLink) {
             return NextResponse.json({
                 success: false,
                 message: "User and documentLink are required.",
             }, { status: 400 });
         }
-
         const newSubmission = new Submission({
-            User,
-            Assignment,
-            Challenge,
+            User:user,
+            Assignment:assignment,
+            Challenge:challenge,
             documentLink,
             submittedAt: new Date(),
         });
         await newSubmission.save();
-
+        await User.findByIdAndUpdate(user, { $push: { submissions: newSubmission._id } },{new:true});
+        if (assignment) {
+            await Assignment.findByIdAndUpdate(assignment, { $push: { submissions: newSubmission._id } });
+        }
+        if(challenge){
+            await Challenge.findByIdAndUpdate(challenge, { $push: { submissions: newSubmission._id } });
+        }
         return NextResponse.json({
             success: true,
             data: newSubmission,
             message: "Submission added successfully.",
         }, { status: 201 });
+
     } catch (error: any) {
         console.error("Error adding submission:", error);
         return NextResponse.json({

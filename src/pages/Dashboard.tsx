@@ -238,7 +238,7 @@ const Dashboard = () => {
           </Grid>
         </DragDropContext>
       </Box> */}
-       <DndExample />
+       {/* <DndExample /> */}
 
     </Layout>
   );
