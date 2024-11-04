@@ -1,17 +1,20 @@
+// "use client"
 import Layout from '@/components/layout'
-import {useState} from 'react'
+import {useState,useEffect} from 'react'
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
-import InboxIcon from '@mui/icons-material/Inbox';
-import DraftsIcon from '@mui/icons-material/Drafts';
 import Avatar from '@mui/material/Avatar';
 import { Button, Modal, TextField, Typography } from '@mui/material';
 import axios from 'axios';
+import { useParams, useRouter } from 'next/navigation'
+import toast, { Toaster } from 'react-hot-toast';
+import { useStore } from '@/store';
+
+
 const style = {
     position: 'absolute',
     top: '50%',
@@ -23,6 +26,7 @@ const style = {
     boxShadow: 24,
     p: 4,
   };
+  //DELETE THIS LATER
   const group = {
     _id:1234,
     leader:1234,
@@ -30,9 +34,15 @@ const style = {
     teamname:"group1",
     description:"nice group"
   }
+  
 export const Settings = () => {
+    const params = useParams<{ groupId:string }>()
+    const router = useRouter()
+    const {user,setUser} = useStore()
     const [input,setInput] = useState("")
-    const [groupInput,setGroupInput] = useState(group)
+    const [team,setTeam] = useState({})
+    const [groupInput,setGroupInput] = useState({maxteamsize:0,teamname:"",description:""})
+    const [members,setMembers] = useState([])
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -44,9 +54,10 @@ export const Settings = () => {
     const handleOpenEdit = () => setOpenEdit(true);
     const handleCloseEdit = () => setOpenEdit(false);
     const handleEditInputChange = (e: { target: { name: any; value: any; }; }) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target; 
         setGroupInput(prev => ({ ...prev, [name]: value }));
     };
+    console.log(groupInput)
     const [openDelete, setOpenDelete] = useState(false);
     const handleOpenDelete = () => setOpenDelete(true);
     const handleCloseDelete = () => setOpenDelete(false);
@@ -54,6 +65,40 @@ export const Settings = () => {
     const [openLeave, setOpenLeave] = useState(false);
     const handleOpenLeave = () => setOpenDelete(true);
     const handleCloseLeave = () => setOpenDelete(false);
+
+
+    useEffect(()=>{
+      const fetchTeam = async()=>{
+        try{
+          const res = await axios.get(`/api/team/${params.groupId}`,{params:{type:"Team"}})
+          console.log(res?.data?.team)
+          setTeam(res?.data?.team)
+          setGroupInput({maxteamsize:res?.data?.team.maxteamsize,teamname:res?.data?.team.teamname,description:res?.data?.team.description})
+
+        }catch(e){
+          console.log(e)
+        }
+      }
+      fetchTeam()
+    },[])
+  
+
+    //  Fetching group members
+    useEffect(()=>{
+        const fetchGroupMembers = async()=>{
+         try{
+           const {data} = await axios.get(`/api/team/${params?.groupId}`,{params:{type:"Members"}})
+          //  console.log(data)
+          
+           if(data.success){
+                setMembers(data.members)
+           }
+         }catch(error){
+           console.error("Error fetching group members:", error);
+         }
+        }
+        fetchGroupMembers()
+     },[])
 
     //Leave a group
     const handleLeave = async()=>{
@@ -72,78 +117,78 @@ export const Settings = () => {
     //Delete a group(by group admin)
     const handleDelete = async()=>{
         try{
-            
-            let user={_id:123}
-            if(user._id!=group.leader){
+            if(user._id!=team.leader){
                 alert("You are not authorised to delete this group")
                 return
             }
-            const res = await axios.delete("/api/team",{params:{teamId:group._id}})
+            const res = await axios.delete("/api/team",{params:{teamId:team._id}})
             if(res.data.success){
                 console.log("Group deleted successfully",res.data.oldGroup)
+                toast.success("Group deleted successfully")
+                router.push('/Groups')
             }
 
         }catch(e){
             console.log("Error deleting group",e)
         }
     }
-
-    // Fetching group members->UNCOMMENT WHEN NEEDED
-    // useEffect(()=>{
-    //     const fetchGroupMembers = async()=>{
-    //      try{
-    //        
-    //        const {data} = await axios.get("/api/team",{params:{teamId:group._id}})
-    //        if(data.success){
-    //          setMembers(data.members)
-    //        }
-    //      }catch(error){
-    //        console.error("Error fetching group members:", error);
-    //      }
-    //     }
-    //     fetchGroupMembers()
-    //  },[])
+    console.log(team)
 
     //Edit group details
     const handleEditGroup = async()=>{
         try{
-            //take these values as props AND CHANGE TEAM SIZE VARIABLE
-            const team = {}
+            if(!groupInput.teamname){
+              toast.error("Group name cannot be empty")
+              return
+          }
+            if(!groupInput.maxteamsize){
+              toast.error("Maximum group size cannot be empty")
+              return
+          }
+          
+            if (isNaN(groupInput.maxteamsize) || groupInput.maxteamsize <= 0) {
+                  toast.error("Maximum group size must be a positive integer");
+                  return;
+             }
+            
+             if(!Number.isInteger(Number(groupInput.maxteamsize))){
+              toast.error("Maximum group size must be a positive integer");
+              return;
+             }
+          
             if(groupInput){
-                const res = await axios.put(`/api/team/${group._id}`,{team:groupInput})
+                const res = await axios.put(`/api/team/${team._id}`,{team:groupInput})
                  if(res.data.success){
-                    console.log("Group edited successfully",res.data.updatedTeam)
+                  toast.success("Group edited successfully")
+                  console.log("Group edited successfully",res.data.updatedTeam)
+                  handleCloseEdit()
                 }
             }
-           }catch(e){
+           }catch(e:any){
+            toast.error(e.response.data.error)
             console.log(e)
            }
     }
 
     const handleAddMember = async()=>{
        try{
-        //take these values as props AND CHANGE TEAM SIZE VARIABLE
-        const teamid = "team-id"
-        const groupname = "group-name"
-        const teamsize = 1//<-CALCULATE THIS FROM MEMBERS.LENGTH
-        const maxteamsize = 2
-
-        if(teamsize==group.maxteamsize){
-            alert("Maximum team limit reached");
-            return
-        }
         if(input){
-            const res = await axios.post(`/api/team/${group._id}`,{email:input,groupName:group.teamname})
+            const res = await axios.post(`/api/team/${params?.groupId}`,{email:input})
              if(res.data.success){
-                console.log("Member added successfully",res.data.updatedTeam)
+                toast.success("Invitation sent")
+                console.log("Invitation sent",res.data.updatedTeam)
             }
         }
-        
+        else{
+          toast.error("Field cannot be empty")
+          return
+        }
 
        }catch(e){
-        console.log(e)
+         toast.error(e.response.data.error)
        }
     }
+    
 
   return (
     <>
@@ -155,22 +200,16 @@ export const Settings = () => {
     <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
       <nav aria-label="main mailbox folders">
         <List>
-          <ListItem disablePadding>
+          {members.map(member=>(
+            <ListItem disablePadding id = {member._id}>
             <ListItemButton>
               <ListItemIcon>
-              <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
+              <Avatar alt={member.username} src="/static/images/avatar/2.jpg" />
               </ListItemIcon>
-              <ListItemText primary="Sahil" />
+              <ListItemText primary={member?.username} />
             </ListItemButton>
           </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-              <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
-              </ListItemIcon>
-              <ListItemText primary="Shikhar" />
-            </ListItemButton>
-          </ListItem>
+          ))}
         </List>
       </nav>
      
@@ -202,14 +241,14 @@ export const Settings = () => {
             Edit Group
           </Typography>
           <div className='flex my-4'>
-          <TextField id="outlined-basic-name" label="Group Name" variant="outlined" sx={{marginRight:"1rem"}}
+          <TextField id="outlined-basic-name" name="teamname" defaultValue={team.teamname} label="Group Name" variant="outlined" sx={{marginRight:"1rem"}}
           onChange={handleEditInputChange}
           />
-          <TextField id="outlined-basic-name" label="Size limit" variant="outlined"
+          <TextField id="outlined-basic-name" name="maxteamsize" defaultValue={team.maxteamsize} label="Size limit" variant="outlined"
           onChange = {handleEditInputChange}
           />
           </div>
-          <TextField id="outlined-basic-desc" label="Group Description" variant="outlined" multiline rows={4} sx={{width:"100%"}}
+          <TextField id="outlined-basic-desc" name="description" defaultValue={team.description} label="Group Description" variant="outlined" multiline rows={4} sx={{width:"100%"}}
           onChange={handleEditInputChange}/>
           <div className='w-full mt-4 flex justify-end' onClick = {handleEditGroup}><Button>Edit</Button></div>
         </Box>
@@ -240,6 +279,8 @@ export const Settings = () => {
           <div className='w-full mt-4 flex justify-end' ><Button onClick = {handleLeave} variant="outlined">Delete</Button></div>
         </Box>
       </Modal>
+      <Toaster />
     </>
 )
 }
+
