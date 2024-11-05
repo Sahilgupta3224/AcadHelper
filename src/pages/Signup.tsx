@@ -3,6 +3,7 @@ import axios from 'axios';
 import "../app/globals.css";
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
+import { useStore } from '@/store';
 
 interface ButtonProps {
   value: string;
@@ -57,6 +58,7 @@ const SignupForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const [username, setusername] = useState('');
   const router = useRouter();
+  const {user,setUser} = useStore()
 
 
   const handleSignup = async () => {
@@ -69,12 +71,14 @@ const SignupForm: React.FC = () => {
   
       if (response.status === 200) {
         console.log("Signup successful:", response.data);
+        setUser(response.data.savedUser)
         router.push('/Dashboard');
       } else {
         console.error("singup failed");
       }
     } catch (error) {
-      console.error("Error during signin:", error);
+      toast.error(error.response.data.error)
+      // console.error("Error during signup:", error);
     }
   };
   

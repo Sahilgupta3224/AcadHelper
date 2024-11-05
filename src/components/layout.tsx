@@ -38,7 +38,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { text: "Dashboard", icon: <DashboardIcon /> },
     { text: "Groups", icon: <GroupIcon /> },
     { text: "Leaderboard", icon: <LeaderboardIcon /> },
-    { text: "Virtual Room", icon: <VideoCallIcon /> },
+    { text: "Focus", icon: <VideoCallIcon /> },
     { text: "Schedule", icon: <ScheduleIcon /> },
     { text: "Challenge", icon: <EmojiEventsIcon /> },
   ];
