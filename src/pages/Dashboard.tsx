@@ -19,6 +19,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import mongoose from 'mongoose';
 import Timer from '@/components/Timer';
+import { useStore } from '@/store';
+import toast, { Toaster } from 'react-hot-toast';
+import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const style = {
   position: 'absolute',
@@ -41,40 +46,88 @@ interface Task {
 }
 const Dashboard = () => {
   const router = useRouter()
-
-  const [taskInput,setTaskInput] = useState({title:"",color:"",course:"",dueDate:""})
-  //CHANGE ITS INITIAL STATE TO REFLECT SELECTED TASK DETAILS
+  const {user,setUser} = useStore()
+  const [courses,setCourses] = useState([])
+  const [taskInput,setTaskInput] = useState({title:"",color:"",course:"",dueDate:"",completed:false})
   const [editInput,setEditInput] = useState({title:"",color:"",course:"",dueDate:""})
   const [tasks, setTasks] = useState([]);
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
   const [age, setAge] = React.useState('');
-  const [progress,setProgress] = useState(60)
+  const [progress,setProgress] = useState<Float>(0)
+  const [selected,setSelected] = useState(null)
+  const handleOpen = (task) => {
+    setSelected(task)
+    setEditInput({
+      title: task.title,
+      color: task.color,
+      course: task.course,
+      dueDate: task.dueDate,
+    });
+    setOpen(true);
+  }
+  const handleClose = () => setOpen(false);
+  const [dueTodayCount, setDueTodayCount] = useState(0);
+
+  // Function to calculate the number of tasks due today
+  const calculateDueTodayCount = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const count = tasks.filter(task => {
+      const dueDate = new Date(task.dueDate);
+      dueDate.setHours(0, 0, 0, 0);
+      return ((dueDate.getTime() === today.getTime()) && !task.completed);
+    }).length;
+
+    setDueTodayCount(count);
+  };
+
+  // useEffect to recalculate due today count on tasks change
+  useEffect(() => {
+    calculateDueTodayCount();
+  }, [tasks]);
+
 
   useEffect(()=>{
      const fetchTasks = async()=>{
       try{
-        const userId="tempuserid"
-        const {data} = await axios.get("/api/task",{params:{userId:userId}})
+
+        const {data} = await axios.get("/api/task",{params:{userId:user._id}})
         if(data.success){
+          
           setTasks(data.tasks)
+          if(data.tasks.length>0){
           let len=data.tasks.length
           let array = data.tasks.filter((task:Task)=>task.completed==true)
-          setProgress(array.length*100/len)
+          setProgress(Math.round(array.length*100*100/len)/100)
+          }else setProgress(0)
+          console.log(data)
         }
       }catch(error){
-        console.error("Error adding task:", error);
+        toast.error(error.response.data.error)
+        // console.error("Error fetching task:", error);
+      }
+     }
+     const fetchCourses = async()=>{
+      try{
+        const {data} = await axios.get("/api/course",{params:{userId:user._id}})
+        if(data.success){
+          setCourses(data.courses)
+          console.log(data)
+        }
+      }catch(error){
+        console.error("Error fetching courses:", error);
       }
      }
      fetchTasks()
+     fetchCourses()
   },[])
 
   const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
     setTaskInput(prev => ({ ...prev, [name]: value }));
   };
-
+  // console.log(taskInput)
     // EDIT TASK INPUT
     const handleChange = (e: { target: { name: any; value: any; }; }) => {
       const { name, value } = e.target;
@@ -84,65 +137,106 @@ const Dashboard = () => {
 
   const handleAddTask = async() => {
     try {
-      // if(!taskInput.title)alert("Title cannot be empty")
-      const userId = "your-user-id"; // Use actual user ID here
 
-      const {data} = await axios.post("/api/task",{task:taskInput,userId:userId})
+      const {data} = await axios.post("/api/task",{task:taskInput,userId:user._id})
 
       if (data.success) {
-        setTaskInput({ title: "", color: "", course: "", dueDate: "" });
-        router.refresh(); // Optionally refresh or update tasks display
+        const newTasks = [...tasks, data.newTask];
+        setTasks(newTasks);
+
+        // Recalculate progress after adding a task
+        const completedTasksCount = newTasks.filter(task => task.completed).length;
+        setProgress(Math.round((completedTasksCount / newTasks.length) * 100));
+
+        // Reset task input
+        setTaskInput({ title: "", color: "", course: "", dueDate: "", completed: false });
 
       } else {
         console.error(data.error || "Task addition failed");
       }
     } catch (error) {
-      console.error("Error adding task:", error);
+      toast.error(error.response.data.error)
+      // console.error("Error adding task:", error);
     }
   };
-
-  const handleEditTask = async() => {
+  const handleCheckboxChange = async (taskId, completed) => {
+    try {
+      const { data } = await axios.put("/api/task", { taskId, completed: !completed,type:"checkbox" });
+      if (data.success) {
+        // Update local task state
+        const updatedTasks = tasks.map(task =>
+          task._id === taskId ? { ...task, completed: !task.completed } : task
+        );
+  
+        setTasks(updatedTasks);
+  
+        // Recalculate progress based on the updated tasks
+        const completedTasksCount = updatedTasks.filter(task => task.completed).length;
+        setProgress(Math.round((completedTasksCount / updatedTasks.length) * 100));
+  
+        console.log(data);
+      } else {
+        console.error(data.error || "Failed to update task status");
+      }
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
+  const handleEditTask = async(id) => {
     try {
 
-      const {data} = await axios.put("/api/task",{task:editInput})
+      const {data} = await axios.put("/api/task",{taskId:id,task:editInput,type:"edit"})
 
       if (data.success) {
         setEditInput({ title: "", color: "", course: "", dueDate: "" });
-        router.refresh(); // Optionally refresh or update tasks display
+        // router.refresh(); // Optionally refresh or update tasks display
+        const updatedTasks = tasks.map(task=>task._id==data.task._id ? data.task:task)
+        setTasks(updatedTasks)
+        console.log(data)
+
+        handleClose()
 
       } else {
         console.error(data.error || "Task edit failed");
       }
     } catch (error) {
+      toast.error(error.response.data.error)
       console.error("Error editing task:", error);
     }
   };
 
   const handleDeleteTask = async(id:mongoose.Schema.Types.ObjectId) => {
     try {
-      const userID="replace-with-user-id"
-      const {data} = await axios.delete("/api/task",{params:{taskId:id,userId:userID}})
-
+      
+      const {data} = await axios.delete("/api/task",{params:{taskId:id,userId:user._id}})
       if (data.success) {
         setEditInput({ title: "", color: "", course: "", dueDate: "" });
-        router.refresh(); // Optionally refresh or update tasks display
+
+        const taskArray = tasks.filter(task => task._id !== id);
+        setTasks(taskArray);
+
+        // Recalculate progress after deleting a task
+        const completedTasksCount = taskArray.filter(task => task.completed).length;
+        setProgress(Math.round((completedTasksCount / taskArray.length) * 100));
+        handleClose()
 
       } else {
-        console.error(data.error || "Task edit failed");
+        console.error(data.error || "Task deletion failed");
       }
     } catch (error) {
-      console.error("Error editing task:", error);
+      console.error("Error deleting task:", error);
     }
   };
 
   return (
+    <>
     <Layout>
-      <div className='flex w-full'>
+      <div className='flex w-full bg-gradient-to-r from-blue-200 to-cyan-200'>
         <div className='tasks'>
-          <div className='bg-gradient-to-r from-blue-200 to-cyan-200 m-4 w-[500px] rounded-md p-4 flex justify-between text-slate-800 font-bold text-xl'>
+          <div className='m-4 bg-white w-[500px] rounded-md p-4 flex justify-between text-slate-800 font-bold text-xl'>
           <div>
-          <div>Hi Khanak</div>
-          <div>0 Tasks due today</div>
+          <div>Hi {user?.username}</div>
+          <div>{dueTodayCount} Tasks due today</div>
           </div>
           <Box sx={{ position: 'relative', display: 'inline-flex' }}>
               <CircularProgress variant="determinate" value={progress} size="60px"/>
@@ -166,61 +260,95 @@ const Dashboard = () => {
               </Box>
             </Box>
           </div>
-          
-          <div className='m-4 w-[500px]'>
+          <div className=''>
+            <div className='m-4 w-[500px]'>
           <input 
           placeholder="Add Task" 
           name="title"
           value={taskInput.title}
           onChange={handleInputChange}
-          className='bg-slate-200 p-2 rounded-md w-[87%] text-slate-600 outline-none'
+          className=' p-2 rounded-md w-[87%] text-slate-600 outline-none'
           ></input>
-          <button className='bg-slate-200 p-2 rounded-full h-10 w-10 ml-2' onClick={handleAddTask}>+</button>
+          <button className='bg-white p-2 rounded-full h-10 w-10 ml-2' onClick={handleAddTask}>+</button>
           </div>
+          <div className=''>
           <select 
           name="course" 
           value={taskInput.course}
           onChange={handleInputChange}
-          className='p-2 ml-4 mb-4 bg-slate-200 rounded-md'>
+          className='p-2 ml-4 mb-4 rounded-md'>
             <option value="" disabled>Select Course</option>
-            <option value="volvo">Course 1</option>
-            <option value="saab">Course 2</option>
-            <option value="opel">Course 3</option>
-            <option value="audi">Course 4</option>
+            {courses?.map(course=>(
+            <option value={course.name}>{course.name}</option>
+            ))}
           </select>
           <select 
           name="color" 
           value={taskInput.color}
           onChange={handleInputChange}
-          className='p-2 mb-4 mx-2 bg-slate-200 rounded-md'>
-            <option value="black">⚫</option>
-            <option value="red">🔴</option>
-            <option value="yellow">🟡</option>
-            <option value="green">🟢</option>
-            <option value="purple">🟣</option>
-            <option value="blue">🔵</option>
+          className='p-2 mb-4 mx-2 rounded-md'>
+            <option value="" disabled>Select Color</option>
+            <option value="border-l-black">⚫ Black</option>
+            <option value="border-l-red-400">🔴 Red</option>
+            <option value="border-l-yellow-400">🟡 Yellow</option>
+            <option value="border-l-green-400">🟢 Green</option>
+            <option value="border-l-purple-400">🟣 Purple</option>
+            <option value="border-l-blue-400">🔵 Blue</option>
           </select>
           <input 
           type='date' 
           name="dueDate"
           value={taskInput.dueDate}
           onChange={handleInputChange}
-          className='bg-slate-200 p-1 rounded-md'
+          className='p-1 h-9 rounded-md'
           ></input>
-          <div className='border-l-4 border-l-red-400  hover:bg-slate-100 w-[500px] p-2 ml-4 cursor-pointer' onClick={handleOpen}>
-          <div className='flex'>
-          <input type="checkbox"></input>
-          <div className='px-2'>Task 1</div>
           </div>
+          </div>
+          <div className='tasks-container h-96 overflow-y-auto w-[500px]'>
+          {tasks.map((task,index) => (
+          <div
+            key={task._id}
+            className={`border-l-8 ${task.color} p-2 m-4 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow duration-200 ease-in-out`}
+          >
+            <div className="">
+              <div className="flex items-center">
+                <Checkbox
+                  checked={task.completed}
+                  onChange={() => handleCheckboxChange(task._id, task.completed)}
+                />
+                <div
+                  className={`text-lg font-semibold px-2 w-96 truncate ${
+                    task.completed ? "line-through text-gray-400" : "text-gray-800"
+                  }`}
+                >
+                  {task.title}
+                </div>
+                <IconButton onClick={()=>handleOpen(task)}>
+                <MoreVertIcon />
+              </IconButton>
+              </div>
+             
 
-          <div className='px-6 flex justify-between'>
-            <div className='flex'>
-            <div className='text-sm mr-4'>Course</div>
-            
-            </div>
-            <div className='text-sm'>Due 1 Nov 2024</div>
+              <div className="flex space-x-4 mx-12">
+                {/* <div className="text-sm font-medium text-blue-600">{task.course}</div> */}
+                {task.course && <Chip label={task.course} /> } 
+                {task.dueDate && (
+                  <div className="text-sm text-gray-600">
+                    Due{" "}
+                    {new Date(task.dueDate).toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric"
+                    })}
+                  </div>
+                )}
+              </div>
+              
             </div>
           </div>
+        ))}
+        </div>
+
           <Modal
             open={open}
             onClose={handleClose}
@@ -228,24 +356,23 @@ const Dashboard = () => {
             aria-describedby="modal-modal-description"
           >
             <Box sx={style}>
-              <TextField id="standard-basic" label="" variant="standard" defaultValue="Task1"/>
+              <TextField id="standard-basic" label="" variant="standard" sx={{width:"100%"}} value={editInput.title} onChange={(e) => setEditInput({ ...editInput, title: e.target.value })}/>
               <div className='flex'>
               <FormControl variant="standard" sx={{ m: 1, minWidth: 100, color:"black" }}>
                 <InputLabel id="demo-simple-select-standard-label">Course</InputLabel>
                 <Select
                   labelId="demo-simple-select-standard-label"
                   id="demo-simple-select-standard"
-                  value={age}
-                  onChange={handleChange}
                   label="Color"
-                  defaultValue="Course 1"
+                  value={editInput.course}
+                  onChange={(e) => setEditInput({ ...editInput, course: e.target.value })}
                 >
-                  <MenuItem value="None">
+                  <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  {courses?.map(course=>(
+                    <MenuItem value={course.name}>{course.name}</MenuItem>
+                  ))}
                 </Select>
                </FormControl>
                <FormControl variant="standard" sx={{ m: 1, minWidth: 120, color:"black" }}>
@@ -256,21 +383,22 @@ const Dashboard = () => {
                   value={age}
                   onChange={handleChange}
                   label="Color"
-                  defaultValue="Course 1"
+                  value={editInput.color}
+                  onChange={(e) => setEditInput({ ...editInput, color: e.target.value })}
                 >
-                  <MenuItem value="None">
-                    <em>None</em>
-                  </MenuItem>
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  <MenuItem value="border-l-black">⚫ Black</MenuItem>
+                  <MenuItem value="border-l-red-400">🔴 Red</MenuItem>
+                  <MenuItem value="border-l-yellow-400">🟡 Yellow</MenuItem>
+                  <MenuItem value="border-l-green-400">🟢 Green</MenuItem>
+                  <MenuItem value="border-l-purple-400">🟣 Purple</MenuItem>
+                  <MenuItem value="border-l-blue-400">🔵 Blue</MenuItem>
                 </Select>
                </FormControl>
                <input 
                   type='date' 
                   name="dueDate"
-                  value={taskInput.dueDate}
-                  onChange={handleInputChange}
+                  value={editInput.dueDate ? new Date(editInput.dueDate).toISOString().substring(0, 10) : ""}
+                  onChange={(e) => setEditInput({ ...editInput, dueDate: e.target.value })} 
                   className='p-1 rounded-md'
                 ></input>
                 </div>
@@ -279,15 +407,15 @@ const Dashboard = () => {
                   label="Description"
                   multiline
                   rows={4}
-                  defaultValue="Default Value"
+                  defaultValue={selected ? selected.description : ""}
                   variant="standard"
                   sx={{width:400}}
                 />
               <div className='flex justify-between my-4'>
-              <Button variant="outlined" startIcon={<DeleteIcon />} color="error">
+              <Button variant="outlined" startIcon={<DeleteIcon />} color="error" onClick={() => handleDeleteTask(selected._id)}>
                   Delete
               </Button>
-              <Button variant="outlined" startIcon={<EditIcon />}>
+              <Button variant="outlined" startIcon={<EditIcon />} onClick={()=>handleEditTask(selected?._id)}>
                   Edit
               </Button>
               </div>
@@ -296,9 +424,10 @@ const Dashboard = () => {
           </Modal>
           
         </div>
-        {/* <Timer/> */}
+        <Toaster/>
         </div>
     </Layout>
+    </>
   )
 }
 

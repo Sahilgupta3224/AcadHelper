@@ -79,6 +79,7 @@ const userSchema = new mongoose.Schema({
             type:Date,
             default: Date.now
         },
+<<<<<<< Updated upstream
     }],
     Totalpoints:[{
         courseId:{
@@ -88,6 +89,10 @@ const userSchema = new mongoose.Schema({
         points:{
             type:Number,
             default:0
+=======
+        teamId: {
+            type:mongoose.Schema.Types.ObjectId
+>>>>>>> Stashed changes
         }
     }],
     challengessolved:[{
