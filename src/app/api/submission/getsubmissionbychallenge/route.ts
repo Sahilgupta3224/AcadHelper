@@ -16,13 +16,6 @@ export async function GET(request: NextRequest) {
             }, { status: 400 });
         }
         const submissions = await Submission.find({ Challenge: challengeId });
-        if (!submissions.length) {
-            return NextResponse.json({
-                success: false,
-                message: "No submissions found for this challenge",
-            }, { status: 404 });
-        }
-
         return NextResponse.json({
             success: true,
             data: submissions,

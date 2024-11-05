@@ -7,7 +7,8 @@ interface Params {
 
 export async function DELETE(request: NextRequest,{ params }: { params: Params }) {
     try {
-        const { id } = params;
+        const url = new URL(request.url);
+        const id = url.searchParams.get('Id');
         const deletedChallenge = await Challenge.findByIdAndDelete(id);
         if (!deletedChallenge) {
             return NextResponse.json({

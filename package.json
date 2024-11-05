@@ -2,6 +2,7 @@
   "name": "acadhelper",
   "version": "0.1.0",
   "private": true,
+  "type":"module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -25,6 +26,7 @@
     "@radix-ui/react-dialog": "^1.1.2",
     "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.3.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^2.30.0",
@@ -41,16 +43,17 @@
     "npm": "^10.9.0",
     "react": "^18.3.1",
     "react-beautiful-dnd": "^13.1.1",
+    "react-bootstrap": "^2.10.5",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
-    "zustand": "^5.0.1",
     "react-loading-skeleton": "^3.5.0",
     "react-toastify": "^10.0.6",
     "recharts": "^2.13.3",
     "sonner": "^1.5.0",
     "sooner": "^1.1.4",
     "tailwind-merge": "^2.5.4",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

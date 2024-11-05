@@ -3,6 +3,7 @@ import Assignment from '@/models/assignmentModel'
 import Course from '@/models/courseModel'
 import User from '@/models/userModel'
 import Submission from '@/models/submissionModel'
+import Challenge from '@/models/challengeModel'
 import {Types} from 'mongoose'
 import { NextResponse } from 'next/server'
 
@@ -28,6 +29,23 @@ export const PATCH = async (request:Request)=>{
             return new NextResponse(JSON.stringify({message:"Already approved"}))
         }
         findSubmission.isVerified=true
+        const userId = findSubmission.User
+        const assignmentId=findSubmission.Assignment
+        const challengeId=findSubmission.challenge
+        if(challengeId){
+            const challenge = await Challenge.findById(challengeId)
+            const points = challenge.points
+            const CourseId = challenge.courseId
+            findSubmission.marksObtained = points
+            await User.findByIdAndUpdate(userId,{$push:{Totalpoints:{courseId:CourseId,points:points}}},{new:true})
+        }
+        if(assignmentId){
+            const assignment =await Assignment.findById(assignmentId)
+            const points = assignment.totalPoints
+            const CourseId = assignment.Course
+            findSubmission.marksObtained = points
+            await User.findByIdAndUpdate(userId,{$push:{Totalpoints:{courseId:CourseId,points:points}}},{new:true})
+        }
         await findSubmission.save()
         
         return new NextResponse(JSON.stringify({message:"Successfully submission approved",submission:findSubmission}),{status:200})

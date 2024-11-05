@@ -78,6 +78,16 @@ const userSchema = new mongoose.Schema({
         date: {
             type:Date,
             default: Date.now
+        },
+    }],
+    Totalpoints:[{
+        courseId:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Course"
+        },
+        points:{
+            type:Number,
+            default:0
         }
     }],
     challengessolved:[{

@@ -19,6 +19,8 @@ const AdminPage: React.FC = () => {
   const [challenges, setChallenges] = React.useState<Challenge[]>([]);
   const [assignments, setassignments] = React.useState<Assignment[]>([]);
   const [value, setValue] = React.useState(0);
+  const [open, setOpen] = React.useState(false);
+  const [challengeIdToDelete, setChallengeIdToDelete] = React.useState<string | null>(null);
   const courseId = '6726042138ea22ecca513fc0';
   const router = useRouter();
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -45,6 +47,28 @@ const AdminPage: React.FC = () => {
     } catch (error) {
       console.error("Error fetching challenges:", error);
     }
+  };
+  const DeleteChallenge = async () => {
+    if(challengeIdToDelete){
+      try {
+        const response = await axios.delete(`/api/challenge/deletechallenge?Id=${challengeIdToDelete}`);
+        setChallenges((prev) => prev.filter(challenge => challenge._id !== challengeIdToDelete));
+        console.log(response.data)
+        handleCloseModal();
+      } catch (error) {
+        console.error("Error deleting challenges:", error);
+    }
+    }
+  };
+
+  const handleOpenModal = (id: string) => {
+    setChallengeIdToDelete(id);
+    setOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpen(false);
+    setChallengeIdToDelete(null);
   };
 
   React.useEffect(() => {
@@ -111,6 +135,9 @@ const AdminPage: React.FC = () => {
                   >
                     View Details
                   </Button>
+                  <Button onClick={() => handleOpenModal(challenge._id)}>
+                    Delete Challennge
+                  </Button>
                 </Box>
               ))
             ) : (
@@ -118,7 +145,7 @@ const AdminPage: React.FC = () => {
             )}
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-            <Button variant="contained" color="primary" sx={{ width: '200px' }}>
+            <Button variant="contained" color="primary" sx={{ width: '200px' }} onClick={() => router.push(`/admin/uploadchallenge/${courseId}`)} >
               Add Challenge
             </Button>
           </Box>
@@ -134,7 +161,44 @@ const AdminPage: React.FC = () => {
         </Box>
         </>
         )}
-        
+        <Modal
+          open={open}
+          onClose={handleCloseModal}
+          aria-labelledby="modal-title"
+          aria-describedby="modal-description"
+        >
+          <Box
+  sx={{
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    borderRadius: 2,
+    boxShadow: 3,
+    p: 4,
+    outline: 'none',
+    zIndex: 1300,
+  }}
+>
+  <Typography id="modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
+    Confirm Delete
+  </Typography>
+  <Typography id="modal-description" sx={{ mb: 4 }}>
+    Are you sure you want to delete this challenge?
+  </Typography>
+  <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+    <Button onClick={handleCloseModal} color="primary" sx={{ mr: 1 }}>
+      Cancel
+    </Button>
+    <Button onClick={DeleteChallenge} variant="contained" color="secondary">
+      Delete
+    </Button>
+  </Box>
+</Box>
+
+        </Modal>
       </Box>
     </Layout>
   );

@@ -5,6 +5,18 @@ import Challenge from "@/Interfaces/challenge";
 import Submission from "@/Interfaces/submission";
 import '../../app/globals.css';
 import toast, { Toaster } from 'react-hot-toast';
+// import { Modal, Button, Form } from 'react-bootstrap';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem } from '@mui/material';
+
+interface EditChallenge {
+  title: string;
+  description: string;
+  challengeDoc?: string;
+  type: "individual" | "team";
+  frequency: "daily" | "weekly";
+  startDate: Date;
+  points: number;
+}
 
 const ChallengeDetails: React.FC = () => {
   const router = useRouter();
@@ -14,6 +26,9 @@ const ChallengeDetails: React.FC = () => {
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [yo, setyo] = useState(false);
+  const [show, setShow] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("");
+  const [editedchallenge, seteditedchallenge] = useState<EditChallenge | null>(null);
   console.log(id)
   const challengeId = typeof id === 'string' ? id : '';
   useEffect(() => {
@@ -43,6 +58,54 @@ const ChallengeDetails: React.FC = () => {
       fetchSubmissions();
     }
   }, [challengeId, yo]);
+
+  const handleClose = () => {
+    setShow(false);
+    setErrorMessage('')
+  }
+
+  const handleShow = () => {
+    setShow(true);
+    console.log(challenge)
+    seteditedchallenge({
+      title: challenge?.title || "",
+      description: challenge?.description || "",
+      challengeDoc: challenge?.challengeDoc || "",
+      type: challenge?.type || "team",
+      frequency: challenge?.frequency || "daily",
+      startDate: challenge?.startDate || new Date(),
+      points: challenge?.points || 0
+    })
+  }
+
+  const handleEdit = async () => {
+    const submitbutton = async () => {
+      try {
+        if (editedchallenge?.title === '' || editedchallenge?.description === '' || editedchallenge?.challengeDoc === '' || (editedchallenge?.frequency !== 'daily' && editedchallenge?.frequency !== 'weekly') || (editedchallenge?.type !== 'team' && editedchallenge?.type !== 'individual')) {
+          setErrorMessage("All entries should be filled");
+          return;
+        }
+        const res = await axios.post(`/api/challenge/editchallenge?Id=${challenge?._id}`, editedchallenge);
+        console.log(res.data);
+        seteditedchallenge({
+          title: "",
+          description: "",
+          challengeDoc: "",
+          type: "individual",
+          frequency: "daily",
+          startDate: new Date(),
+          points: 0
+        });
+        setErrorMessage("");
+        setyo(prev => !prev)
+        handleClose()
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    submitbutton()
+  };
+
   const approve = async (id: string) => {
     try {
       const response = await axios.patch(`/api/submission/approve-a-submission?Id=${id}`);
@@ -88,7 +151,7 @@ const ChallengeDetails: React.FC = () => {
       console.error("Error while approving:", e);
     }
   }
-  
+
   const approveall = async () => {
     try {
       const response = await axios.patch(`/api/submission/approve-all-submission-challenge?Id=${challengeId}`);
@@ -141,6 +204,9 @@ const ChallengeDetails: React.FC = () => {
             )}
           </div>
         </div>
+        <Button onClick={handleShow}>
+          Edit Challenge
+        </Button>
         {/* <button
           onClick={() => { approveall(challengeId) }}
           className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
@@ -184,6 +250,189 @@ const ChallengeDetails: React.FC = () => {
         >
           Back to Challenges
         </button>
+
+        {/* <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Edit Challenge</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId="title">
+                <Form.Label>Title</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={editedchallenge?.title || ""}
+                  onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, title: e.target.value }))}
+                />
+              </Form.Group>
+
+              <Form.Group controlId="description" className="mt-3">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={editedchallenge?.description || ""}
+                  onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, description: e.target.value }))}
+                />
+              </Form.Group>
+
+              <Form.Group controlId="points" className="mt-3">
+                <Form.Label>Points</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={editedchallenge?.points || 0}
+                  onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, points: parseInt(e.target.value, 10) }))}
+                />
+              </Form.Group>
+
+              <Form.Group controlId="startDate" className="mt-3">
+                <Form.Label>Start Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={editedchallenge?.startDate ? editedchallenge.startDate: ""}
+                  onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, startDate: new Date(e.target.value) }))}
+                />
+              </Form.Group>
+
+              <Form.Group controlId="challengeDoc" className="mt-3">
+                <Form.Label>Challenge Document</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={editedchallenge?.challengeDoc || ""}
+                  onChange={(e) =>
+                    seteditedchallenge((prev) => ({
+                      ...prev!,
+                      challengeDoc: e.target.value,
+                    }))
+                  }
+                />
+              </Form.Group>
+
+              <Form.Group controlId="type" className="mt-3">
+                <Form.Label>Type</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={editedchallenge?.type || "individual"}
+                  onChange={(e) =>
+                    seteditedchallenge((prev) => ({
+                      ...prev!,
+                      type: e.target.value as "individual" | "team",
+                    }))
+                  }
+                >
+                  <option value="individual">Individual</option>
+                  <option value="team">Team</option>
+                </Form.Control>
+              </Form.Group>
+
+              <Form.Group controlId="frequency" className="mt-3">
+                <Form.Label>Frequency</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={editedchallenge?.frequency || "daily"}
+                  onChange={(e) =>
+                    seteditedchallenge((prev) => ({
+                      ...prev!,
+                      frequency: e.target.value as "daily" | "weekly",
+                    }))
+                  }
+                >
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                </Form.Control>
+              </Form.Group>
+
+
+              {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleEdit}>
+              Save Changes
+            </Button>
+          </Modal.Footer>
+        </Modal> */}
+
+<div className="flex flex-col items-center bg-gray-100 min-h-screen py-10 px-5">
+      <Button onClick={handleShow}>Edit Challenge</Button>
+
+      <Dialog open={show} onClose={handleClose}>
+        <DialogTitle>Edit Challenge</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Title"
+            fullWidth
+            margin="normal"
+            value={editedchallenge?.title || ""}
+            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, title: e.target.value }))}
+          />
+          <TextField
+            label="Description"
+            fullWidth
+            margin="normal"
+            multiline
+            rows={3}
+            value={editedchallenge?.description || ""}
+            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, description: e.target.value }))}
+          />
+          <TextField
+            label="Points"
+            type="number"
+            fullWidth
+            margin="normal"
+            value={editedchallenge?.points || 0}
+            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, points: parseInt(e.target.value, 10) }))}
+          />
+          <TextField
+            label="Start Date"
+            type="date"
+            fullWidth
+            margin="normal"
+            value={editedchallenge?.startDate ? editedchallenge.startDate : ""}
+            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, startDate: new Date(e.target.value) }))}
+          />
+          <TextField
+            label="Challenge Document"
+            fullWidth
+            margin="normal"
+            value={editedchallenge?.challengeDoc || ""}
+            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, challengeDoc: e.target.value }))}
+          />
+          <TextField
+            label="Type"
+            select
+            fullWidth
+            margin="normal"
+            value={editedchallenge?.type || "individual"}
+            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, type: e.target.value as "individual" | "team" }))}
+          >
+            <MenuItem value="individual">Individual</MenuItem>
+            <MenuItem value="team">Team</MenuItem>
+          </TextField>
+          <TextField
+            label="Frequency"
+            select
+            fullWidth
+            margin="normal"
+            value={editedchallenge?.frequency || "daily"}
+            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, frequency: e.target.value as "daily" | "weekly" }))}
+          >
+            <MenuItem value="daily">Daily</MenuItem>
+            <MenuItem value="weekly">Weekly</MenuItem>
+          </TextField>
+          {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
+        </DialogContent>
+        <DialogActions>
+        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+          <Button onClick={handleClose} color="secondary">Cancel</Button>
+          <Button onClick={handleEdit} color="primary">Save Changes</Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+
       </div>
     </div>
   );
