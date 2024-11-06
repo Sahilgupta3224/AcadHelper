@@ -12,11 +12,10 @@ import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Popover from '@mui/material/Popover';
-import Fire from './fire'
+import Fire from './Fire'
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import LoginModal from '@/components/AuthModal';
 import Notification from './Notification';
@@ -137,7 +136,7 @@ export default function Navbar() {
         <IconButton size="large" color="inherit">
           <Badge badgeContent={4} color="error">
             <Fire/>
-            <LocalFireDepartmentIcon />
+            {/* <LocalFireDepartmentIcon /> */}
           </Badge>
         </IconButton>
         <p>Messages</p>
@@ -182,27 +181,7 @@ export default function Navbar() {
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" color="inherit" onClick={handleClick}>
-              <Badge badgeContent={4} color="error">
-                {/* <Fire/> */}
-                <LocalFireDepartmentIcon />
-              </Badge>
-            </IconButton>
-            <Popover
-              id={id}
-              open={open}
-              anchorEl={anchorEl}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-            >
-              <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
-            </Popover>
-            <IconButton>
-              <DirectionsRunIcon sx={{ fontSize: 30, color: 'black', stroke: 'black', strokeWidth: 1 }} />
-            </IconButton>
+                <Fire/>
             <Notification/>
             <IconButton
               size="large"

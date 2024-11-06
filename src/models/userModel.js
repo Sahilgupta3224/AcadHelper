@@ -91,8 +91,8 @@ const userSchema = new mongoose.Schema({
         points:{
             type:Number,
             default:0
-        }
-    }],
+       
+    }}],
     challengessolved:[{
         challengeId: {
             type: mongoose.Schema.Types.ObjectId,

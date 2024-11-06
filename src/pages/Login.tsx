@@ -1,8 +1,10 @@
+"use client"
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import "../app/globals.css";
 import { useStore } from "@/store";
+import toast, { Toaster } from 'react-hot-toast';
 
 
 interface ButtonProps {
@@ -75,7 +77,8 @@ const LoginForm: React.FC = () => {
         console.error("Login failed");
       }
     } catch (error) {
-      console.error("Error during login:", error);
+      toast.error(error.response.data.error)
+      // console.error("Error during login:", error);
     }
   };
 
@@ -105,6 +108,7 @@ const LoginForm: React.FC = () => {
           />
           <Button value="Submit" onClick={handleLogin} />
         </form>
+        <Toaster/>
       </div>
     </div>
   );

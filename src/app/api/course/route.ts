@@ -9,7 +9,9 @@ connect()
 //GET all courses from user id
 export async function GET(request:NextRequest){
     try{
-        const {userId} = await request.json() 
+        const {searchParams} = new URL(request.url)
+        const userId = searchParams.get('userId')
+        await connect()
 
         const user = await User.findOne({_id:userId})
         

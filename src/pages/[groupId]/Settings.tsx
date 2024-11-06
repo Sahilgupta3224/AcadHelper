@@ -63,8 +63,8 @@ export const Settings = () => {
     const handleCloseDelete = () => setOpenDelete(false);
 
     const [openLeave, setOpenLeave] = useState(false);
-    const handleOpenLeave = () => setOpenDelete(true);
-    const handleCloseLeave = () => setOpenDelete(false);
+    const handleOpenLeave = () => setOpenLeave(true);
+    const handleCloseLeave = () => setOpenLeave(false);
 
 
     useEffect(()=>{
@@ -103,9 +103,10 @@ export const Settings = () => {
     //Leave a group
     const handleLeave = async()=>{
        try{
-        let user={_id:123}
-        const res = await axios.delete(`/api/team/${group._id}`,{params:{userId:user._id}})
+        const res = await axios.delete(`/api/team/${params?.groupId}`,{params:{userId:user._id,groupId:params?.groupId}})
         if(res.data.success){
+            router.push('/Groups')
+            toast.success("Group left successfully")
             console.log("Group left successfully",res.data.updatedUser)
         }
 
@@ -177,7 +178,10 @@ export const Settings = () => {
              if(res.data.success){
                 toast.success("Invitation sent")
                 console.log("Invitation sent",res.data.updatedTeam)
+                handleClose()
+                
             }
+            // console.log(res.data)
         }
         else{
           toast.error("Field cannot be empty")
@@ -185,6 +189,7 @@ export const Settings = () => {
         }
 
        }catch(e){
+        console.log(e)
          toast.error(e.response.data.error)
        }
     }
@@ -276,7 +281,7 @@ export const Settings = () => {
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Do you want to leave this group? 
           </Typography>
-          <div className='w-full mt-4 flex justify-end' ><Button onClick = {handleLeave} variant="outlined">Delete</Button></div>
+          <div className='w-full mt-4 flex justify-end' ><Button onClick = {handleLeave} variant="outlined">Leave</Button></div>
         </Box>
       </Modal>
       <Toaster />

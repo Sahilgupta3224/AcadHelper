@@ -16,18 +16,19 @@ export async function GET(request:NextRequest){
        if(!user)return NextResponse.json({error:"User does not exist"},{status:400})
 
        const taskIdList = user.tasks
-       const tasks = await Task.find({_id:{$in:{taskIdList}}})
+       const tasks = await Task.find({_id:{$in:taskIdList}})
        return NextResponse.json({tasks:tasks,success:true})
     }catch(error:any){
         return NextResponse.json({error:error.message},{status:500})
     }
 }
 
+
 // Add task
 export async function POST(request:NextRequest){
    try{
       const {task,userId} = await request.json()
-
+    //   console.log(userId)
       if(!userId)return NextResponse.json({error:"You are not logged in"},{status:500})
       if(!task.title)return NextResponse.json({error:"Title cannot be empty"},{status:500})
 
@@ -37,7 +38,7 @@ export async function POST(request:NextRequest){
       const savedTask = await newTask.save()
       const user = await User.findByIdAndUpdate(userId,{$push:{tasks:savedTask._id}},{new:true})
 
-      return NextResponse.json({message:"Task added sucessfully",tasks:user.tasks,success:true})
+      return NextResponse.json({message:"Task added sucessfully",tasks:user.tasks,newTask,success:true})
    }catch(error:any){
     return NextResponse.json({error:error.message},{status:500})
    }
@@ -67,15 +68,22 @@ export async function DELETE(request:NextRequest){
 //Edit task
 export async function PUT(request:NextRequest){
     try{
-        const {task} = await request.json()
+        const body = await request.json()
+        if(body.type=="edit"){
         await connect()
-
-        const updatedTask = await Task.findByIdAndUpdate(task._id,task,{new:true})
+        console.log(body)
+        const updatedTask = await Task.findByIdAndUpdate(body.taskId,body.task,{new:true})
         if(!updatedTask)return NextResponse.json({error:"Task does not exist"},{status:400})
 
-        return NextResponse.json({message:"Task updated successfully",task:updatedTask,success:true})        
-        
-    }catch(error:any){
+        return NextResponse.json({message:"Task updated successfully",task:updatedTask,success:true})}
+        else if(body.type=="checkbox"){
+               console.log(body.completed)
+               const updatedTask = await Task.findByIdAndUpdate(body.taskId,{completed:body.completed},{new:true})
+                if(!updatedTask)return NextResponse.json({error:"Task does not exist"},{status:400})
+
+                  return NextResponse.json({message:"Task updated successfully",task:updatedTask,success:true})
+        }
+        }catch(error:any){
         return NextResponse.json({error:error.message},{status:500})
     }
 }
