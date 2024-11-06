@@ -28,10 +28,6 @@ export default function Notification() {
       try{
         const {data} = await axios.post("/api/team/invitation",{approval,userId:user._id,teamId:mail.teamId,mail})
         console.log(data) 
-        // setUser((prevUser) => ({
-        //   ...prevUser,
-        //   inbox: prevUser.inbox.filter((notif) => notif._id !== mail._id),
-        // }));
         toast.success(data.message)
     }catch(e){
         toast.error(e.response.data.error)
@@ -79,7 +75,10 @@ export default function Notification() {
             </Avatar>
             </ListItemAvatar>
             <ListItemText primary={notif.message} secondary={new Date(notif.date).toISOString().split('T')[0]} />
-            <div><CheckCircleOutlineIcon color="success" sx={{cursor:"pointer"}} onClick={()=>handleInvite(true,notif)}/><CancelOutlinedIcon color="error" sx={{cursor:"pointer"}} onClick={()=>handleInvite(false,notif)}/></div>
+            {notif.type == "group invite" && <div>
+              <CheckCircleOutlineIcon color="success" sx={{cursor:"pointer"}} onClick={()=>handleInvite(true,notif)}/>
+              <CancelOutlinedIcon color="error" sx={{cursor:"pointer"}} onClick={()=>handleInvite(false,notif)}/>
+            </div>}
           </ListItem>
         )):(
           <div>

@@ -106,7 +106,7 @@ export const Settings = () => {
         const res = await axios.delete(`/api/team/${params?.groupId}`,{params:{userId:user._id,groupId:params?.groupId}})
         if(res.data.success){
             router.push('/Groups')
-            toast.success(res.data.message)
+            toast.success("Group left successfully")
             console.log("Group left successfully",res.data.updatedUser)
         }
 

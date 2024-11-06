@@ -21,7 +21,7 @@ const AdminPage: React.FC = () => {
   const [value, setValue] = React.useState(0);
   const [open, setOpen] = React.useState(false);
   const [challengeIdToDelete, setChallengeIdToDelete] = React.useState<string | null>(null);
-  const courseId = '6726042138ea22ecca513fc0';
+  const courseId = '6729e6d6f4a82d6fedab5625';
   const router = useRouter();
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
