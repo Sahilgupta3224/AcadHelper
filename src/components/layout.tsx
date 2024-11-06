@@ -22,13 +22,18 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { useRouter } from "next/navigation";
 import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-
+import { clearUser } from "@/store";
 
 const drawerWidth = 240;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   // const [selectedCourse, setSelectedCourse] = React.useState("");
+
+  const handleLogout = ()=>{
+    clearUser()
+    router.push('/Login')
+  }
 
   const handleNavigation = (text: string) => {
     router.push(`/${text}`);
@@ -38,7 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { text: "Dashboard", icon: <DashboardIcon /> },
     { text: "Groups", icon: <GroupIcon /> },
     { text: "Leaderboard", icon: <LeaderboardIcon /> },
-    { text: "Virtual Room", icon: <VideoCallIcon /> },
+    { text: "Focus", icon: <VideoCallIcon /> },
     { text: "Schedule", icon: <ScheduleIcon /> },
     { text: "Challenge", icon: <EmojiEventsIcon /> },
   ];
@@ -46,7 +51,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const secondaryItems = [
     { text: "Rewards", icon: <RedeemIcon /> },
     { text: "Settings", icon: <SettingsIcon /> },
-    { text: "Logout", icon: <ExitToAppIcon /> },
   ];
 
   return (
@@ -95,6 +99,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </ListItemButton>
               </ListItem>
             ))}
+           <ListItem key="Logout" disablePadding>
+                <ListItemButton onClick={handleLogout}>
+                  <ListItemIcon><ExitToAppIcon /></ListItemIcon>
+                  <ListItemText primary="Logout" />
+                </ListItemButton>
+              </ListItem>
+
           </List>
         </Box>
       </Drawer>

@@ -37,23 +37,6 @@ const courseSchema = new mongoose.Schema({
             default: Date.now,
         },
     }],
-    CourseCode: {
-        type: String,
-        unique: true,
-        required: true,
-    },
-    Announcements: [{
-        title: String,
-        message: String,
-        postedBy: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-        },
-        postedAt: {
-            type: Date,
-            default: Date.now,
-        },
-    }],
     StudentsEnrolled:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"

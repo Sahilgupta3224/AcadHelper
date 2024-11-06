@@ -26,16 +26,12 @@ import {
   Paper,
 } from "@mui/material";
 import Layout from "@/components/layout";
-import { Event } from "@/Interfaces/event";
-
 
 const Calendar: React.FC = () => {
   const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [newEventTitle, setNewEventTitle] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<DateSelectArg | null>(null);
-  const [editedEvent,setEditedEvent]=useState<Event>(null)
-
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -91,18 +87,6 @@ const Calendar: React.FC = () => {
     }
   };
 
-
-  const handleEditEvent=(event:any)=>{
-    // e.preventDefault();
-
-    const eventId=event.id;
-
-
-
-    
-  }
-
-
   return (
     <Layout>
       <Box display="flex" flexDirection={{ xs: "column", md: "row" }} padding="20px">
@@ -132,14 +116,6 @@ const Calendar: React.FC = () => {
                         minute: "2-digit",
                       })}
                     />
-
-                      <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={()=>handleEditEvent(event)}
-                      >
-                        Edit
-                      </Button>
                   </ListItem>
                 ))
               )}
@@ -157,7 +133,7 @@ const Calendar: React.FC = () => {
               center: "title",
               right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek", // Different views enabled here
             }}
-            initialView="dayGridMonth" 
+            initialView="dayGridMonth" // Default initial view
             editable={true}
             selectable={true}
             selectMirror={true}

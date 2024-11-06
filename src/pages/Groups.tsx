@@ -109,7 +109,7 @@ const Groups = () => {
     <Layout>
         <div className="font-bold text-2xl m-4">Groups</div>
         <div className='grid grid-cols-3'>
-          {groups?.map(group=>(
+          {groups.length>0 ? groups.map(group=>(
             <>
               <Link href={`/${group._id}/GroupPage`}> <Card sx={{ maxWidth: 345,margin:"2rem" }}>
               <CardMedia
@@ -128,7 +128,11 @@ const Groups = () => {
               </Card>
               </Link>
             </>
-          ))}
+          )) : 
+          (
+            <div className='p-4'>You don't have any groups yet</div>
+          )
+          }
            
         </div>
         <Fab color="primary" aria-label="add" sx={{

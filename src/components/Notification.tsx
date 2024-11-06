@@ -19,16 +19,22 @@ import { useEffect } from 'react';
 import GroupsIcon from '@mui/icons-material/Groups';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export default function Notification() {
   const {user,setUser} = useStore()
-  const handleAccept = ()=>{
-
+  const handleInvite = async(approval:Boolean,mail)=>{
+      try{
+        const {data} = await axios.post("/api/team/invitation",{approval,userId:user._id,teamId:mail.teamId,mail})
+        console.log(data) 
+        toast.success(data.message)
+    }catch(e){
+        toast.error(e.response.data.error)
+        console.log(e)
+      }
   }
-
-  const handleReject = ()=>{
-    
-  }
+  console.log(user.inbox)
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
@@ -61,7 +67,7 @@ export default function Notification() {
         }}
       >
     <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-        {user?.inbox?.map(notif=>(
+        {user?.inbox?.length>0 ? user.inbox.map(notif=>(
             <ListItem>
             <ListItemAvatar>
             <Avatar>
@@ -69,9 +75,16 @@ export default function Notification() {
             </Avatar>
             </ListItemAvatar>
             <ListItemText primary={notif.message} secondary={new Date(notif.date).toISOString().split('T')[0]} />
-            <div><CheckCircleOutlineIcon color="success" sx={{cursor:"pointer"}} onClick={handleAccept}/><CancelOutlinedIcon color="error" sx={{cursor:"pointer"}} onClick={handleReject}/></div>
+            {notif.type == "group invite" && <div>
+              <CheckCircleOutlineIcon color="success" sx={{cursor:"pointer"}} onClick={()=>handleInvite(true,notif)}/>
+              <CancelOutlinedIcon color="error" sx={{cursor:"pointer"}} onClick={()=>handleInvite(false,notif)}/>
+            </div>}
           </ListItem>
-        ))}
+        )):(
+          <div>
+            You have no notifications
+          </div>
+        )}
     </List>
       </Popover>
     </div>

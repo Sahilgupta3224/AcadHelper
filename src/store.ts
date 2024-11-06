@@ -50,10 +50,11 @@ const defaultUser: User = {
 
 // Function to get the initial user data from localStorage
 const getUserFromLocalStorage = (): User => {
-  if(typeof window==='undefined')return defaultUser
-  const userData = localStorage.getItem("user");
-  return userData ? JSON.parse(userData) : defaultUser;
-};
+    if (typeof window === 'undefined') return defaultUser;
+    const userData = localStorage.getItem("user");
+    return userData && userData !== "undefined" ? JSON.parse(userData) : defaultUser;
+  };
+  
 
 // Create the Zustand store with localStorage persistence
 export const useStore = create<Store>((set) => ({
