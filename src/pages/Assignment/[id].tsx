@@ -1,55 +1,55 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import Challenge from "@/Interfaces/challenge";
 import Submission from "@/Interfaces/submission";
+import Assignment from "@/Interfaces/assignment";
 import '../../app/globals.css';
 import toast, { Toaster } from 'react-hot-toast';
-// import { Modal, Button, Form } from 'react-bootstrap';
+import { CldUploadWidget } from 'next-cloudinary';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem } from '@mui/material';
 
-interface EditChallenge {
+interface EditAssignment {
   title: string;
-  description: string;
-  challengeDoc?: string;
-  type: "individual" | "team";
-  frequency: "daily" | "weekly";
-  startDate: Date;
-  points: number;
+  description?: string;
+  DueDate?: Date;
+  AssignmentDoc: string;
+  totalPoints: number;
+  status: "Open" | "Closed" | "Graded";
 }
 
-const ChallengeDetails: React.FC = () => {
+
+const AssignmentDetails: React.FC = () => {
   const router = useRouter();
   const { query } = router
   console.log(query)
   const { id } = router.query;
-  const [challenge, setChallenge] = useState<Challenge | null>(null);
+  const [assignment, setassignment] = useState<Assignment | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [yo, setyo] = useState(false);
   const [show, setShow] = useState(false)
   const [errorMessage, setErrorMessage] = useState("");
-  const [editedchallenge, seteditedchallenge] = useState<EditChallenge | null>(null);
+  const [editedassignment, seteditedassignment] = useState<EditAssignment | null>(null);
   console.log(id)
-  const challengeId = typeof id === 'string' ? id : '';
+  const assignmentId = typeof id === 'string' ? id : '';
   useEffect(() => {
-    if (challengeId) {
-      const fetchChallenge = async () => {
+    if (assignmentId) {
+      const fetchAssignment = async () => {
         try {
-          const response = await axios.get(`/api/challenge/getchallengeById?Id=${challengeId}`);
-          setChallenge(response.data.data);
+          const response = await axios.get(`/api/assignment/getassignmentById?Id=${assignmentId}`);
+          setassignment(response.data.data);
         } catch (error) {
           console.error("Error fetching challenge details:", error);
         }
       };
-      fetchChallenge();
+      fetchAssignment();
     }
-  }, [challengeId]);
+  }, [assignmentId]);
 
   useEffect(() => {
-    if (challengeId) {
+    if (assignmentId) {
       const fetchSubmissions = async () => {
         try {
-          const submissionsResponse = await axios.get(`/api/submission/getsubmissionbychallenge?challengeId=${challengeId}`);
+          const submissionsResponse = await axios.get(`/api/submission/getsubmissionbyassignment?assignmentId=${assignmentId}`);
           setSubmissions(submissionsResponse.data.data);
         } catch (error) {
           console.error("Error fetching submissions:", error);
@@ -57,7 +57,7 @@ const ChallengeDetails: React.FC = () => {
       };
       fetchSubmissions();
     }
-  }, [challengeId, yo]);
+  }, [assignmentId, yo]);
 
   const handleClose = () => {
     setShow(false);
@@ -66,42 +66,33 @@ const ChallengeDetails: React.FC = () => {
 
   const handleShow = () => {
     setShow(true);
-    console.log(challenge)
-    seteditedchallenge({
-      title: challenge?.title || "",
-      description: challenge?.description || "",
-      challengeDoc: challenge?.challengeDoc || "",
-      type: challenge?.type || "team",
-      frequency: challenge?.frequency || "daily",
-      startDate: challenge?.startDate || new Date(),
-      points: challenge?.points || 0
+    console.log(assignment)
+    seteditedassignment({
+      title: assignment?.title || "",
+      description: assignment?.description || "",
+      DueDate:assignment?.DueDate || new Date(),
+      AssignmentDoc:assignment?.AssignmentDoc||"",
+      totalPoints:assignment?.totalPoints||0,
+      status:assignment?.status||"Open"
     })
   }
 
   const handleEdit = async () => {
     const submitbutton = async () => {
       try {
-        let End = editedchallenge?.startDate 
-        if(editedchallenge?.frequency==="daily"){
-          End?.setDate(End?.getDate()+1)
-        }
-        if(editedchallenge?.frequency==="weekly"){
-          End?.setDate(End?.getDate()+7)
-        }
-        if (editedchallenge?.title === '' || editedchallenge?.description === '' || editedchallenge?.challengeDoc === '' || (editedchallenge?.frequency !== 'daily' && editedchallenge?.frequency !== 'weekly') || (editedchallenge?.type !== 'team' && editedchallenge?.type !== 'individual')) {
+        if (editedassignment?.title === "" || editedassignment?.description === "" || editedassignment?.AssignmentDoc ==="" || (editedassignment?.status !== "Open" && editedassignment?.status !== "Graded" && editedassignment?.status !== 'Closed')) {
           setErrorMessage("All entries should be filled");
           return;
         }
-        const res = await axios.post(`/api/challenge/editchallenge?Id=${challenge?._id}`, editedchallenge);
+        const res = await axios.patch(`/api/assignment/editassignment?Id=${assignment?._id}`, editedassignment);
         console.log(res.data);
-        seteditedchallenge({
+        seteditedassignment({
           title: "",
           description: "",
-          challengeDoc: "",
-          type: "individual",
-          frequency: "daily",
-          startDate: new Date(),
-          points: 0
+          AssignmentDoc: "",
+          status: "Open",
+          DueDate: new Date(),
+          totalPoints: 0
         });
         setErrorMessage("");
         setyo(prev => !prev)
@@ -135,11 +126,6 @@ const ChallengeDetails: React.FC = () => {
       setyo(!yo);
     }
     catch (e: any) {
-      // if (e.response && e.response.status === 400) {
-      //   toast.error(e.response.data.message);
-      // } else {
-      //   toast.error("An unexpected error occurred. Please try again.");
-      // }
       console.error("Error while removing:", e);
     }
   }
@@ -161,7 +147,7 @@ const ChallengeDetails: React.FC = () => {
 
   const approveall = async () => {
     try {
-      const response = await axios.patch(`/api/submission/approve-all-submission-challenge?Id=${challengeId}`);
+      const response = await axios.patch(`/api/submission/approve-all-submission-assignment?Id=${assignmentId}`);
       console.log(response.data)
       setyo(!yo);
     }
@@ -175,36 +161,39 @@ const ChallengeDetails: React.FC = () => {
     }
   }
 
-  if (!challenge) return <div>Loading...</div>;
+  const handleUpload = (result: any) => {
+    if (result && result.info) {
+        seteditedassignment((prev) => ({ ...prev!, AssignmentDoc: result.info.url }));
+      console.log("Upload result info:", result.info);
+    } else {
+      console.error("Upload failed or result is invalid.");
+    }
+  };
+
+  if (!assignment) return <div>Loading...</div>;
 
   return (
     <div className="flex flex-col items-center bg-gray-100 min-h-screen py-10 px-5">
       <div>
         <div className="flex justify-between mb-6">
           <div className="flex flex-col">
-            <h1 className="text-3xl font-bold text-center">{challenge.title}</h1>
-            <p className="text-gray-700 text-center">{challenge.description}</p>
+            <h1 className="text-3xl font-bold text-center">{assignment.title}</h1>
+            <p className="text-gray-700 text-center">{assignment.description}</p>
           </div>
           <div className="flex flex-col items-end">
             <div className="mb-4">
-              <span className="font-semibold">Type:</span> {challenge.type}
+              <span className="font-semibold">Frequency:</span> {assignment.status}
             </div>
             <div className="mb-4">
-              <span className="font-semibold">Frequency:</span> {challenge.frequency}
+              <span className="font-semibold">Points:</span> {assignment.totalPoints}
             </div>
             <div className="mb-4">
-              <span className="font-semibold">Points:</span> {challenge.points}
+              <span className="font-semibold">Start Date:</span> {new Date(assignment.DueDate || new Date()).toLocaleDateString()}
             </div>
-            <div className="mb-4">
-              <span className="font-semibold">Start Date:</span> {new Date(challenge.startDate).toLocaleDateString()}
-            </div>
-            <div className="mb-4">
-              <span className="font-semibold">End Date:</span> {new Date(challenge.endDate).toLocaleDateString()}
-            </div>
-            {challenge.challengeDoc && (
+            {assignment.AssignmentDoc && (
               <div className="mb-4">
-                <span className="font-semibold">Challenge Document:</span>{" "}
-                <a href={challenge.challengeDoc} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                <span className="font-semibold">assignment Document:</span>{" "}
+                <a href={assignment.AssignmentDoc} target="_blank" rel="noopener noreferrer" className="text-blue-500">
                   View Document
                 </a>
               </div>
@@ -212,7 +201,7 @@ const ChallengeDetails: React.FC = () => {
           </div>
         </div>
         <Button onClick={handleShow}>
-          Edit Challenge
+          Edit assignment
         </Button>
         <button
           onClick={approveall}
@@ -242,28 +231,28 @@ const ChallengeDetails: React.FC = () => {
             </div>
           ))
         ) : (
-          <p>No submissions found for this challenge.</p>
+          <p>No submissions found for this assignment.</p>
         )}
 
         <button
           onClick={() => router.push(`/admin/Courses`)}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
         >
-          Back to Challenges
+          Back to assignments
         </button>
 
 <div className="flex flex-col items-center bg-gray-100 min-h-screen py-10 px-5">
-      <Button onClick={handleShow}>Edit Challenge</Button>
+      <Button onClick={handleShow}>Edit assignment</Button>
 
       <Dialog open={show} onClose={handleClose}>
-        <DialogTitle>Edit Challenge</DialogTitle>
+        <DialogTitle>Edit assignment</DialogTitle>
         <DialogContent>
           <TextField
             label="Title"
             fullWidth
             margin="normal"
-            value={editedchallenge?.title || ""}
-            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, title: e.target.value }))}
+            value={editedassignment?.title || ""}
+            onChange={(e) => seteditedassignment((prev) => ({ ...prev!, title: e.target.value }))}
           />
           <TextField
             label="Description"
@@ -271,53 +260,54 @@ const ChallengeDetails: React.FC = () => {
             margin="normal"
             multiline
             rows={3}
-            value={editedchallenge?.description || ""}
-            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, description: e.target.value }))}
+            value={editedassignment?.description || ""}
+            onChange={(e) => seteditedassignment((prev) => ({ ...prev!, description: e.target.value }))}
           />
           <TextField
             label="Points"
             type="number"
             fullWidth
             margin="normal"
-            value={editedchallenge?.points || 0}
-            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, points: parseInt(e.target.value, 10) }))}
+            value={editedassignment?.totalPoints || 0}
+            onChange={(e) => seteditedassignment((prev) => ({ ...prev!, totalPoints: parseInt(e.target.value, 10) }))}
           />
           <TextField
             label="Start Date"
             type="date"
             fullWidth
             margin="normal"
-            value={editedchallenge?.startDate ? editedchallenge.startDate : ""}
-            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, startDate: new Date(e.target.value) }))}
+            value={editedassignment?.DueDate ? editedassignment.DueDate.toISOString().split('T')[0] : ""}
+            onChange={(e) => seteditedassignment((prev) => ({ ...prev!, DueDate: new Date(e.target.value) }))}
           />
-          <TextField
-            label="Challenge Document"
-            fullWidth
-            margin="normal"
-            value={editedchallenge?.challengeDoc || ""}
-            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, challengeDoc: e.target.value }))}
-          />
+          {editedassignment?.AssignmentDoc && (
+    <div className="mb-4">
+      <span className="font-semibold">Current Document:</span>{" "}
+      <a href={editedassignment.AssignmentDoc} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+        View Document
+      </a>
+    </div>
+  )}
+          <CldUploadWidget
+                    uploadPreset="acad_helper_pdf	"
+                    onSuccess={handleUpload}
+                  >
+                    {({ open }) => (
+                      <Button onClick={() => open()} variant="outlined" color="primary" fullWidth>
+                        Select File
+                      </Button>
+                    )}
+        </CldUploadWidget>
           <TextField
             label="Type"
             select
             fullWidth
             margin="normal"
-            value={editedchallenge?.type || "individual"}
-            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, type: e.target.value as "individual" | "team" }))}
+            value={editedassignment?.status|| "Open"}
+            onChange={(e) => seteditedassignment((prev) => ({ ...prev!, status: e.target.value as "Open" | "Closed" | "Graded" }))}
           >
-            <MenuItem value="individual">Individual</MenuItem>
-            <MenuItem value="team">Team</MenuItem>
-          </TextField>
-          <TextField
-            label="Frequency"
-            select
-            fullWidth
-            margin="normal"
-            value={editedchallenge?.frequency || "daily"}
-            onChange={(e) => seteditedchallenge((prev) => ({ ...prev!, frequency: e.target.value as "daily" | "weekly" }))}
-          >
-            <MenuItem value="daily">Daily</MenuItem>
-            <MenuItem value="weekly">Weekly</MenuItem>
+            <MenuItem value="Open">Open</MenuItem>
+            <MenuItem value="Closed">Closed</MenuItem>
+            <MenuItem value="Graded">Graded</MenuItem>
           </TextField>
           {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
         </DialogContent>
@@ -334,4 +324,4 @@ const ChallengeDetails: React.FC = () => {
   );
 };
 
-export default ChallengeDetails;
+export default AssignmentDetails;

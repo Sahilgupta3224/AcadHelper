@@ -31,21 +31,43 @@ export const PATCH = async (request:Request)=>{
         findSubmission.isVerified=true
         const userId = findSubmission.User
         const assignmentId=findSubmission.Assignment
-        const challengeId=findSubmission.challenge
+        const challengeId=findSubmission.Challenge
+        const user = await User.findById(userId)
+        console.log(assignmentId)
+        console.log(challengeId)
         if(challengeId){
+            console.log("challenge")
             const challenge = await Challenge.findById(challengeId)
             const points = challenge.points
             const CourseId = challenge.courseId
             findSubmission.marksObtained = points
-            await User.findByIdAndUpdate(userId,{$push:{Totalpoints:{courseId:CourseId,points:points}}},{new:true})
+            const courseIndex = user.Totalpoints.findIndex(
+                (entry:any) => entry.courseId.toString() === CourseId.toString()
+            );
+        
+            if (courseIndex >= 0) {
+                user.Totalpoints[courseIndex].points += points;
+            } else {
+                user.Totalpoints.push({ CourseId, points });
+            }
         }
         if(assignmentId){
+            console.log("assignment")
             const assignment =await Assignment.findById(assignmentId)
             const points = assignment.totalPoints
             const CourseId = assignment.Course
             findSubmission.marksObtained = points
-            await User.findByIdAndUpdate(userId,{$push:{Totalpoints:{courseId:CourseId,points:points}}},{new:true})
+            const courseIndex = user.Totalpoints.findIndex(
+                (entry:any) => entry.courseId.toString() === CourseId.toString()
+            );
+        
+            if (courseIndex >= 0) {
+                user.Totalpoints[courseIndex].points += points;
+            } else {
+                user.Totalpoints.push({ CourseId, points });
+            }
         }
+        await user.save()
         await findSubmission.save()
         
         return new NextResponse(JSON.stringify({message:"Successfully submission approved",submission:findSubmission}),{status:200})

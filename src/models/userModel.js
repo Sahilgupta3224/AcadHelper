@@ -79,6 +79,9 @@ const userSchema = new mongoose.Schema({
             type:Date,
             default: Date.now
         },
+        teamId:{
+            type:mongoose.Schema.Types.ObjectId
+        }
     }],
     Totalpoints:[{
         courseId:{

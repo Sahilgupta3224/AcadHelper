@@ -33,7 +33,7 @@ export async function POST(request:NextRequest){
     try{
         const {code,userId} = await request.json()
         const courseExist = await Course.findOne({CourseCode:code})
-
+        
         if(!courseExist){
             return NextResponse.json({error:"Course code is invalid"},{status:400})
         }

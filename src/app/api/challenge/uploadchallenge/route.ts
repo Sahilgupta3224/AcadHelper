@@ -17,8 +17,7 @@ export async function POST(request: Request) {
         if (!user) {
             return NextResponse.json({ message: "user doesn't exist" }, { status: 403 });
         }
-
-        if (!title || !challengeDoc || !description ||!type ||!frequency ||!startDate||!endDate||!courseId||!createdBy) {
+        if (!title || !challengeDoc || !description ||!type ||!frequency ||!startDate||!courseId||!createdBy) {
             return NextResponse.json({ message: "required fields are empty" }, { status: 400 });
         }
         const course=await Course.findById(courseId)

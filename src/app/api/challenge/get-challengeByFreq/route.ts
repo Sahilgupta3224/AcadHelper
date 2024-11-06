@@ -4,8 +4,10 @@ interface Params {
 import Challenge from "@/models/challengeModel";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
+import {connect} from '@/dbConfig/dbConfig'
 
-export async function GET(request: NextRequest) {
+connect()
+export async function POST(request: NextRequest) {
     try {
         const { frequency, userId } = await request.json();
         if(frequency !='daily' && frequency !='weekly'){
@@ -23,9 +25,11 @@ export async function GET(request: NextRequest) {
                 message: "User not found."
             }, { status: 404 });
         }
+        console.log(user)
+        const courseIds = user.Courses.map((course) => course.courseId);
 
         const challenges = await Challenge.find({
-            courseId: { $in: user.Courses.courseId },
+            courseId: { $in: courseIds },
             frequency: frequency
         });
         return NextResponse.json({
