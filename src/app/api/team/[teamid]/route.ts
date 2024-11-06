@@ -56,12 +56,14 @@ export async function DELETE(request:NextRequest,context:{params:any}){
         console.log(teamId)
 
         await connect()
+        const user = await User.findById(userId)
+        if(!user)return NextResponse.json({error:"User not found"},{status:400})
+        const team = Team.findById(teamId)
+        if(!team)return NextResponse.json({error:"Team not found"},{status:400})
         
         const updatedUser = await User.findByIdAndUpdate(userId,{$pull:{teams:{teamId:teamId}}},{new:true})
-        if(!updatedUser)return NextResponse.json({error:"User not found"},{status:400})
         
-        const updatedTeam = await Course.findByIdAndUpdate(teamId,{$pull:{Members:{memberId:userId}}},{new:true})
-        if(!updatedTeam)return NextResponse.json({error:"Team not found"},{status:400})
+        const updatedTeam = await Team.findByIdAndUpdate(teamId,{$pull:{Members:{memberId:userId}}},{new:true})
 
         return NextResponse.json({updatedUser,success:true})
 

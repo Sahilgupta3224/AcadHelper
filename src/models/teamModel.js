@@ -41,6 +41,10 @@ const teamSchema = new mongoose.Schema({
         type: [String],
         default: []
     },
+    tasks:[{
+        text:{type:String},
+        completed:{type:Boolean}
+    }],
     challengescompleted:{
         type:String
     },

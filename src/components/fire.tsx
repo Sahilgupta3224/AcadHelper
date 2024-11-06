@@ -1,129 +1,157 @@
+"use client"
 import * as React from 'react';
-import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
-import { styled } from '@mui/system';
+import Popover from '@mui/material/Popover';
+import Badge from '@mui/material/Badge';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import { useStore } from '@/store';
+import { useEffect, useState } from 'react';
+import GroupsIcon from '@mui/icons-material/Groups';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function CustomTabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+
 export default function Fire() {
-  const [anchor, setAnchor] = React.useState<null | HTMLElement>(null);
+  const {user,setUser} = useStore()
+  const [daily,setDaily] = useState([])
+  const [weekly,setWeekly] = useState([])
+  useEffect(()=>{
+    const fetchDaily = async()=>{
+      try{
+        const {data} = await axios.post("/api/challenge/get-challengeByFreq",{frequency:"daily",userId:user._id})
+        if(data.success){
+          setDaily(data.data)
+        }
+    }catch(e){
+        console.log(e)
+      }
+    }
+    const fetchWeekly = async()=>{
+      try{
+        const {data} = await axios.post("/api/challenge/get-challengeByFreq",{frequency:"weekly",userId:user._id})
+        if(data.success){
+          setDaily(data.data)
+        }
+    }catch(e){
+        console.log(e)
+      }
+    }
+    fetchDaily()
+    fetchWeekly()
+  },[])
+  console.log(daily,weekly)
+  
+
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchor(anchor ? null : event.currentTarget);
-  };
-
-  const open = Boolean(anchor);
-  const id = open ? 'simple-popper' : undefined;
-
   return (
     <div>
-      <Button aria-describedby={id} type="button" onClick={handleClick}>
-        <LocalFireDepartmentIcon/>
-      </Button>
-      <BasePopup id={id} open={open} anchor={anchor}>
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        aria-label="scrollable auto tabs example"
+      <IconButton size="large" color="inherit" onClick={handleClick}>
+              <Badge badgeContent={17} color="error">
+                <LocalFireDepartmentIcon />
+              </Badge>
+            </IconButton>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
       >
-        {/* <Tab label="Item One" />
-        <Tab label="Item Two" />
-        <Tab label="Item Three" />
-        <Tab label="Item Four" />
-        <Tab label="Item Five" />
-        <Tab label="Item Six" />
-        <Tab label="Item Seven" /> */}
-      </Tabs>
-      </BasePopup>
+          <Box sx={{ width: '100%' }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+              <Tab label="Daily challenge" {...a11yProps(0)} />
+              <Tab label="Weekly challenge" {...a11yProps(1)} />
+            </Tabs>
+          </Box>
+          <CustomTabPanel value={value} index={0}>
+            Item One
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={1}>
+            Item Two
+          </CustomTabPanel>
+        </Box>
+    {/* <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+        {user?.inbox?.length>0 ? user.inbox.map(notif=>(
+            <ListItem>
+            <ListItemAvatar>
+            <Avatar>
+                <GroupsIcon />
+            </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={notif.message} secondary={new Date(notif.date).toISOString().split('T')[0]} />
+            {notif.type == "group invite" && <div>
+              <CheckCircleOutlineIcon color="success" sx={{cursor:"pointer"}} onClick={()=>handleInvite(true,notif)}/>
+              <CancelOutlinedIcon color="error" sx={{cursor:"pointer"}} onClick={()=>handleInvite(false,notif)}/>
+            </div>}
+          </ListItem>
+        )):(
+          <div>
+            You have no notifications
+          </div>
+        )}
+    </List> */}
+      </Popover>
     </div>
   );
 }
-
-const grey = {
-  50: '#F3F6F9',
-  100: '#E5EAF2',
-  200: '#DAE2ED',
-  300: '#C7D0DD',
-  400: '#B0B8C4',
-  500: '#9DA8B7',
-  600: '#6B7A90',
-  700: '#434D5B',
-  800: '#303740',
-  900: '#1C2025',
-};
-
-const blue = {
-  200: '#99CCFF',
-  300: '#66B2FF',
-  400: '#3399FF',
-  500: '#007FFF',
-  600: '#0072E5',
-  700: '#0066CC',
-};
-
-const PopupBody = styled('div')(
-  ({ theme }) => `
-  width: max-content;
-  padding: 12px 16px;
-  margin: 8px;
-  border-radius: 8px;
-  border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-  background-color: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
-  box-shadow: ${
-    theme.palette.mode === 'dark'
-      ? `0px 4px 8px rgb(0 0 0 / 0.7)`
-      : `0px 4px 8px rgb(0 0 0 / 0.1)`
-  };
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.875rem;
-  z-index: 1;
-`,
-);
-
-const Button = styled('button')(
-  ({ theme }) => `
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 600;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  background-color: ${blue[500]};
-  padding: 8px 16px;
-  border-radius: 8px;
-  color: white;
-  transition: all 150ms ease;
-  cursor: pointer;
-  border: 1px solid ${blue[500]};
-  box-shadow: 0 2px 1px ${
-    theme.palette.mode === 'dark' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(45, 45, 60, 0.2)'
-  }, inset 0 1.5px 1px ${blue[400]}, inset 0 -2px 1px ${blue[600]};
-
-  &:hover {
-    background-color: ${blue[600]};
-  }
-
-  &:active {
-    background-color: ${blue[700]};
-    box-shadow: none;
-  }
-
-  &:focus-visible {
-    box-shadow: 0 0 0 4px ${theme.palette.mode === 'dark' ? blue[300] : blue[200]};
-    outline: none;
-  }
-
-  &.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    box-shadow: none;
-    &:hover {
-      background-color: ${blue[500]};
-    }
-  }
-`,
-);

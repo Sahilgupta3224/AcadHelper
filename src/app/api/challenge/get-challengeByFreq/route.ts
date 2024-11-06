@@ -5,7 +5,7 @@ import Challenge from "@/models/challengeModel";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
         const { frequency, userId } = await request.json();
         if(frequency !='daily' && frequency !='weekly'){

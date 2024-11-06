@@ -8,6 +8,9 @@ import { Container, Typography, TextField, Button, List, ListItem, ListItemText,
 import DeleteIcon from '@mui/icons-material/Delete';
 import '../../app/globals.css';
 import Modal from '@mui/material/Modal';
+import axios from 'axios';
+import { useStore } from '@/store';
+import { useParams, useRouter } from 'next/navigation';
 
 
 const style = {
@@ -22,10 +25,7 @@ const style = {
     p: 4,
   };
 
-interface Task {
-    text: string;
-    completed: boolean;
-  }
+
 function a11yProps(index: number) {
     return {
       id: `simple-tab-${index}`,
@@ -56,9 +56,10 @@ function a11yProps(index: number) {
   
 export const Pomodoro = () => {
     const [value, setValue] = useState(0);
-    const [tasks, setTasks] = useState<Task[]>([]);
+    const [tasks, setTasks] = useState([]);
+    const {user,setUser} = useStore()
     const [newTask, setNewTask] = useState<string>("");
-
+    const params = useParams()
     const [timer,setTimer] = useState({pomodoro:25,short:5,long:15})
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -71,6 +72,18 @@ export const Pomodoro = () => {
     };
     const [isActive, setIsActive] = useState({pomodoro:false,short:false,long:false}); // Timer status (active or not)
     const [paused,setPaused] = useState<boolean>(true) // Pause status
+    useEffect(()=>{
+      const fetchTeam = async()=>{
+        try{
+          const res = await axios.get(`/api/team/${params.groupId}`,{params:{type:"Team"}})
+          console.log(res?.data?.team)
+          setTasks(res.data.team.tasks || []);
+        }catch(e){
+          console.log(e)
+        }
+      }
+      fetchTeam()
+    },[])
 
     // Convert minutes input to seconds and start the timer
     const startTimer = () => {
@@ -152,30 +165,49 @@ export const Pomodoro = () => {
 
 
   // Function to add a new task
-  const addTask = () => {
-    if (newTask.trim()) {
+  const addTask = async() => {
+    // console.log(newTask)
+      try{
+      const {data} = await axios.post("/api/team/tasks",{task:{text:newTask,completed:false},userId:user._id,teamId:params.groupId})
+      if(data.success){
       setTasks([...tasks, { text: newTask, completed: false }]);
       setNewTask("");
-    }
+      }
+      }catch(error){
+        console.log(error)
+      }
+    
   };
 
   // Function to toggle task completion
-  const toggleComplete = (index: number) => {
-    setTasks(
-      tasks.map((task, i) =>
-        i === index ? { ...task, completed: !task.completed } : task
-      )
+  const toggleComplete = async(currTask) => {
+    const updatedTasks = tasks.map(task =>
+      task._id === currTask._id ? { ...task, completed: !task.completed } : task
     );
+    setTasks(updatedTasks);
+    try{
+      const {data} = await axios.put("/api/team/tasks",{taskId:currTask._id,teamId:params.groupId,completed:!currTask.completed})
+      console.log(data)
+    }catch(e){
+      console.log(e)
+    }
+    
   };
-
   // Function to delete a task
-  const deleteTask = (index: number) => {
-    console.log("Deleting task at index:", index); // Log the index
-    setTasks(prevTasks => {
-      const updatedTasks = prevTasks.filter((_, i) => i !== index);
-      console.log("Updated tasks after deletion:", updatedTasks); // Log updated tasks
-      return updatedTasks;
-    });
+  const deleteTask = async(id) => { 
+    try{
+      const {data} = await axios.delete("/api/team/tasks",{params:{teamId:params.groupId,taskId:id}})
+      if(data.success){
+        setTasks(prevTasks => {
+          const updatedTasks = prevTasks.filter(task => task._id!== id);
+          console.log("Updated tasks after deletion:", updatedTasks); 
+          return updatedTasks;
+        });
+      }
+    }catch(e){
+      console.log("Error deleting task",e)
+    }
+    
   };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -254,12 +286,12 @@ export const Pomodoro = () => {
       <List>
         {tasks.map((task, index) => (
           <ListItem key={index}>
-            <Checkbox checked={task.completed} tabIndex={-1} disableRipple  onClick={() => toggleComplete(index)}/>
+            <Checkbox checked={task.completed} tabIndex={-1} disableRipple  onClick={() => toggleComplete(task)}/>
             <ListItemText
               primary={task.text}
               style={{ textDecoration: task.completed ? 'line-through' : 'none' }}
             />
-            <IconButton edge="end" onClick={() => deleteTask(index)}>
+            <IconButton edge="end" onClick={() => deleteTask(task._id)}>
               <DeleteIcon />
             </IconButton>
           </ListItem>
