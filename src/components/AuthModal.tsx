@@ -95,7 +95,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
         const userD = response.data;
         setUser(userD); // Set user in Zustand store
         toast.success("Signed up successfully!");
-        localStorage.setItem("user", JSON.stringify(userD));
+        localStorage.setItem("user", JSON.stringify(userD.savedUser));
         router.push('/Leaderboard');
         handleClose();
         // Clear fields

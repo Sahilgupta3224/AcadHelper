@@ -9,6 +9,8 @@ connect()
 export async function POST(request: NextRequest) {
     try {
         const {userId,adminId,courseId} = await request.json();
+
+        
         if(!userId || !adminId || !courseId){
             return NextResponse.json({ error: "ID is required" }, { status: 400 });
         }
