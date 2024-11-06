@@ -16,6 +16,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Popover from '@mui/material/Popover';
 import Fire from './Fire'
+import { useRouter } from 'next/router';
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import LoginModal from '@/components/AuthModal';
 import Notification from './Notification';
@@ -62,6 +63,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Navbar() {
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
   const [challengeAnchorEl, setChallengeAnchorEl] = React.useState<HTMLButtonElement | null>(null);
@@ -189,12 +191,12 @@ export default function Navbar() {
               aria-label="account of current user"
               aria-controls={undefined} 
               aria-haspopup="true"
-              onClick={handleClick} 
+              onClick={handleClick}
               color="inherit"
             >
               <AccountCircle />
             </IconButton>
-            <Button variant="outlined" color="inherit" sx={{ ml: 2 }} onClick={handleOpen}>Login</Button>
+            <Button variant="outlined" color="inherit" sx={{ ml: 2 }} onClick={() => {router.push(`/Login`);}}>Login</Button>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton

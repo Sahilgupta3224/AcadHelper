@@ -17,6 +17,7 @@ import Assignment from "@/Interfaces/assignment";
 import { useStore } from "@/store";
 import { CldUploadWidget } from 'next-cloudinary';
 import { Box, Button, TextField, Typography, Modal, IconButton, Select, MenuItem } from "@mui/material";
+import Leaderboard from "../Leaderboard";
 
 const AdminPage: React.FC = () => {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
@@ -193,7 +194,7 @@ const AdminPage: React.FC = () => {
   return (
     <Layout>
       <Box sx={{ padding: "24px" }}>
-        <Typography variant="h4" gutterBottom>Admin Dashboard</Typography>
+        <Typography variant="h4" gutterBottom>User Dashboard</Typography>
         <Tabs
           value={value}
           onChange={handleChange}
@@ -203,7 +204,8 @@ const AdminPage: React.FC = () => {
         >
           <Tab label="Assignments" />
           <Tab label="Challenges" />
-          <Tab label="Basic Operations" />
+          <Tab label="Leaderboard" />
+          <Tab label="My submissions" />
         </Tabs>
         {value === 0 && (
           <>
@@ -214,13 +216,13 @@ const AdminPage: React.FC = () => {
                     <Typography variant="h6">{assignment.title}</Typography>
                     <Button
                       variant="contained"
-                      onClick={() => router.push(`/Assignment/admin/${assignment._id}`)}
+                      onClick={() => router.push(`/Assignment/user/${assignment._id}`)}
                     >
                       View Details
                     </Button>
-                    <Button onClick={() => handleOpenAssignmentModal(assignment._id)}>
-                      Delete Assignment
-                    </Button>
+                    <div>
+                    {assignment.status}
+                    </div>
                   </Box>
                 ))
               ) : (
@@ -309,9 +311,6 @@ const AdminPage: React.FC = () => {
                     >
                       View Details
                     </Button>
-                    <Button onClick={() => handleOpenModal(challenge._id)}>
-                      Delete Challennge
-                    </Button>
                   </Box>
                 ))
               ) : (
@@ -365,6 +364,13 @@ const AdminPage: React.FC = () => {
         )}
 
         {value === 2 && (
+          <>
+          <Box sx={{ display: 'flex', justifyContent: 'flex', mb: 2 }}><Leaderboard/></Box>
+            
+          </>
+        )}
+
+        {value === 3 && (
           <>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
               <Button variant="contained" color="primary" sx={{ width: '200px' }}>

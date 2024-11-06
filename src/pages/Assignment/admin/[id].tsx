@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import Submission from "@/Interfaces/submission";
 import Assignment from "@/Interfaces/assignment";
-import '../../app/globals.css';
+import '../../../app/globals.css';
 import toast, { Toaster } from 'react-hot-toast';
 import { CldUploadWidget } from 'next-cloudinary';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem } from '@mui/material';
@@ -182,17 +182,17 @@ const AssignmentDetails: React.FC = () => {
           </div>
           <div className="flex flex-col items-end">
             <div className="mb-4">
-              <span className="font-semibold">Frequency:</span> {assignment.status}
+              <span className="font-semibold">Frequency :</span> {assignment.status}
             </div>
             <div className="mb-4">
-              <span className="font-semibold">Points:</span> {assignment.totalPoints}
+              <span className="font-semibold">Points :</span> {assignment.totalPoints}
             </div>
             <div className="mb-4">
-              <span className="font-semibold">Start Date:</span> {new Date(assignment.DueDate || new Date()).toLocaleDateString()}
+              <span className="font-semibold">Due Date :</span> {new Date(assignment.DueDate || new Date()).toLocaleDateString()}
             </div>
             {assignment.AssignmentDoc && (
               <div className="mb-4">
-                <span className="font-semibold">assignment Document:</span>{" "}
+                <span className="font-semibold">Assignment :</span>{" "}
                 <a href={assignment.AssignmentDoc} target="_blank" rel="noopener noreferrer" className="text-blue-500">
                   View Document
                 </a>
