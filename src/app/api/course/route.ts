@@ -9,9 +9,7 @@ connect()
 //GET all courses from user id
 export async function GET(request:NextRequest){
     try{
-        const {searchParams} = new URL(request.url)
-        const userId = searchParams.get('userId')
-        await connect()
+        const {userId} = await request.json() 
 
         const user = await User.findOne({_id:userId})
         
@@ -35,7 +33,7 @@ export async function POST(request:NextRequest){
     try{
         const {code,userId} = await request.json()
         const courseExist = await Course.findOne({CourseCode:code})
-        
+
         if(!courseExist){
             return NextResponse.json({error:"Course code is invalid"},{status:400})
         }
