@@ -6,9 +6,10 @@ import Submission from "@/Interfaces/submission";
 import '../../../app/globals.css';
 import toast, { Toaster } from 'react-hot-toast';
 // import { Modal, Button, Form } from 'react-bootstrap';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Modal, Typography, Box } from '@mui/material';
 import { useStore } from "@/store";
 import { CldUploadWidget } from 'next-cloudinary';
+import Layout from "@/components/layout";
 interface EditChallenge {
   title: string;
   description: string;
@@ -18,6 +19,20 @@ interface EditChallenge {
   startDate: Date;
   points: number;
 }
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+
+//Modal style
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 const ChallengeDetails: React.FC = () => {
   const router = useRouter();
@@ -33,6 +48,12 @@ const ChallengeDetails: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isDocVisible, setIsDocVisible] = useState<boolean>(false);
   const [editedchallenge, seteditedchallenge] = useState<EditChallenge | null>(null);
+  const [submitOpen,setSubmitOpen] = useState(false)
+
+  //Submit modal 
+  const handleSubmitOpen = () => setSubmitOpen(true);
+  const handleSubmitClose = () => setSubmitOpen(false);
+
   console.log(id)
   const challengeId = typeof id === 'string' ? id : '';
   useEffect(() => {
@@ -142,12 +163,19 @@ const handleUpload = (result: any) => {
   if (!challenge) return <div>Loading...</div>;
 
   return (
-    <div className="flex flex-col items-center bg-gray-100 min-h-screen py-10 px-5">
-      <div>
+    <Layout>
+    <div className="bg-gray-100 min-h-screen py-10 px-5">
+    <button
+          onClick={() => router.push(`/user/Courses`)}
+          className="mx-4 text-blue-400 rounded hover:bg-blue-100 transition"
+        >
+           <ArrowBackIosNewIcon/>
+        </button>
+      <div className="m-4">
         <div className="flex justify-between mb-6">
           <div className="flex flex-col">
-            <h1 className="text-3xl font-bold text-center">{challenge.title}</h1>
-            <p className="text-gray-700 text-center">{challenge.description}</p>
+            <h1 className="text-3xl font-bold">Title: {challenge.title}</h1>
+            <p className="text-gray-700 p-1">Description: {challenge.description}</p>
           </div>
           <div className="flex flex-col items-end">
             <div className="mb-4">
@@ -175,19 +203,20 @@ const handleUpload = (result: any) => {
             )}
           </div>
         </div>
-        <button
-                    onClick={() => (submissions.length > 0 ? handleEditsub(submissions[0]._id) : handlesub())}
-                    className="mb-4 ml-4 mr-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                >
-                    {submissions.length > 0 ? "Edit Submission" : "Submit Challenge"}
-                </button>
-                <CldUploadWidget uploadPreset="acad_helper_pdf" onSuccess={handleUpload}>
+        <CldUploadWidget uploadPreset="acad_helper_pdf" onSuccess={handleUpload}>
                     {({ open }) => (
                         <Button className="mt-4" onClick={() => open()} variant="outlined" color="primary">
                             Select File
                         </Button>
                     )}
-                </CldUploadWidget>
+        </CldUploadWidget>
+        <button
+          onClick={() => (submissions.length > 0 ? handleEditsub(submissions[0]._id) : handleSubmitOpen())}
+          className="mb-4 ml-4 mr-6 px-4 h-9 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
+          {submissions.length > 0 ? "Edit Submission" : "Submit Challenge"}
+        </button>
+                
                 {isDocVisible && challengeDoc && (
                     <div>
                         <a href={challengeDoc} className="text-blue-500 " target="_blank" rel="noopener noreferrer">
@@ -216,15 +245,29 @@ const handleUpload = (result: any) => {
                         <p className="text-gray-600">No submissions yet.</p>
                     )}
                 </div>
-        <button
-          onClick={() => router.push(`/user/Courses`)}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-        >
-          Back to Challenges
-        </button>
+       
 
       </div>
     </div>
+    <Modal
+        open={submitOpen}
+        onClose={handleSubmitClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Do you want to submit as group or as an individual?
+          </Typography>
+        
+          <div className='w-full flex justify-between mt-4' >
+            <Button type="button" variant="outlined">Group</Button>
+            <Button type="button" variant="outlined">Individual</Button>
+          </div>
+          
+        </Box>
+      </Modal>
+    </Layout>
   );
 };
 

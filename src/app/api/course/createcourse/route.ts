@@ -8,7 +8,8 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(request: NextRequest) {
     try {
         const reqBody = await request.json();
-        const { name, description, userId, CourseCode } = reqBody;
+        const { name, description, userId } = reqBody;
+        const CourseCode = generateRandomCode()
         console.log(reqBody);
         const newCourse = new Course({
             name,
@@ -18,10 +19,25 @@ export async function POST(request: NextRequest) {
         });
         const newuser = await User.findByIdAndUpdate(userId,{$push:{CoursesAsAdmin: newCourse._id}},{new:true});
         await newCourse.save();
-        return NextResponse.json({ message: "Course created successfully", course: newCourse }, { status: 201 });
+        return NextResponse.json({ message: "Course created successfully", course: newCourse,success:true }, { status: 201 });
 
     } catch (error: any) {
         console.error("Error creating course:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
+
+
+// Random code generation
+function generateRandomCode(length = 6) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    const charactersLength = characters.length;
+    
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charactersLength);
+      result += characters.charAt(randomIndex);
+    }
+    
+    return result;
+  }

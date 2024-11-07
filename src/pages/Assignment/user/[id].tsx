@@ -8,6 +8,9 @@ import toast, { Toaster } from 'react-hot-toast';
 import { CldUploadWidget } from 'next-cloudinary';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem } from '@mui/material';
 import { useStore } from "@/store";
+import Layout from "@/components/layout";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+
 
 interface EditAssignment {
     title: string;
@@ -124,12 +127,19 @@ const AssignmentDetails: React.FC = () => {
     if (!assignment) return <div>Loading...</div>;
     console.log(submissions[0])
     return (
-        <div className="flex flex-col items-center bg-gray-100 min-h-screen py-10 px-5">
-            <div>
+        <Layout>
+        <div className="bg-gray-100 min-h-screen py-10 px-5">
+        <button
+          onClick={() => router.push(`/user/Courses`)}
+          className="mx-4 text-blue-400 rounded hover:bg-blue-100 transition"
+        >
+          <ArrowBackIosNewIcon/>
+        </button>
+            <div className="m-4">
                 <div className="flex justify-between mb-6">
                     <div className="flex flex-col">
-                        <h1 className="text-3xl font-bold text-center">{assignment.title}</h1>
-                        <p className="text-gray-700 text-center">{assignment.description}</p>
+                        <h1 className="text-3xl font-bold">Title: {assignment.title}</h1>
+                        <p className="text-gray-700 p-1">Description: {assignment.description}</p>
                     </div>
                     <div className="flex flex-col items-end">
                         <div className="mb-4">
@@ -151,20 +161,21 @@ const AssignmentDetails: React.FC = () => {
                         )}
                     </div>
                 </div>
-                
-                <button
-                    onClick={() => (submissions.length > 0 ? handleEditsub(submissions[0]._id) : handlesub())}
-                    className="mb-4 ml-4 mr-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                >
-                    {submissions.length > 0 ? "Edit Submission" : "Submit Assignment"}
-                </button>
+                <div className="">
                 <CldUploadWidget uploadPreset="acad_helper_pdf" onSuccess={handleUpload}>
                     {({ open }) => (
-                        <Button className="mt-4" onClick={() => open()} variant="outlined" color="primary">
+                        <Button sx={{height:"2.5rem"}} onClick={() => open()} variant="outlined" color="primary">
                             Select File
                         </Button>
                     )}
                 </CldUploadWidget>
+                <button
+                    onClick={() => (submissions.length > 0 ? handleEditsub(submissions[0]._id) : handlesub())}
+                    className="mb-4 ml-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                >
+                    {submissions.length > 0 ? "Edit Submission" : "Submit Assignment"}
+                </button>
+                </div>
 
                 {isDocVisible && assignmentDoc && (
                     <div>
@@ -187,21 +198,17 @@ const AssignmentDetails: React.FC = () => {
                                         View Submission
                                     </a>
                                     <Button onClick={()=>{deletesub(submission._id)}}>Delete submission</Button>
-                                </div>
+                                </div>  
                             </div>
                         ))
                     ) : (
                         <p className="text-gray-600">No submissions yet.</p>
                     )}
                 </div>
-                <button
-                    onClick={() => router.push(`/admin/Courses`)}
-                    className="mt-4 ml-7 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                >
-                    Back to assignments
-                </button>
+                
             </div>
         </div>
+        </Layout>
     );
 };
 

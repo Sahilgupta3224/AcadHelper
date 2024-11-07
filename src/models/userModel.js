@@ -124,6 +124,8 @@ const userSchema = new mongoose.Schema({
     forgotPasswordTokenExpiry: Date,
     verifyToken: String,
     verifyTokenExpiry: Date,
+    badges:[String],
+    NoOfEarlySubmits: {type:Number,default:0}
     },{timestamps: true})
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);

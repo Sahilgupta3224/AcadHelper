@@ -50,19 +50,14 @@ export default function GroupPage() {
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Pomodoro Timer" {...a11yProps(0)} />
-          <Tab label="Challenges" {...a11yProps(1)} />
-          <Tab label="Settings" {...a11yProps(2)} />
+          <Tab label="Group Tasks" {...a11yProps(0)} />
+          <Tab label="Settings" {...a11yProps(1)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
         <Pomodoro/>
-        {/* Nice */}
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        Group Challenges
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={2}>
         <Settings/>
       </CustomTabPanel>
     </Box>

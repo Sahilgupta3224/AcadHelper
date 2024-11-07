@@ -6,7 +6,12 @@ import Assignment from "@/Interfaces/assignment";
 import '../../../app/globals.css';
 import toast, { Toaster } from 'react-hot-toast';
 import { CldUploadWidget } from 'next-cloudinary';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, TableContainer, Paper, Table, TableCell, TableHead, TableRow, TableBody } from '@mui/material';
+import Layout from "@/components/layout";
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 interface EditAssignment {
   title: string;
@@ -173,12 +178,19 @@ const AssignmentDetails: React.FC = () => {
   if (!assignment) return <div>Loading...</div>;
 
   return (
-    <div className="flex flex-col items-center bg-gray-100 min-h-screen py-10 px-5">
+    <Layout>
+    <div className=" bg-gray-100 min-h-screen p-10">
       <div>
+      <button
+          onClick={() => router.push(`/admin/Courses`)}
+          className="mb-4 text-blue-400 rounded hover:bg-blue-100 transition"
+        >
+          <ArrowBackIosNewIcon/>
+        </button>
         <div className="flex justify-between mb-6">
           <div className="flex flex-col">
-            <h1 className="text-3xl font-bold text-center">{assignment.title}</h1>
-            <p className="text-gray-700 text-center">{assignment.description}</p>
+            <h1 className="text-3xl font-bold">Title: {assignment.title}</h1>
+            <p className="text-gray-700 font-bold p-2 w-[50vw]">Description: {assignment.description}</p>
           </div>
           <div className="flex flex-col items-end">
             <div className="mb-4">
@@ -193,6 +205,7 @@ const AssignmentDetails: React.FC = () => {
             {assignment.AssignmentDoc && (
               <div className="mb-4">
                 <span className="font-semibold">Assignment :</span>{" "}
+                <span className="font-semibold">Assignment Document:</span>{" "}
                 <a href={assignment.AssignmentDoc} target="_blank" rel="noopener noreferrer" className="text-blue-500">
                   View Document
                 </a>
@@ -200,49 +213,73 @@ const AssignmentDetails: React.FC = () => {
             )}
           </div>
         </div>
-        <Button onClick={handleShow}>
+        <div className="flex justify-end w-full">
+        <Button variant = "outlined" onClick={handleShow} sx={{marginX:"10px"}}>
           Edit assignment
         </Button>
-        <button
+        <Button
+        color="success"
+        variant="outlined"
           onClick={approveall}
-          className="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          className=""
         >
           Approve All Submissions
-        </button>
+        </Button>
+        </div>
         <h2 className="text-xl font-semibold mb-4">Submissions</h2>
+       
         {submissions.length > 0 ? (
-          submissions.map((submission) => (
-            <div key={submission._id} className="mb-2 flex justify-between p-4 border-b">
-              <div>
-                <a href={submission.documentLink} className="text-blue-500 cursor-pointer"> Submission link </a>
-              </div>
-              <button className="mb-2 flex justify-between p-4 border-b" onClick={() => { approve(submission._id) }}>
-                Approve
-              </button>
-              <button className="mb-2 flex justify-between p-4 border-b" onClick={() => { disapprove(submission._id) }}>
-                Disapprove
-              </button>
-              <button className="mb-2 flex justify-between p-4 border-b" onClick={() => { deletesub(submission._id) }}>
-                Delete
-              </button>
-              <a onClick={() => router.push(`/Submission/${submission._id}`)} className="text-blue-500  cursor-pointer">
-                View Submission Details
-              </a>
-            </div>
-          ))
+           <TableContainer component={Paper}>
+           <Table sx={{ minWidth: 650 }} aria-label="simple table">
+           <TableHead>
+             <TableRow>
+               <TableCell>Submission Link</TableCell>
+               <TableCell align="center">View Submission Details</TableCell>
+               <TableCell align="left">Approve</TableCell>
+               <TableCell align="left">Disapprove</TableCell>
+               <TableCell align="left">Delete</TableCell>
+             </TableRow>
+           </TableHead>
+           <TableBody>
+          {submissions.map(submission=>(
+            <TableRow
+            key={submission._id}
+            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+          >
+            <TableCell component="th" scope="row">
+            <a href={submission.documentLink} className="text-blue-500 cursor-pointer"> Submission link </a>
+            </TableCell>
+            <TableCell align="center">
+            <a onClick={() => router.push(`/Submission/${submission._id}`)} className="text-blue-500  cursor-pointer">
+                 Submission Details
+            </a>
+            </TableCell>
+            <TableCell align="right">
+            <button className="mb-2 flex justify-between p-4 text-green-400" onClick={() => { approve(submission._id) }}>
+                 <ThumbUpIcon/>
+            </button>
+            </TableCell>
+            <TableCell align="right">
+               <button className="mb-2 flex justify-between p-4 text-red-500" onClick={() => { disapprove(submission._id) }}>
+                 <ThumbDownIcon/>
+               </button>
+            </TableCell>
+            <TableCell align="right">
+               <button className="mb-2 flex justify-between p-4" onClick={() => { deletesub(submission._id) }}>
+                 <DeleteIcon/>
+               </button>
+            </TableCell>
+          </TableRow>
+          ))}
+          </TableBody>
+          </Table>
+        </TableContainer>
         ) : (
           <p>No submissions found for this assignment.</p>
         )}
-
-        <button
-          onClick={() => router.push(`/admin/Courses`)}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-        >
-          Back to assignments
-        </button>
+        
 
 <div className="flex flex-col items-center bg-gray-100 min-h-screen py-10 px-5">
-      {/* <Button onClick={handleShow}>Edit assignment</Button> */}
 
       <Dialog open={show} onClose={handleClose}>
         <DialogTitle>Edit assignment</DialogTitle>
@@ -321,6 +358,7 @@ const AssignmentDetails: React.FC = () => {
 
       </div>
     </div>
+    </Layout>
   );
 };
 
