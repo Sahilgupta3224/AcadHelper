@@ -6,28 +6,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 connect()
 
-//GET all courses from user id
-export async function GET(request:NextRequest){
-    try{
-        const {userId} = await request.json() 
-
-        const user = await User.findOne({_id:userId})
-        
-        if(!user){
-            return NextResponse.json({error:'User does not exist'},{status:400})
-        }
-
-        const courseList= user.Courses.map((course:{courseId:mongoose.Schema.Types.ObjectId,enrolledAt:Date})=>{return course.courseId})
-
-        const courses = await Course.find({_id:{$in:courseList}}).select('_id name')
-
-        return NextResponse.json({courses,success:true})
-
-    }catch(error:any){
-        return NextResponse.json({error:error.message},{status:500})
-    }
-}
-
 //Join course using course code
 export async function POST(request:NextRequest){
     try{

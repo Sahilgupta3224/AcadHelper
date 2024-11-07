@@ -197,13 +197,15 @@ export const Settings = () => {
 
   return (
     <>
-    Members<Button variant="outlined" onClick={handleOpen}>Add member</Button>
-    {/* EDIT AND DELETE SHOULD ONLY BE VISIBLE TO THE GROUP LEADER */}
-    <Button variant="outlined" onClick={handleOpenEdit}>Edit Group</Button>
-    <Button variant="outlined" onClick={handleOpenDelete}>Delete Group</Button>
-    <Button variant="outlined" onClick={handleOpenLeave}>Leave Group</Button>
+   <div className='flex justify-evenly'>
+    
     <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
       <nav aria-label="main mailbox folders">
+      <Typography id="modal-modal-title" variant="h6" component="h2">
+         Members
+      </Typography>
+
+
         <List>
           {members.map(member=>(
             <ListItem disablePadding id = {member._id}>
@@ -219,6 +221,18 @@ export const Settings = () => {
       </nav>
      
     </Box>
+    {team.leader==user._id ?(
+      <div className='flex flex-col w-40 '>
+    <Button variant="outlined" onClick={handleOpen}>Add member</Button>
+    <Button variant="outlined" onClick={handleOpenEdit} sx={{marginY:"10px"}}>Edit Group</Button>
+    <Button variant="outlined" onClick={handleOpenDelete} color='error'>Delete Group</Button>
+    </div>
+  ):(
+    <Button variant="outlined" onClick={handleOpenLeave} color="error" sx={{height:"3rem"}}>Leave Group</Button>
+  )
+  }
+    </div>
+
     <Modal
         open={open}
         onClose={handleClose}
