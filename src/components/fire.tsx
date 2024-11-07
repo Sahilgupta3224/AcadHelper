@@ -19,6 +19,9 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import Chip from '@mui/material/Chip';
+import Link from 'next/link';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -69,7 +72,7 @@ export default function Fire() {
       try{
         const {data} = await axios.post("/api/challenge/get-challengeByFreq",{frequency:"weekly",userId:user._id})
         if(data.success){
-          setDaily(data.data)
+          setWeekly(data.data)
         }
     }catch(e){
         console.log(e)
@@ -125,32 +128,48 @@ export default function Fire() {
             </Tabs>
           </Box>
           <CustomTabPanel value={value} index={0}>
-            Item One
+          <div className='overflow-y-auto max-h-60'>
+              {daily.length>0 ? daily.map(challenge=>(
+                <Link href = {`/Challenge/${challenge._id}`}>
+                <ListItem>
+                <ListItemAvatar>
+                <Avatar>
+                    <EmojiEventsIcon/>
+                </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={challenge.title} secondary={new Date(challenge.endDate).toISOString().split('T')[0]} />
+                <Chip label={`${challenge.points} points`} />
+              </ListItem>
+              </Link>
+            )):(
+              <div>
+                There are no daily challenges in your enrolled courses yet
+              </div>
+            )}
+            </div>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
-            Item Two
+          <div className='overflow-y-auto max-h-60'>
+          {weekly.length>0 ? weekly.map(challenge=>(
+                <Link href = {`/Challenge/${challenge._id}`}>
+                <ListItem>
+                <ListItemAvatar>
+                <Avatar>
+                    <EmojiEventsIcon />
+                </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={challenge.title} secondary={new Date(challenge.endDate).toISOString().split('T')[0]} />
+                <Chip label={`${challenge.points} points`} />
+              </ListItem>
+              </Link>
+            )):(
+              <div>
+                There are no weekly challenges in your enrolled courses yet
+              </div>
+            )}
+            </div>
           </CustomTabPanel>
         </Box>
-    {/* <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-        {user?.inbox?.length>0 ? user.inbox.map(notif=>(
-            <ListItem>
-            <ListItemAvatar>
-            <Avatar>
-                <GroupsIcon />
-            </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary={notif.message} secondary={new Date(notif.date).toISOString().split('T')[0]} />
-            {notif.type == "group invite" && <div>
-              <CheckCircleOutlineIcon color="success" sx={{cursor:"pointer"}} onClick={()=>handleInvite(true,notif)}/>
-              <CancelOutlinedIcon color="error" sx={{cursor:"pointer"}} onClick={()=>handleInvite(false,notif)}/>
-            </div>}
-          </ListItem>
-        )):(
-          <div>
-            You have no notifications
-          </div>
-        )}
-    </List> */}
       </Popover>
     </div>
   );

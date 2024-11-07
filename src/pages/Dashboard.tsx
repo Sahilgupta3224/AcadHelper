@@ -110,7 +110,7 @@ const Dashboard = () => {
      }
      const fetchCourses = async()=>{
       try{
-        const {data} = await axios.get("/api/course",{params:{userId:user._id}})
+        const {data} = await axios.post("/api/course/getCourses",{userId:user._id,type:"both"})
         if(data.success){
           setCourses(data.courses)
           console.log(data)
