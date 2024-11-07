@@ -110,6 +110,14 @@ const handleSubmitChallenge = async () => {
       courseId,
     });
     setChallenges((prev) => [...prev, response.data.Challenge]);
+    setTitle("");
+    setDescription("");
+    setStartDate("");
+    setEndDate("");
+    setChallengeDoc("");
+    setType("individual");
+    setFrequency("daily");
+    setPoints(undefined);
     setOpenUploadModal(false);
     setyo(!yo)
   } catch (error) {
@@ -130,6 +138,11 @@ const handleSubmitAssignment = async () => {
       status: "Open"
     });
     console.log("Assignment uploaded successfully:", response.data);
+    setAssignmentTitle("");
+    setAssignmentDescription("");
+    setAssignmentDueDate("");
+    setAssignmentDoc("");
+    setAssignmentPoints(undefined);
     setOpenUploadAssignmentModal(false);
     setyo(!yo)
   } catch (error) {

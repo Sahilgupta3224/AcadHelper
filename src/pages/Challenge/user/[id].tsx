@@ -114,7 +114,8 @@ const handlesub = async () => {
   const submitwala = {
       user: user._id,
       challenge: challengeId,
-      documentLink: challengeDoc
+      documentLink: challengeDoc,
+      Course:challenge?.courseId
   }
   try {
       const response = await axios.post('/api/submission', submitwala);

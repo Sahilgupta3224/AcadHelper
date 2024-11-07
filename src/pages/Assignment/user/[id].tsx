@@ -91,17 +91,18 @@ const AssignmentDetails: React.FC = () => {
             console.error("Error while removing:", e);
         }
     }
-
+    console.log(assignment)
     const handlesub = async () => {
         const submitwala = {
             user: user._id,
             assignment: assignmentId,
-            documentLink: assignmentDoc
+            documentLink: assignmentDoc,
+            Course:assignment?.Course
         }
         try {
             const response = await axios.post('/api/submission', submitwala);
             console.log(response.data)
-            setAssignmentDoc("")
+            setAssignmentDoc("")    
             setIsDocVisible(false);
             setyo(!yo);
         }

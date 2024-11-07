@@ -4,29 +4,44 @@ import Submission from "@/models/submissionModel";
 import Assignment from "@/models/assignmentModel";
 import { NextRequest, NextResponse } from "next/server";
 import {connect} from '@/dbConfig/dbConfig'
+import Team from "@/models/teamModel";
 
 connect()
 
 export async function POST(request: NextRequest) {
     try {
         const data = await request.json();
-        const { user, assignment, challenge, documentLink } = data;
+        const { user, assignment, challenge, documentLink,Course,type,groupId} = data;
         if (!user || !documentLink) {
             return NextResponse.json({
                 success: false,
                 message: "User and documentLink are required.",
             }, { status: 400 });
         }
+        console.log("Course",Course)
         const newSubmission = new Submission({
             User:user,
             Assignment:assignment,
             Challenge:challenge,
             documentLink,
             submittedAt: new Date(),
+            Course,
+            type,
+            groupId
         });
         await newSubmission.save();
+        if(groupId){
+            const team = await Team.findById(groupId)
+            if(team){
+                const members = team.Members.map((member:any) => member.memberId)
+                for(const member of members){
+                    const user = await User.findByIdAndUpdate(member, { $push: { submissions: newSubmission._id } },{new:true});
+                }
+            }
+        }
         await User.findByIdAndUpdate(user, { $push: { submissions: newSubmission._id } },{new:true});
         if (assignment) {
+            await User.findByIdAndUpdate(user, { $pull: { pendingAssignments: assignment } });
             await Assignment.findByIdAndUpdate(assignment, { $push: { submissions: newSubmission._id } },{new:true});
         }
         if(challenge){

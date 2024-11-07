@@ -22,11 +22,17 @@ export async function POST(request: Request) {
             return NextResponse.json({message:"Course needs to be created first"},{status:400})
         }
         const newAssignment = new Assignment({
-            title,description,DueDate,uploadedAt,AssignmentDoc,CourseId,status,totalPoints
+            title,description,DueDate,uploadedAt,AssignmentDoc,Course:CourseId,status,totalPoints
         });
         await newAssignment.save();
         await course.assignments.push(newAssignment._id);
         await course.save();
+        const enrolledUsers = await User.find({ "Courses.courseId": CourseId });
+        console.log(enrolledUsers)
+        for (const user of enrolledUsers) {
+            user.pendingAssignments.push(newAssignment._id);
+            await user.save();
+        }
         return NextResponse.json({ message: "Challenge uploaded successfully.", Assignment: newAssignment }, { status: 201 });
     } catch (error: any) {
         console.error("Error uploading assignment:", error);

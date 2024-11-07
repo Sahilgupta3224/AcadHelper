@@ -14,6 +14,10 @@ const submissionSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref: "challenge",
     },
+    Course:{
+        type:mongoose.Schema.Types.ObjectId,
+        required:true
+    },
     submittedAt:{
         type:Date,
         default: Date.now,
@@ -43,6 +47,12 @@ const submissionSchema = new mongoose.Schema({
     gradedAt: {
         type: Date,
     },
+    type:{
+        type:String
+    },
+    groupId:{
+        type:mongoose.Schema.Types.ObjectId
+    }
 },{timestamps: true})
 
 const Submission = mongoose.models.Submission || mongoose.model("Submission", submissionSchema);

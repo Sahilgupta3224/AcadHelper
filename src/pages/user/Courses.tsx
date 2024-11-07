@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import ButtonComp from "@/components/button";
 import axios from "axios";
 import Challenge from "@/Interfaces/challenge";
+import Submission from "@/Interfaces/submission";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Assignment from "@/Interfaces/assignment";
@@ -35,6 +36,7 @@ const AdminPage: React.FC = () => {
   const [type, setType] = useState("individual");
   const [frequency, setFrequency] = useState("daily");
   const [points, setPoints] = useState<number | undefined>();
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [openUploadModal, setOpenUploadModal] = useState(false);
   const [openUploadAssignmentModal, setOpenUploadAssignmentModal] = useState(false);
   const [assignmentTitle, setAssignmentTitle] = useState("");
@@ -157,6 +159,17 @@ const AdminPage: React.FC = () => {
         setassignments((prev) => prev.filter(assignment => assignment._id !== AssignmentIdToDelete));
         console.log(response.data)
         handleCloseAssignmentModal();
+      } catch (error) {
+        console.error("Error deleting challenges:", error);
+      }
+    }
+  };
+  const GetsubmissionBycourse = async () => {
+    if (courseId) {
+      try {
+        const response = await axios.get(`/api/submission/getsubmissionbycourseanduser?CourseId=${courseId}&userId=${user._id}`);
+        // setSubmissions(response.data)
+        console.log(response.data)
       } catch (error) {
         console.error("Error deleting challenges:", error);
       }
@@ -372,10 +385,30 @@ const AdminPage: React.FC = () => {
 
         {value === 3 && (
           <>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-              <Button variant="contained" color="primary" sx={{ width: '200px' }}>
-                All Users
-              </Button>
+            <Box sx={{ display: 'flex', justifyContent: 'flex', mb: 2 }}>
+              {/* <Button variant="contained" color="primary" sx={{ width: '200px' }}>
+                My Submissions
+              </Button> */}
+              <div className="mt-10">
+                    <h2 className="text-2xl font-bold mb-4">Submissions</h2>
+                    {submissions.length > 0 ? (
+                        submissions.map((submission) => (
+                            <div key={submission._id} className="bg-white shadow-md rounded-lg p-4 mb-4">
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        {/* <p><strong>Submitted By:</strong> {submission.user.name}</p> */}
+                                        <p><strong>Submitted At:</strong> {new Date(submission.submittedAt).toLocaleString()}</p>
+                                    </div>
+                                    <a href={submission.documentLink} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                                        View Submission
+                                    </a>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-gray-600">No submissions yet.</p>
+                    )}
+                </div>
             </Box>
           </>
         )}
