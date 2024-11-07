@@ -4,6 +4,7 @@ import "../app/globals.css";
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { useStore } from '@/store';
+import Link from 'next/link';
 
 interface ButtonProps {
   value: string;
@@ -119,8 +120,9 @@ const SignupForm: React.FC = () => {
           />
           <Button value="Submit" onClick={handleSignup} />
         </form>
+        <div className='text-center mt-4'>Already have an account?<Link href="/Login" className='text-blue-500'> Login</Link></div>
       </div>
-         <Toaster />
+      <Toaster/>
     </div>
   );
 };

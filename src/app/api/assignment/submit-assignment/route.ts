@@ -58,6 +58,9 @@ export async function POST(request:Request)
             await user.save()      
         }
 
+        //Checking for eligibility of Early Bird badge
+        
+
         return NextResponse.json({message:"Successfully submitted the assignment"},{status:200})
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -49,6 +49,28 @@ const AdminPage: React.FC = () => {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+  const [enrolledUsers,setEnrolledUsers] = useState([])
+
+  // Get all users in a course
+  useEffect(()=>{
+    const fetchEnrolledUsers=async ()=>{
+      try {
+        const response=await axios.get('/api/course/get-enrolled',{
+          params:{
+            courseId
+          }
+        })
+    
+        setEnrolledUsers(response.data.users)
+    
+      } catch (error) {
+        console.log("Error while fetching all the enrolled users of the course",error);
+        return;
+      }
+    }
+    fetchEnrolledUsers()
+  },[])
+
 
   const handleUpload = (result: any) => {
     if (result && result.info) {
@@ -365,8 +387,9 @@ const AdminPage: React.FC = () => {
 
         {value === 2 && (
           <>
-          <Box sx={{ display: 'flex', justifyContent: 'flex', mb: 2 }}><Leaderboard/></Box>
-            
+          <div className="text-center ">
+          <Leaderboard users={enrolledUsers}/>
+          </div>
           </>
         )}
 
