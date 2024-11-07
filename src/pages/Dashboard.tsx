@@ -38,10 +38,10 @@ const style = {
 
 interface Task {
   _id:mongoose.Schema.Types.ObjectId,
-  title:String,
-  completed:Boolean,
-  color:String,
-  course:String,
+  title:string,
+  completed:boolean,
+  color:string,
+  course:string,
   dueDate:Date
 }
 const Dashboard = () => {

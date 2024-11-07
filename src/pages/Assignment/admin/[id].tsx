@@ -242,7 +242,7 @@ const AssignmentDetails: React.FC = () => {
         </button>
 
 <div className="flex flex-col items-center bg-gray-100 min-h-screen py-10 px-5">
-      <Button onClick={handleShow}>Edit assignment</Button>
+      {/* <Button onClick={handleShow}>Edit assignment</Button> */}
 
       <Dialog open={show} onClose={handleClose}>
         <DialogTitle>Edit assignment</DialogTitle>
@@ -276,7 +276,7 @@ const AssignmentDetails: React.FC = () => {
             type="date"
             fullWidth
             margin="normal"
-            value={editedassignment?.DueDate ? editedassignment.DueDate.toISOString().split('T')[0] : ""}
+            value={editedassignment?.DueDate instanceof Date ? editedassignment.DueDate.toISOString().split('T')[0] : ""}
             onChange={(e) => seteditedassignment((prev) => ({ ...prev!, DueDate: new Date(e.target.value) }))}
           />
           {editedassignment?.AssignmentDoc && (

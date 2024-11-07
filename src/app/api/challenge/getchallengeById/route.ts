@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
         const url = new URL(request.url);
         const Id = url.searchParams.get('Id');
         const chal = await Challenge.findById(Id);
+        console.log(Id)
         if(!chal){
             return NextResponse.json({
                 success: false,

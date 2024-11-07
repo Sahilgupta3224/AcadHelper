@@ -53,20 +53,6 @@ const AssignmentDetails: React.FC = () => {
         if (assignmentId) {
             const fetchSubmissions = async () => {
                 try {
-                    const submissionsResponse = await axios.get(`/api/submission/getsubmissionbyassignment?assignmentId=${assignmentId}`);
-                    setSubmissions(submissionsResponse.data.data);
-                } catch (error) {
-                    console.error("Error fetching submissions:", error);
-                }
-            };
-            fetchSubmissions();
-        }
-    }, [assignmentId, yo]);
-
-    useEffect(() => {
-        if (assignmentId) {
-            const fetchSubmissions = async () => {
-                try {
                     const submissionsResponse = await axios.get(`/api/submission/getsubmissionbyassignmentanduser?assignmentId=${assignmentId}&userId=${user._id}`);
                     setSubmissions(submissionsResponse.data.data);
                     console.log(submissionsResponse)
@@ -78,66 +64,6 @@ const AssignmentDetails: React.FC = () => {
         }
     }, [assignmentId, yo]);
 
-    const handleClose = () => {
-        setShow(false);
-        setErrorMessage('')
-    }
-
-    const handleShow = () => {
-        setShow(true);
-        console.log(assignment)
-        seteditedassignment({
-            title: assignment?.title || "",
-            description: assignment?.description || "",
-            DueDate: assignment?.DueDate || new Date(),
-            AssignmentDoc: assignment?.AssignmentDoc || "",
-            totalPoints: assignment?.totalPoints || 0,
-            status: assignment?.status || "Open"
-        })
-    }
-
-    const handleEdit = async () => {
-        const submitbutton = async () => {
-            try {
-                if (editedassignment?.title === "" || editedassignment?.description === "" || editedassignment?.AssignmentDoc === "" || (editedassignment?.status !== "Open" && editedassignment?.status !== "Graded" && editedassignment?.status !== 'Closed')) {
-                    setErrorMessage("All entries should be filled");
-                    return;
-                }
-                const res = await axios.patch(`/api/assignment/editassignment?Id=${assignment?._id}`, editedassignment);
-                console.log(res.data);
-                seteditedassignment({
-                    title: "",
-                    description: "",
-                    AssignmentDoc: "",
-                    status: "Open",
-                    DueDate: new Date(),
-                    totalPoints: 0
-                });
-                setErrorMessage("");
-                setyo(prev => !prev)
-                handleClose()
-            } catch (err) {
-                console.log(err);
-            }
-        }
-        submitbutton()
-    };
-
-    const approve = async (id: string) => {
-        try {
-            const response = await axios.patch(`/api/submission/approve-a-submission?Id=${id}`);
-            console.log(response.data)
-            setyo(!yo);
-        }
-        catch (e: any) {
-            if (e.response && e.response.status === 400) {
-                toast.error(e.response.data.message);
-            } else {
-                toast.error("An unexpected error occurred. Please try again.");
-            }
-            console.error("Error while approving:", e);
-        }
-    }
     const deletesub = async (id: string) => {
         try {
             const response = await axios.patch(`/api/submission/remove-submission?Id=${id}`);
@@ -166,18 +92,6 @@ const AssignmentDetails: React.FC = () => {
         }
     }
 
-    // const submitSubmission = async (submissionData: any) => {
-    //     try {
-    //         const response = await axios.patch(`/api/submission/edit-submission?Id=${id}`, submissionData);
-    //         console.log(response.data);
-    //         setAssignmentDoc("");
-    //         setIsDocVisible(false);
-    //         setyo(!yo);
-    //     } catch (error) {
-    //         console.error("Error while submitting:", error);
-    //     }
-    // };
-
     const handlesub = async () => {
         const submitwala = {
             user: user._id,
@@ -193,51 +107,6 @@ const AssignmentDetails: React.FC = () => {
         }
         catch (e: any) {
             console.error("Error while removing:", e);
-        }
-    }
-
-    // const deletesub = async (id: string) => {
-    //     try {
-    //         const response = await axios.patch(`/api/submission/remove-submission?Id=${id}`);
-    //         console.log(response.data)
-    //         // setAssignmentDoc("")
-    //         // setIsDocVisible(false);
-    //         setyo(!yo);
-    //     }
-    //     catch (e: any) {
-    //         console.error("Error while removing:", e);
-    //     }
-    // }
-
-    const disapprove = async (id: string) => {
-        try {
-            const response = await axios.patch(`/api/submission/disapprove-submission?Id=${id}`);
-            console.log(response.data)
-            setyo(!yo);
-        }
-        catch (e: any) {
-            if (e.response && e.response.status === 400) {
-                toast.error(e.response.data.message);
-            } else {
-                toast.error("An unexpected error occurred. Please try again.");
-            }
-            console.error("Error while approving:", e);
-        }
-    }
-
-    const approveall = async () => {
-        try {
-            const response = await axios.patch(`/api/submission/approve-all-submission-assignment?Id=${assignmentId}`);
-            console.log(response.data)
-            setyo(!yo);
-        }
-        catch (e: any) {
-            if (e.response && e.response.status === 400) {
-                toast.error(e.response.data.message);
-            } else {
-                toast.error("An unexpected error occurred. Please try again.");
-            }
-            console.error("Error while approving:", e);
         }
     }
 
@@ -281,7 +150,7 @@ const AssignmentDetails: React.FC = () => {
                         )}
                     </div>
                 </div>
-
+                
                 <button
                     onClick={() => (submissions.length > 0 ? handleEditsub(submissions[0]._id) : handlesub())}
                     className="mb-4 ml-4 mr-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"

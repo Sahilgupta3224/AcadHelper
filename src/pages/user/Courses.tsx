@@ -307,7 +307,7 @@ const AdminPage: React.FC = () => {
                     <Typography variant="h6">{challenge.title}</Typography>
                     <Button
                       variant="contained"
-                      onClick={() => router.push(`/Challenge/${challenge._id}`)}
+                      onClick={() => router.push(`/Challenge/user/${challenge._id}`)}
                     >
                       View Details
                     </Button>
