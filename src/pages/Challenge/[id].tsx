@@ -31,6 +31,8 @@ const ChallengeDetails: React.FC = () => {
   const [editedchallenge, seteditedchallenge] = useState<EditChallenge | null>(null);
   console.log(id)
   const challengeId = typeof id === 'string' ? id : '';
+
+  
   useEffect(() => {
     if (challengeId) {
       const fetchChallenge = async () => {
