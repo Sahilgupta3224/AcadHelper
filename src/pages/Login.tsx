@@ -5,6 +5,7 @@ import axios from 'axios';
 import "../app/globals.css";
 import { useStore } from "@/store";
 import toast, { Toaster } from 'react-hot-toast';
+import Link from 'next/link';
 
 
 interface ButtonProps {
@@ -108,6 +109,7 @@ const LoginForm: React.FC = () => {
           />
           <Button value="Submit" onClick={handleLogin} />
         </form>
+        <div className='text-center mt-4'>Don't have an account?<Link href="/Signup" className='text-blue-500'> Sign up</Link></div>
         <Toaster/>
       </div>
     </div>

@@ -190,7 +190,7 @@ const AssignmentDetails: React.FC = () => {
         <div className="flex justify-between mb-6">
           <div className="flex flex-col">
             <h1 className="text-3xl font-bold">Title: {assignment.title}</h1>
-            <p className="text-gray-700 font-bold p-2">Description: {assignment.description}</p>
+            <p className="text-gray-700 font-bold p-2 w-[50vw]">Description: {assignment.description}</p>
           </div>
           <div className="flex flex-col items-end">
             <div className="mb-4">
