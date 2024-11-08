@@ -6,7 +6,7 @@ import Submission from "@/Interfaces/submission";
 import '../../../app/globals.css';
 import toast, { Toaster } from 'react-hot-toast';
 // import { Modal, Button, Form } from 'react-bootstrap';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Modal, Typography, Box } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Modal, Typography, Box, FormControl, Select, InputLabel, Divider } from '@mui/material';
 import { useStore } from "@/store";
 import { CldUploadWidget } from 'next-cloudinary';
 import Layout from "@/components/layout";
@@ -49,13 +49,33 @@ const ChallengeDetails: React.FC = () => {
   const [isDocVisible, setIsDocVisible] = useState<boolean>(false);
   const [editedchallenge, seteditedchallenge] = useState<EditChallenge | null>(null);
   const [submitOpen,setSubmitOpen] = useState(false)
+  const [groups,setGroups] = useState([])
+  const [selectedGroup,setSelectedGroup] = useState("")
 
   //Submit modal 
   const handleSubmitOpen = () => setSubmitOpen(true);
   const handleSubmitClose = () => setSubmitOpen(false);
 
-  console.log(id)
+  console.log(challenge)
   const challengeId = typeof id === 'string' ? id : '';
+
+  //Fetching all teams of the user
+  useEffect(()=>{
+    const fetchGroups = async()=>{
+      try{
+        const {data} = await axios.get("/api/team/",{params:{userId:user._id}})
+      if(data.success){
+        setGroups(data.teams)
+      }
+    }
+      catch(error){
+        console.log(error)
+      }
+    }  
+    fetchGroups()
+  },[])
+  console.log(groups)
+
   useEffect(() => {
     if (challengeId) {
       const fetchChallenge = async () => {
@@ -84,6 +104,8 @@ const ChallengeDetails: React.FC = () => {
         fetchSubmissions();
     }
 }, [challengeId, yo]);
+
+
 
   const handleClose = () => {
     setShow(false);
@@ -131,14 +153,22 @@ const ChallengeDetails: React.FC = () => {
     }
 }
 
-const handlesub = async () => {
+const handlesub = async (type,groupId="") => {
+  console.log(type,groupId)
+  if(type=="team" && groupId==""){
+    toast.error("Select a group")
+    return;
+  }
   const submitwala = {
       user: user._id,
       challenge: challengeId,
       documentLink: challengeDoc,
-      Course:challenge?.courseId
+      type,
+      Course:challenge?.courseId,
+      groupId
   }
   try {
+     
       const response = await axios.post('/api/submission', submitwala);
       console.log(response.data)
       setchallengeDoc("")
@@ -260,13 +290,32 @@ const handleUpload = (result: any) => {
             Do you want to submit as group or as an individual?
           </Typography>
         
-          <div className='w-full flex justify-between mt-4' >
-            <Button type="button" variant="outlined">Group</Button>
-            <Button type="button" variant="outlined">Individual</Button>
+          {/* <div className='w-full flex justify-between mt-4' > */}
+          <Button type="button" variant="outlined" sx={{marginY:"1rem"}} onClick={()=>handlesub("individual")}>Individual</Button>
+          <Divider>OR</Divider>
+          <div className="flex my-4">
+            <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Select group</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={selectedGroup}
+              label="Age"
+              onChange={(e)=>setSelectedGroup(e.target.value)}
+            >
+              {
+                groups.length>0 && groups.map(group=>
+                    <MenuItem value={group._id}>{group.teamname}</MenuItem>
+                )
+              }
+            </Select>
+          </FormControl>
+          <Button type="button" variant="outlined" sx={{marginLeft:"1rem"}} onClick={()=>handlesub("team",selectedGroup)}>Group</Button>
           </div>
           
         </Box>
       </Modal>
+      <Toaster/>
     </Layout>
   );
 };

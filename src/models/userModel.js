@@ -91,7 +91,7 @@ const userSchema = new mongoose.Schema({
         points:{
             type:Number,
             default:0
-       
+        
     }}],
     challengessolved:[{
         challengeId: {
@@ -125,7 +125,8 @@ const userSchema = new mongoose.Schema({
     verifyToken: String,
     verifyTokenExpiry: Date,
     badges:[String],
-    NoOfEarlySubmits: {type:Number,default:0}
+    NoOfEarlySubmits: {type:Number,default:0},
+    institute:{type:String}
     },{timestamps: true})
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
