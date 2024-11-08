@@ -7,7 +7,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 //GET team details from team id
 export async function GET(request:NextRequest,context:{params:any}){
-    const teamId = context.params.teamId
+    const teamId = context.params.teamid
+    console.log(teamId)
     const {searchParams} = new URL(request.url)
     const type = searchParams.get('type') 
     if(type=="Team"){
@@ -76,11 +77,11 @@ export async function DELETE(request:NextRequest,context:{params:any}){
 export async function POST(request:NextRequest,context:{params:any}){
     try{
         const {email} = await request.json()
-        const teamId = await context.params.teamId?.toString();
+        const teamId = await context.params.teamid?.toString();
         await connect()
         const team = await Team.findById(teamId)
         const newUser = await User.findOne({email:email})
-        console.log(teamId)
+        console.log(context.params)
         // Group not found
         if(!team)return NextResponse.json({error:"Group not found"},{status:400})
         if (!newUser) return NextResponse.json({ error: "User not found" }, { status: 400 });

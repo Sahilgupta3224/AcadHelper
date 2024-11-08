@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         }
         await User.findByIdAndUpdate(user, { $push: { submissions: newSubmission._id } },{new:true});
         if (assignment) {
-            await User.findByIdAndUpdate(user, { $pull: { pendingAssignments: assignment } });
+            await User.findByIdAndUpdate(user, { $pull: { pendingAssignments: { assignmentId: { $in: assignment } } } },{new:true});
             await Assignment.findByIdAndUpdate(assignment, { $push: { submissions: newSubmission._id } },{new:true});
         }
         if(challenge){

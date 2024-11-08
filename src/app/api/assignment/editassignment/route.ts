@@ -16,13 +16,15 @@ export async function PATCH(request: NextRequest) {
             }, { status: 404 });
         }
         const reqbody = await request.json()
-        // console.log(reqbody)
         const {title,
             description,
             AssignmentDoc,
             DueDate,
             totalPoints,
             status}= reqbody
+        if (!title || !AssignmentDoc || !description ||!status ||!DueDate||!totalPoints) {
+            return NextResponse.json({ message: "required fields are empty" }, { status: 400 });
+        }
         const newAssignment = await Assignment.findByIdAndUpdate(id,
             {
                 title,
@@ -34,6 +36,9 @@ export async function PATCH(request: NextRequest) {
             },
             {new:true}
         )
+        if(!newAssignment){
+            return NextResponse.json({ message: "Assignment not found" }, { status: 400 });
+        }
         return NextResponse.json({
             success: true,
             message: "Assignment Edited successfully",

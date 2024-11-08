@@ -14,7 +14,6 @@ import { useParams, useRouter } from 'next/navigation'
 import toast, { Toaster } from 'react-hot-toast';
 import { useStore } from '@/store';
 
-
 const style = {
     position: 'absolute',
     top: '50%',
@@ -36,8 +35,9 @@ const style = {
   }
   
 export const Settings = () => {
-    const params = useParams<{ groupId:string }>()
+    // const params = useParams<{ groupId:string }>()
     const router = useRouter()
+    const params = useParams();
     const {user,setUser} = useStore()
     const [input,setInput] = useState("")
     const [team,setTeam] = useState({})
@@ -70,7 +70,7 @@ export const Settings = () => {
     useEffect(()=>{
       const fetchTeam = async()=>{
         try{
-          const res = await axios.get(`/api/team/${params.groupId}`,{params:{type:"Team"}})
+          const res = await axios.get(`/api/team/${params?.groupId}`,{params:{type:"Team"}})
           console.log(res?.data?.team)
           setTeam(res?.data?.team)
           setGroupInput({maxteamsize:res?.data?.team.maxteamsize,teamname:res?.data?.team.teamname,description:res?.data?.team.description})

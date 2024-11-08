@@ -30,12 +30,12 @@ export async function POST(request: Request) {
         const enrolledUsers = await User.find({ "Courses.courseId": CourseId });
         console.log(enrolledUsers)
         for (const user of enrolledUsers) {
-            user.pendingAssignments.push(newAssignment._id);
+            user.pendingAssignments.push({assignmentId:newAssignment._id,dueDate:newAssignment.DueDate});
             await user.save();
         }
-        return NextResponse.json({ message: "Challenge uploaded successfully.", Assignment: newAssignment }, { status: 201 });
+        return NextResponse.json({ message: "Assignment uploaded successfully.", Assignment: newAssignment }, { status: 201 });
     } catch (error: any) {
-        console.error("Error uploading assignment:", error);
+        console.error("Error uploading Assignment:", error);
         return NextResponse.json({ message: "An error occurred while uploading the assignment." }, { status: 500 });
     }
 }

@@ -10,8 +10,8 @@ export async function GET(request: NextRequest) {
     try {
         const url = new URL(request.url);
         const Id = url.searchParams.get('Id');
-        const chal = await Assignment.findById(Id);
-        if(!chal){
+        const assignment= await Assignment.findById(Id);
+        if(!assignment){
             return NextResponse.json({
                 success: false,
                 message: "Assignment not found",
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
         }
         return NextResponse.json({
             success: true,
-            data: chal,
+            data: assignment,
         });
     } catch (error: any) {
         console.error("Error fetching assignment:", error);

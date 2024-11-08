@@ -10,6 +10,12 @@ export async function DELETE(request: NextRequest,{ params }: { params: Params }
     try {
         const url = new URL(request.url);
         const id = url.searchParams.get('Id');
+        if(!id){
+            return NextResponse.json({
+                success: false,
+                message: "Id not found",
+            }, { status: 400 });
+        }
         const deletedChallenge = await Challenge.findByIdAndDelete(id);
         if (!deletedChallenge) {
             return NextResponse.json({
@@ -18,6 +24,12 @@ export async function DELETE(request: NextRequest,{ params }: { params: Params }
             }, { status: 404 });
         }
         const course = await Course.findByIdAndUpdate(deletedChallenge.courseId,{$pull:{challenges:deletedChallenge._id}},{new:true})
+        if(!course){
+            return NextResponse.json({
+                success: false,
+                message: "Course not found",
+            }, { status: 404 });
+        }
         return NextResponse.json({
             success: true,
             message: "Challenge deleted successfully",

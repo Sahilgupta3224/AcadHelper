@@ -9,13 +9,17 @@ connect()
 export async function POST(request: NextRequest) {
     try {
         const {userId,adminId,courseId} = await request.json();
-
-        
         if(!userId || !adminId || !courseId){
             return NextResponse.json({ error: "ID is required" }, { status: 400 });
         }
         const updatedcourse = await Course.findByIdAndUpdate(courseId,{$push:{Admins:userId}},{new:true});
+        if(!updatedcourse){
+            return NextResponse.json({ error: "Invalid course" }, { status: 400 });
+        }
         const updateduser = await User.findByIdAndUpdate(userId,{$push:{CoursesAsAdmin:courseId}},{new:true});
+        if(!updateduser){
+            return NextResponse.json({ error: "Invalid user" }, { status: 400 });
+        }
         return NextResponse.json({ message: "admin made successfully"}, { status: 200 });
     } catch (error: any) {
         console.error("Error", error);

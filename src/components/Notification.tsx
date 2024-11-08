@@ -1,5 +1,6 @@
 "use client"
 import * as React from 'react';
+import { useState } from 'react';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -21,20 +22,26 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 export default function Notification() {
   const {user,setUser} = useStore()
-  const handleInvite = async(approval:Boolean,mail)=>{
+  const [invitationStatus, setInvitationStatus] = useState<{ [key: string]: 'pending' | 'accepted' | 'rejected' }>({});
+  const handleInvite = async(approval:Boolean,mail:any)=>{
       try{
         const {data} = await axios.post("/api/team/invitation",{approval,userId:user._id,teamId:mail.teamId,mail})
         console.log(data) 
         toast.success(data.message)
+        setInvitationStatus((prevState) => ({
+          ...prevState,
+          [mail.teamId]: approval ? 'accepted' : 'rejected',
+        }));
     }catch(e){
         toast.error(e.response.data.error)
         console.log(e)
       }
   }
-  console.log(user.inbox)
+  console.log(user)
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
@@ -76,8 +83,24 @@ export default function Notification() {
             </ListItemAvatar>
             <ListItemText primary={notif.message} secondary={new Date(notif.date).toISOString().split('T')[0]} />
             {notif.type == "group invite" && <div>
-              <CheckCircleOutlineIcon color="success" sx={{cursor:"pointer"}} onClick={()=>handleInvite(true,notif)}/>
-              <CancelOutlinedIcon color="error" sx={{cursor:"pointer"}} onClick={()=>handleInvite(false,notif)}/>
+              {invitationStatus[notif.teamId] === 'accepted' ? (
+                    <CheckCircleIcon color="success" />
+                  ) : invitationStatus[notif.teamId] === 'rejected' ? (
+                    <CancelOutlinedIcon color="error" />
+                  ) : (
+                    <>
+                      <CheckCircleOutlineIcon
+                        color="success"
+                        sx={{ cursor: "pointer" }}
+                        onClick={() => handleInvite(true, notif)}
+                      />
+                      <CancelOutlinedIcon
+                        color="error"
+                        sx={{ cursor: "pointer" }}
+                        onClick={() => handleInvite(false, notif)}
+                      />
+                    </>
+                  )}
             </div>}
           </ListItem>
         )):(

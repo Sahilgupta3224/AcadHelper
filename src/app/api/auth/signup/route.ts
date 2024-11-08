@@ -8,7 +8,13 @@ export async function POST(request: NextRequest){
     try {
         const reqBody = await request.json()
         const {username, email, password} = reqBody
-        // console.log(reqBody);
+        if(!email||!username||!password){
+            return NextResponse.json({error: "Fill all fields"}, {status: 400})
+        }
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
+        }
         const user = await User.findOne({email})
         if(user){
             return NextResponse.json({error: "User with this email already exists"}, {status: 400})
@@ -30,7 +36,6 @@ export async function POST(request: NextRequest){
             success: true,
             savedUser
         })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         return NextResponse.json({error: error.message}, {status: 500})
     }

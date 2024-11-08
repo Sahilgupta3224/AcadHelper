@@ -1,6 +1,7 @@
 import Challenge from "@/models/challengeModel";
 import Course from "@/models/courseModel"
 import Assignment from "@/models/assignmentModel";
+import User from "@/models/userModel";
 import { NextRequest,NextResponse} from "next/server";
 
 export async function DELETE(request: NextRequest) {
@@ -15,6 +16,12 @@ export async function DELETE(request: NextRequest) {
             }, { status: 404 });
         }
         const course = await Course.findByIdAndUpdate(deletedAssignment.courseId,{$pull:{assignments:deletedAssignment._id}},{new:true})
+        const users = await User.find({pendingAssignments:deletedAssignment._id})
+        for(const user of users){
+            await user.updateOne({
+                $pull: { pendingAssignments: deletedAssignment._id }
+            });
+        }
         return NextResponse.json({
             success: true,
             message: "Assignment deleted successfully",

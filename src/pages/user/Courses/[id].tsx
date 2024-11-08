@@ -5,7 +5,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import Layout from "@/components/layout";
-import "../../app/globals.css";
+import "../../../app/globals.css";
 import { Dayjs } from "dayjs";
 import { useRouter } from "next/router";
 import ButtonComp from "@/components/button";
@@ -18,7 +18,7 @@ import Assignment from "@/Interfaces/assignment";
 import { useStore } from "@/store";
 import { CldUploadWidget } from 'next-cloudinary';
 import { Box, Button, TextField, Typography, Modal, IconButton, Select, MenuItem } from "@mui/material";
-import Leaderboard from "../Leaderboard";
+import Leaderboard from "../../Leaderboard";
 
 const AdminPage: React.FC = () => {
   const [challenges, setChallenges] = useState<Challenge[]>([]);

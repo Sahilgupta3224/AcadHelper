@@ -3,7 +3,7 @@ import * as React from "react";
 import { useState } from "react";
 import { Box, Button, TextField, Typography, Modal, IconButton, Badge, Pagination,Select, MenuItem } from "@mui/material";
 import Layout from "@/components/layout";
-import "../../app/globals.css";
+import "../../../app/globals.css";
 import { useRouter } from "next/router";
 import axios from "axios";
 import Challenge from "@/Interfaces/challenge";
