@@ -32,6 +32,10 @@ const AssignmentDetails: React.FC = () => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [yo, setyo] = useState(false);
   const [show, setShow] = useState(false)
+  const [showmodal, setShowmodal] = useState(false)
+  const [bonus,setBonus]=useState();
+  const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null);
+  const [deduct,setDeduct]=useState();
   const [errorMessage, setErrorMessage] = useState("");
   const [editedassignment, seteditedassignment] = useState<EditAssignment | null>(null);
   console.log(id)
@@ -150,6 +154,44 @@ const AssignmentDetails: React.FC = () => {
     }
   }
 
+  
+  const handleOpenModal = (submissionId: string) => {
+    setSelectedSubmissionId(submissionId);
+    setShowmodal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowmodal(false);
+    setBonus(0);
+    setDeduct(0);
+  };
+
+  const bonusPoints = async () => {
+    if (!selectedSubmissionId) return;
+    try {
+      const response = await axios.patch(`/api/submission/bonus-points?Id=${selectedSubmissionId}`, { bonus });
+      console.log(response.data);
+      setyo(!yo);
+      toast.success("Bonus points awarded successfully!");
+    } catch (e: any) {
+      toast.error(e);
+    }
+    handleCloseModal();
+  };
+
+  const deductPoints = async () => {
+    if (!selectedSubmissionId) return;
+    try {
+      const response = await axios.patch(`/api/submission/deduct-points?Id=${selectedSubmissionId}`, { deduct });
+      console.log(response.data);
+      setyo(!yo);
+      toast.success("Points deducted successfully!");
+    } catch (e: any) {
+      toast.error(e);
+    }
+    handleCloseModal();
+  };
+
   const approveall = async () => {
     try {
       const response = await axios.patch(`/api/submission/approve-all-submission-assignment?Id=${assignmentId}`);
@@ -238,6 +280,7 @@ const AssignmentDetails: React.FC = () => {
                <TableCell align="left">Approve</TableCell>
                <TableCell align="left">Disapprove</TableCell>
                <TableCell align="left">Delete</TableCell>
+               <TableCell align="left">Deduct/Bonus</TableCell>
              </TableRow>
            </TableHead>
            <TableBody>
@@ -267,6 +310,11 @@ const AssignmentDetails: React.FC = () => {
             <TableCell align="right">
                <button className="mb-2 flex justify-between p-4" onClick={() => { deletesub(submission._id) }}>
                  <DeleteIcon/>
+               </button>
+            </TableCell>
+            <TableCell align="right">
+               <button className="mb-2 flex justify-between p-4" onClick={() => {handleOpenModal(submission._id)}}>
+                  Deduct/Bonus
                </button>
             </TableCell>
           </TableRow>
@@ -354,6 +402,33 @@ const AssignmentDetails: React.FC = () => {
           <Button onClick={handleEdit} color="primary">Save Changes</Button>
         </DialogActions>
       </Dialog>
+      <Dialog open={showmodal} onClose={handleCloseModal}>
+        <DialogTitle>Deduct/Bonus Points</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Bonus Points"
+            type="number"
+            fullWidth
+            value={bonus}
+            onChange={(e) => setBonus(Number(e.target.value))}
+            margin="dense"
+          />
+          <TextField
+            label="Deduct Points"
+            type="number"
+            fullWidth
+            value={deduct}
+            onChange={(e) => setDeduct(Number(e.target.value))}
+            margin="dense"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="secondary">Cancel</Button>
+          <Button onClick={bonusPoints} color="primary">Add Bonus</Button>
+          <Button onClick={deductPoints} color="primary">Deduct Points</Button>
+        </DialogActions>
+      </Dialog>
+
     </div>
 
       </div>

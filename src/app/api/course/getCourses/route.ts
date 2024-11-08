@@ -22,10 +22,10 @@ export async function POST(request:NextRequest){
         let coursesAdmin=[];
         if(type==="enrolled" || type === "both"){
             const courseList= user.Courses.map((course:{courseId:mongoose.Schema.Types.ObjectId,enrolledAt:Date})=>{return course.courseId})
-            coursesEnrolled = await Course.find({_id:{$in:courseList}}).select('_id name')
+            coursesEnrolled = await Course.find({_id:{$in:courseList}}).select('_id name CourseCode')
         }
         if(type==="admin" || type === "both"){
-            coursesAdmin = await Course.find({_id:{$in:user.CoursesAsAdmin}}).select('_id name')
+            coursesAdmin = await Course.find({_id:{$in:user.CoursesAsAdmin}}).select('_id name CourseCode')
         }
 
         const courses = [...coursesEnrolled,...coursesAdmin]

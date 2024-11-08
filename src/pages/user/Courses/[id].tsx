@@ -18,7 +18,7 @@ import Assignment from "@/Interfaces/assignment";
 import { useStore } from "@/store";
 import { CldUploadWidget } from 'next-cloudinary';
 import { Box, Button, TextField, Typography, Modal, IconButton, Select, MenuItem } from "@mui/material";
-import Leaderboard from "../../components/Leaderboard";
+import Leaderboard from "@/components/Leaderboard";
 
 function sortUsersByCoursePoints(users, targetCourseId) {
   return users.sort((a, b) => {

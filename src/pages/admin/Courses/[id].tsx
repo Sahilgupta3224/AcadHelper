@@ -18,9 +18,14 @@ import { CldUploadWidget } from 'next-cloudinary';
 import AssignmentModal from "@/components/AssignmentModal";
 import SearchUserModal from "@/components/SearchUser";
 import KickUserModal from "@/components/KickUserModal";
+import Course from "@/Interfaces/course";
 import User from "@/Interfaces/user";
 
 const AdminPage: React.FC = () => {
+  const router = useRouter();
+  const { query } = router
+  console.log(query)
+  const { id } = router.query;
   const [enrolledUsers,setEnrolledUsers]=React.useState<User[]>([])
   const [openSearch,setOpenSearch]=React.useState<boolean>(false);
   const [openKick,setOpenKick]=React.useState<boolean>(false);
@@ -31,6 +36,7 @@ const AdminPage: React.FC = () => {
   const [assignments, setassignments] = useState<Assignment[]>([]);
   const [value, setValue] = useState(0);
   const [open, setOpen] = useState(false);
+  const [course,setcourse]= useState<Course>()
   const [openAssignment, setopenAssignment] = useState(false);
   const [challengeIdToDelete, setChallengeIdToDelete] = useState<string | null>(null);
   const [AssignmentIdToDelete, setAssignmentIdToDelete] = useState<string | null>(null);
@@ -50,12 +56,11 @@ const AdminPage: React.FC = () => {
   const [assignmentDoc, setAssignmentDoc] = useState("");
   const [assignmentPoints, setAssignmentPoints] = useState<number | undefined>();
   const [yo, setyo] = useState(false)
-  const courseId = '6729e6d6f4a82d6fedab5625';
   const { user, setUser } = useStore()
-  const router = useRouter();
+  const courseId=id
   const itemsPerPage = 5;
 
-
+  console.log(courseId)
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -78,6 +83,17 @@ const handleUpload = (result: any) => {
     console.error("Upload failed or result is invalid.");
   }
 };
+
+  const getcourse=async()=>{
+    try{
+      const res = await axios.get(`/api/course/${courseId}`);
+      setcourse(res.data.course)
+      console.log(res.data.course)
+    }
+    catch(e){
+      console.error(e);
+    }
+  }
 
 const handleUploadChallenge =(result:any)=>{
   if (result && result.info) {
@@ -282,14 +298,20 @@ React.useEffect(() => {
     fetchAssignments();
     fetchChallenges();
     fetchEnrolledUsers();
+    getcourse();
   }, [courseId,yo]);
 
   return (
     <Layout>
       <Box sx={{ padding: "24px" }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Typography variant="h4" gutterBottom>
             Admin Dashboard
         </Typography>
+        <Typography variant="h4" gutterBottom>
+            Course-Code: {course?.CourseCode}
+        </Typography>
+        </Box>
         <Tabs
           value={value}
           onChange={handleChange}

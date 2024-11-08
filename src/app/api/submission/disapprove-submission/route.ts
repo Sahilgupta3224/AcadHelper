@@ -52,14 +52,10 @@ export const PATCH = async (request: Request) => {
                     const user = await User.findById(memberId);
                     if (courseId && user && user.Totalpoints) {
                         const courseIndex = user.Totalpoints.findIndex(
-                            (entry: any) => entry.courseId === courseId
+                            (entry: any) => entry.courseId.equals(courseId)
                         );
-
                         if (courseIndex >= 0 && user.Totalpoints[courseIndex]) {
                             user.Totalpoints[courseIndex].points -= points;
-                            if (user.Totalpoints[courseIndex].points <= 0) {
-                                user.Totalpoints.pull({ courseId });
-                            }
                         } else {
                             user.Totalpoints.push({ courseId, points: 0 });
                         }
@@ -69,14 +65,14 @@ export const PATCH = async (request: Request) => {
             }
         } else {
             const user = await User.findById(findSubmission.User);
+            console.log(courseId)
+            console.log(user)
             const courseIndex = user.Totalpoints.findIndex(
-                (entry: any) => entry.courseId === courseId
+                (entry: any) => entry.courseId.equals(courseId)
             );
+            console.log(courseIndex)
             if (courseIndex >= 0) {
                 user.Totalpoints[courseIndex].points -= points;
-                if (user.Totalpoints[courseIndex].points <= 0) {
-                    user.Totalpoints.pull({ courseId });
-                }
             }
             await user.save();
         }

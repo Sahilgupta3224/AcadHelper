@@ -14,54 +14,56 @@ export const PATCH = async (request:Request)=>{
     try {
         const url = new URL(request.url);
         const submissionId = url.searchParams.get('Id');
+        const {bonus} = await request.json()
+        console.log(bonus);
+        console.log(submissionId)
         if(!submissionId)
         {
             return new NextResponse(JSON.stringify({message:"Enter all the credentials"}),{status:404})
         }
-        
         const findSubmission=await Submission.findById(submissionId)
 
         if(!findSubmission)
         {
             return new NextResponse(JSON.stringify({message:"Submission doesn't exist"}))
         }
-        if(findSubmission.isVerified===true){
+        if(findSubmission.isVerified===false){
             return new NextResponse(JSON.stringify({message:"Already approved"}))
         }
-        findSubmission.isVerified=true
         let points = 0;
         let courseId;
         if (findSubmission.Challenge) {
             const challenge = await Challenge.findById(findSubmission.Challenge);
-            points = challenge.points;
-            courseId = challenge.courseId;
-            findSubmission.marksObtained = points;
+            courseId = challenge?.courseId;
         } else if (findSubmission.Assignment) {
+            console.log("yoo")
             const assignment = await Assignment.findById(findSubmission.Assignment);
-            points = assignment.totalPoints;
-            courseId = assignment.Course;
-            findSubmission.marksObtained = points;
+            console.log(assignment._id)
+            courseId = assignment?.Course;
         }
+        console.log(courseId)
+        if (!courseId) {
+            return new NextResponse(JSON.stringify({ message: "Course is required but was not found" }), { status: 400 });
+        }
+        findSubmission.marksObtained+=bonus
+
         if (findSubmission.type === "team") {
             const team = await Team.findById(findSubmission.groupId);
             if (team) {
                 const members = team.Members.map((member:any) => member.memberId);
-                const pointsPerMember = points / members.length;
-                
+                const pointsPerMember = bonus / members.length;
                 for (const memberId of members) {
                     const user = await User.findById(memberId);
-                    if (user) {
-                        console.log(user._id)
-                        const courseIndex = user.Totalpoints.findIndex(
-                            (entry: any) => entry.courseId?.toString() === courseId.toString()
-                        );
-                        if (courseIndex >= 0) {
-                            user.Totalpoints[courseIndex].points += pointsPerMember;
-                        } else {
-                            user.Totalpoints.push({ courseId, points: pointsPerMember });
-                        }
-                        await user.save();
+                    const courseIndex = user.Totalpoints.findIndex(
+                        (entry: any) => entry.courseId.equals(courseId)
+                    );
+
+                    if (courseIndex >= 0) {
+                        user.Totalpoints[courseIndex].points += pointsPerMember;
+                    } else {
+                        user.Totalpoints.push({ courseId, points: pointsPerMember });
                     }
+                    await user.save();
                 }
             }
         } else {
@@ -71,19 +73,19 @@ export const PATCH = async (request:Request)=>{
             );
 
             if (courseIndex >= 0) {
-                user.Totalpoints[courseIndex].points += points;
+                user.Totalpoints[courseIndex].points += bonus;
             } else {
-                user.Totalpoints.push({ courseId, points });
+                user.Totalpoints.push({ courseId, bonus });
             }
             await user.save();
         }
         await findSubmission.save()
         
-        return new NextResponse(JSON.stringify({message:"Successfully submission approved",submission:findSubmission}),{status:200})
+        return new NextResponse(JSON.stringify({message:"Successfully bonus points given",submission:findSubmission}),{status:200})
 
     } catch (error:any) {
         console.log(error)
-        return new NextResponse(JSON.stringify({message:"Error while approving to a assignment submission",error:error}),{status:500})
+        return new NextResponse(JSON.stringify({message:"Error while giving bonus points",error:error}),{status:500})
     }
 }
 

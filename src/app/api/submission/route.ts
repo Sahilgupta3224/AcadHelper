@@ -115,4 +115,35 @@ function getDaysBetweenDates(date1, date2) {
     const diffInTime = Math.abs(date2 - date1); 
     return Math.floor(diffInTime / oneDay); 
   }
-  
+
+export async function GET(request: NextRequest) {
+    try {
+        const url = new URL(request.url);
+        const Id = url.searchParams.get('Id');
+        if(!Id){
+            return NextResponse.json({
+                success: false,
+                message: "Invalid Id",
+            }, { status: 400 });
+        }
+        const submission = await Submission.findById(Id);
+        console.log(Id)
+        if(!submission){
+            return NextResponse.json({
+                success: false,
+                message: "submission not found",
+            }, { status: 404 });
+        }
+        return NextResponse.json({
+            success: true,
+            data: submission,
+        });
+    } catch (error: any) {
+        console.error("Error fetching submission:", error);
+        return NextResponse.json({
+            success: false,
+            message: "Failed to fetch submission.",
+            error: error.message,
+        }, { status: 500 });
+    }
+}
