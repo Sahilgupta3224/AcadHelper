@@ -1,61 +1,89 @@
-"use client"
 import Layout from '@/components/layout'
-import React from 'react'
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Avatar from '@mui/material/Avatar';
+import React, { useEffect, useState } from 'react'
+import '../app/globals.css';
+import axios from 'axios';
+import LeaderboardComponent from '@/components/Leaderboard';
+import Button from '@mui/material/Button';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { institutes } from '@/utils/Sample Data/Sample';
 
-function createData(
-  rank: number,
-  name: string,
-  points: number
-) {
-  return {rank, name, points };
-}
+const Leaderboard = () => {
+    const [users,setUsers] = useState([])
+    const [institute,setInstitute] = useState("")
+    useEffect(()=>{
+        const fetchUsers = async()=>{
+            try{
+            const {data} = await axios.get('/api/user/getAllUsers')
+            console.log(data)
+            if(data?.success){
+                const usersWithPoints = data.users.map(user => {
+                    const totalPoints = user.Totalpoints.reduce((sum, course) => sum + course.points, 0);
+                    return {
+                      ...user,
+                      totalPoints
+                    };
+                  });
+              
+                  // Sort users by totalPoints in descending order 
+                  usersWithPoints.sort((a, b) => b.totalPoints - a.totalPoints);
+                setUsers(usersWithPoints)
+            }
+            
+            }catch(error){
+                console.log("Error fetching users",error)
+            }
+        }
+        fetchUsers()
+    },[])
 
-const rows = [
-  createData(1,'Khanak Patwari', 159),
-  createData(2,'Narendra Modi', 237)
-];
-
-const Leaderboard = ({users}) => {
-  users.sort((a,b)=>b.points-a.points)
+    const handleFilter=async()=>{
+        try{
+            const {data} = await axios.get('/api/user/filter',{params:{filter:institute}})
+            if(data?.success){
+                const usersWithPoints = data.users.map(user => {
+                    const totalPoints = user.Totalpoints.reduce((sum, course) => sum + course.points, 0);
+                    return {
+                      ...user,
+                      totalPoints
+                    };
+                  });
+              
+                  // Sort users by totalPoints in descending order 
+                  usersWithPoints.sort((a, b) => b.totalPoints - a.totalPoints);
+                setUsers(usersWithPoints)
+            }
+        }catch(e){
+            console.log(e)
+        }
+    }
   return (
-    <div className=''>
-       {/* <div className="w-full flex justify-center m-4 font-bold text-2xl">Leaderboard</div> */}
-       <TableContainer sx={{display:"flex",justifyContent:"center"}}>
-      <Table sx={{ width: "900px",margin:"2rem" }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell align="left">Rank</TableCell>
-            <TableCell align="left">Name</TableCell>
-            <TableCell align="right">Points</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {users.map((user,index) => (
-            <TableRow
-              key={user.username}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+    <div>
+        <Layout>
+        <div className='m-4 w-full text-center text-3xl font-bold p-2'>Global Leaderboard</div>
+        <div className="flex justify-center">
+        <InputLabel id="demo-simple-select-label">Institute</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={institute}
+              label="Age"
+              onChange={(e) => setInstitute(e.target.value)}
+              sx={{width:"40%",marginX:"20px"}}
+              placeholder='hi'
             >
-              <TableCell align="left">{index+1}</TableCell>
-              <TableCell component="th" scope="row" sx={{display:"flex"}}>
-                <Avatar sx={{ width: 24, height: 24,marginRight:"10px" }} alt="Remy Sharp" src={`https://ui-avatars.com/api/?name=${user.username.split(" ").join("+")}`} />
-                 {user.username}
-              </TableCell>
-              <TableCell align="right">{user.points}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+              {institutes.map(uni=>(
+              <MenuItem value={uni}>{uni}</MenuItem>
+              ))}
+        </Select>
+        <Button variant="outlined" onClick={handleFilter}>Filter</Button>
+        </div>
+
+        <LeaderboardComponent users={users}/>
+        </Layout>
+
     </div>
   )
 }
-
 export default Leaderboard
