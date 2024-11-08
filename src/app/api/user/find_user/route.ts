@@ -21,7 +21,7 @@ export async function POST(request: Request) {
         }
 
         // Return the found user
-        return NextResponse.json({ message: "User found successfully", user }, { status: 200 });
+        return NextResponse.json({ success:true, message: "User found successfully", user }, { status: 200 });
 
     } catch (error) {
         console.error("Error while fetching the user by username", error);

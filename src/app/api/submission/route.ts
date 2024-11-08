@@ -29,7 +29,9 @@ export async function POST(request: NextRequest) {
             type,
             groupId
         });
+
         await newSubmission.save();
+
         if(groupId){
             const team = await Team.findById(groupId)
             if(team){
@@ -38,14 +40,60 @@ export async function POST(request: NextRequest) {
                     const user = await User.findByIdAndUpdate(member, { $push: { submissions: newSubmission._id } },{new:true});
                 }
             }
-        }
-        await User.findByIdAndUpdate(user, { $push: { submissions: newSubmission._id } },{new:true});
+        }else await User.findByIdAndUpdate(user, { $push: { submissions: newSubmission._id } },{new:true});
+
         if (assignment) {
-            await User.findByIdAndUpdate(user, { $pull: { pendingAssignments: assignment } });
-            await Assignment.findByIdAndUpdate(assignment, { $push: { submissions: newSubmission._id } },{new:true});
+            const updatedAssignment = await Assignment.findByIdAndUpdate(assignment, { $push: { submissions: newSubmission._id } },{new:true});
+            // Group submission
+            if(groupId){
+                const team = await Team.findById(groupId)
+                if(team){
+                const members = team.Members.map((member:any) => member.memberId)
+                for(const member of members){
+                    const userDetails = await User.findById(member)
+
+                    // Extra aura points
+                    if(updatedAssignment.DueDate>Date.now){
+                    const daysLeft = getDaysBetweenDates(updatedAssignment.DueDate,Date.now)
+                    const totalDays = getDaysBetweenDates(updatedAssignment.DueDate,updatedAssignment.uploadedAt)
+                    const extraPoints = Math.floor(Math.floor(updatedAssignment.totalPoints/totalDays)*daysLeft*0.5/members.length)
+                    await User.updateOne({_id:member,"Totalpoints.courseId":updatedAssignment.Course},{$inc:{"Totalpoints.$.points":extraPoints}})
+                    }
+                
+                    //Checking for eligibility of Early Bird badge
+                    if(userDetails.NoOfEarlySubmits<10 && updatedAssignment.DueDate>Date.now){
+                        const updatedUser = await User.findByIdAndUpdate(member,{ $inc: { NoOfEarlySubmits: 1 }},{new:true})
+                        if(updatedUser.NoOfEarlySubmits==10){
+                            await User.findByIdAndUpdate(member,{$push:{badges:"Phantom.png",inbox:{type:"badge",message:"Congratulations! You've won the Early Bird Badge!"}}})
+                        }
+                    }
+                }
+               }
+            }else{
+                //Individual assignment submission
+                const userDetails = await User.findById(user)
+
+                // Extra aura points
+                if(updatedAssignment.DueDate>Date.now){
+                   const daysLeft = getDaysBetweenDates(updatedAssignment.DueDate,Date.now)
+                   const totalDays = getDaysBetweenDates(updatedAssignment.DueDate,updatedAssignment.uploadedAt)
+                   const extraPoints = Math.floor(Math.floor(updatedAssignment.totalPoints/totalDays)*daysLeft*0.5)
+                   await User.updateOne({_id:user,"Totalpoints.courseId":updatedAssignment.Course},{$inc:{"Totalpoints.$.points":extraPoints}})
+                }
+            
+                //Checking for eligibility of Early Bird badge
+                if(userDetails.NoOfEarlySubmits<10 && updatedAssignment.DueDate>Date.now){
+                    const updatedUser = await User.findByIdAndUpdate(user,{ $inc: { NoOfEarlySubmits: 1 }},{new:true})
+                    if(updatedUser.NoOfEarlySubmits==10){
+                        await User.findByIdAndUpdate(user,{$push:{badges:"Phantom.png",inbox:{type:"badge",message:"Congratulations! You've won the Early Bird Badge!"}}})
+                    }
+                }
+            }
+
         }
         if(challenge){
             await Challenge.findByIdAndUpdate(challenge, { $push: { submissions: newSubmission._id } },{new:true});
+
         }
         return NextResponse.json({
             success: true,
@@ -62,28 +110,9 @@ export async function POST(request: NextRequest) {
     }
 }
 
-export async function GET(request: NextRequest) {
-    try {
-        const url = new URL(request.url);
-        const Id = url.searchParams.get('Id');
-        console.log("urlll",url)
-        const sub = await Submission.findById(Id);
-        if(!sub){
-            return NextResponse.json({
-                success: false,
-                message: "Submission not found",
-            }, { status: 404 });
-        }
-        return NextResponse.json({
-            success: true,
-            data: sub,
-        });
-    } catch (error: any) {
-        console.error("Error fetching challenges:", error);
-        return NextResponse.json({
-            success: false,
-            message: "Failed to fetch challenges.",
-            error: error.message,
-        }, { status: 500 });
-    }
-}
+function getDaysBetweenDates(date1, date2) {
+    const oneDay = 1000 * 60 * 60 * 24; 
+    const diffInTime = Math.abs(date2 - date1); 
+    return Math.floor(diffInTime / oneDay); 
+  }
+  

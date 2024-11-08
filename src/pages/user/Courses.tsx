@@ -18,8 +18,18 @@ import Assignment from "@/Interfaces/assignment";
 import { useStore } from "@/store";
 import { CldUploadWidget } from 'next-cloudinary';
 import { Box, Button, TextField, Typography, Modal, IconButton, Select, MenuItem } from "@mui/material";
-import Leaderboard from "../Leaderboard";
+import Leaderboard from "../../components/Leaderboard";
 
+function sortUsersByCoursePoints(users, targetCourseId) {
+  return users.sort((a, b) => {
+    // Find points for the target course in each user
+    const aPoints = a.Totalpoints.find(course => course.courseId === targetCourseId)?.points || 0;
+    const bPoints = b.Totalpoints.find(course => course.courseId === targetCourseId)?.points || 0;
+
+    // Sort in descending order
+    return bPoints - aPoints;
+  });
+}
 const AdminPage: React.FC = () => {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [assignments, setassignments] = useState<Assignment[]>([]);
@@ -62,8 +72,9 @@ const AdminPage: React.FC = () => {
             courseId
           }
         })
-    
-        setEnrolledUsers(response.data.users)
+        
+        const sortedUsers = sortUsersByCoursePoints(response.data.users, courseId);
+        setEnrolledUsers(sortedUsers)
     
       } catch (error) {
         console.log("Error while fetching all the enrolled users of the course",error);
