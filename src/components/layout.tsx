@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { clearUser } from "@/store";
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 
 const drawerWidth = 240;
 
@@ -41,6 +42,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const mainItems = [
     { text: "Dashboard", icon: <DashboardIcon /> },
+    { text:"Courses",icon: <MenuBookIcon/>},
     { text: "Groups", icon: <GroupIcon /> },
     { text: "Leaderboard", icon: <LeaderboardIcon /> },
     { text: "Focus", icon: <VideoCallIcon /> },
@@ -68,18 +70,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Toolbar />
         <Box sx={{ overflow: "auto" }}>
           <List>
-            <SimpleTreeView sx={{ padding: "10px" }}>
-              <TreeItem itemId="Courses" label="Courses">
-                <TreeItem
-                  itemId="Course1"
-                  label="Course1"
-                  onClick={() => {
-                    router.push(`/Courses`);
-                  }}
-                />
-              </TreeItem>
-            </SimpleTreeView>
-            <Divider />
             {mainItems.map((item) => (
               <ListItem key={item.text} disablePadding onClick={() => handleNavigation(item.text)}>
                 <ListItemButton>

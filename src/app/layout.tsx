@@ -1,4 +1,4 @@
-import AuthProvider from "@/components/AuthProvider"; // Ensure this component wraps SessionProvider
+import AuthProvider from "@/components/AuthProvider"; 
 import LoginForm from "@/pages/Login";
 import localFont from "next/font/local";
 import { ToastContainer } from "react-toastify";

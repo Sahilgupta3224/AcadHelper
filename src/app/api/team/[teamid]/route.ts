@@ -7,7 +7,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 //GET team details from team id
 export async function GET(request:NextRequest,context:{params:any}){
-    const teamId = context.params.teamId
+    const teamId = context.params.teamid
+    console.log(teamId)
     const {searchParams} = new URL(request.url)
     const type = searchParams.get('type') 
     if(type=="Team"){
@@ -48,19 +49,6 @@ export async function GET(request:NextRequest,context:{params:any}){
 
 // Leave a Team -> if he is not the group admin
 export async function DELETE(request:NextRequest,context:{params:any}){
-<<<<<<< HEAD
-    const teamId = context.params.groupId
-    try{
-        const {searchParams} = new URL(request.url)
-        const userId = searchParams.get('userId') 
-        await connect()
-        
-        const updatedUser = await User.findByIdAndUpdate(userId,{$pull:{teams:{teamId:teamId}}},{new:true})
-        if(!updatedUser)return NextResponse.json({error:"User not found"},{status:400})
-        
-        const updatedTeam = await Course.findByIdAndUpdate(teamId,{$pull:{Members:{memberId:userId}}},{new:true})
-        if(!updatedTeam)return NextResponse.json({error:"Team not found"},{status:400})
-=======
     // const teamId = context.params.groupId
     try{
         const {searchParams} = new URL(request.url)
@@ -77,7 +65,6 @@ export async function DELETE(request:NextRequest,context:{params:any}){
         const updatedUser = await User.findByIdAndUpdate(userId,{$pull:{teams:{teamId:teamId}}},{new:true})
         
         const updatedTeam = await Team.findByIdAndUpdate(teamId,{$pull:{Members:{memberId:userId}}},{new:true})
->>>>>>> f96d12a07e9548ee24a3ed46fc90c8d41bf84151
 
         return NextResponse.json({updatedUser,success:true})
 
@@ -88,23 +75,13 @@ export async function DELETE(request:NextRequest,context:{params:any}){
 
 // Add member
 export async function POST(request:NextRequest,context:{params:any}){
-<<<<<<< HEAD
-    const teamId = context.params.teamId
     try{
         const {email} = await request.json()
+        const teamId = await context.params.teamid?.toString();
         await connect()
         const team = await Team.findById(teamId)
         const newUser = await User.findOne({email:email})
-
-=======
-    try{
-        const {email} = await request.json()
-        const teamId = await context.params.teamId?.toString();
-        await connect()
-        const team = await Team.findById(teamId)
-        const newUser = await User.findOne({email:email})
-        console.log(teamId)
->>>>>>> f96d12a07e9548ee24a3ed46fc90c8d41bf84151
+        console.log(context.params)
         // Group not found
         if(!team)return NextResponse.json({error:"Group not found"},{status:400})
         if (!newUser) return NextResponse.json({ error: "User not found" }, { status: 400 });
@@ -117,10 +94,6 @@ export async function POST(request:NextRequest,context:{params:any}){
 
         // Invitation already sent
         if(team.pendingInvites.includes(email))return NextResponse.json({error:"Invitation already sent"},{status:409})
-<<<<<<< HEAD
-
-        const user = await User.findOneAndUpdate({email:email},{$push:{inbox:{type:"group invite",message:`You have been invited by ${team.teamname}`}}},{new:true})
-=======
         console.log(team._id)
         const user = await User.findOneAndUpdate(
             { email: email },
@@ -135,7 +108,6 @@ export async function POST(request:NextRequest,context:{params:any}){
             },
             { new: true }
         );
->>>>>>> f96d12a07e9548ee24a3ed46fc90c8d41bf84151
         if(!user)return NextResponse.json({error:"User not found"},{status:400})
         const updatedTeam = await Team.findByIdAndUpdate(teamId,{$push:{pendingInvites:user.email}},{new:true})
         return NextResponse.json({updatedTeam,success:true})

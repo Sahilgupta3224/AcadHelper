@@ -4,6 +4,11 @@ import "../app/globals.css";
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { useStore } from '@/store';
+import Link from 'next/link';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { institutes } from '@/utils/Sample Data/Sample';
 
 interface ButtonProps {
   value: string;
@@ -57,6 +62,8 @@ const SignupForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setusername] = useState('');
+  const [institute, setInstitute] = React.useState('');
+
   const router = useRouter();
   const {user,setUser} = useStore()
 
@@ -67,6 +74,7 @@ const SignupForm: React.FC = () => {
         email,
         password,
         username,
+        institute
       });
   
       if (response.status === 200) {
@@ -74,7 +82,7 @@ const SignupForm: React.FC = () => {
         setUser(response.data.savedUser)
         router.push('/Dashboard');
       } else {
-        console.error("singup failed");
+        console.error("signup failed");
       }
     } catch (error) {
       toast.error(error.response.data.error)
@@ -108,6 +116,19 @@ const SignupForm: React.FC = () => {
             value={username}
             onChange={(e) => setusername(e.target.value)}
           />
+          <InputLabel id="demo-simple-select-label">Institute</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={institute}
+              label="Age"
+              onChange={(e) => setInstitute(e.target.value)}
+              sx={{width:"100%"}}
+            >
+              {institutes.map(uni=>(
+              <MenuItem value={uni}>{uni}</MenuItem>
+              ))}
+            </Select>
           <Input
             type="password"
             id="password"
@@ -119,8 +140,9 @@ const SignupForm: React.FC = () => {
           />
           <Button value="Submit" onClick={handleSignup} />
         </form>
+        <div className='text-center mt-4'>Already have an account?<Link href="/Login" className='text-blue-500'> Login</Link></div>
       </div>
-         <Toaster />
+      <Toaster/>
     </div>
   );
 };

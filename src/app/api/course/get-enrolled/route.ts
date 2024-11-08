@@ -20,7 +20,6 @@ export async function GET(request: Request) {
     if (!course) {
       return NextResponse.json({ message: "The course doesn't exist" }, { status: 404 });
     }
-
     
     const userIds = course.StudentsEnrolled;
 

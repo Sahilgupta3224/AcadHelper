@@ -17,7 +17,7 @@ export const PATCH = async (request:Request)=>{
             return new NextResponse(JSON.stringify({message:"Enter all the credentials"}),{status:404})
         }
         
-        const assignment=await Submission.findById(assignmentId)
+        const assignment=await Assignment.findById(assignmentId)
 
         if(!assignment)
         {
@@ -25,6 +25,9 @@ export const PATCH = async (request:Request)=>{
         }
         for(const submission of assignment.submissions){
             const sub =await Submission.findById(submission);
+            if(!sub){
+                continue;
+            }
             sub.isVerified=true;
             await sub.save();
         }
@@ -32,7 +35,7 @@ export const PATCH = async (request:Request)=>{
         return new NextResponse(JSON.stringify({message:"Successfully submissions approved",assignment:assignment}),{status:200})
 
     } catch (error:any) {
-        console.log("Error while approving to submissions")
+        console.log(error)
         return new NextResponse(JSON.stringify({message:"Error while approving to submissions",error:error.message}),{status:500})
     }
 }

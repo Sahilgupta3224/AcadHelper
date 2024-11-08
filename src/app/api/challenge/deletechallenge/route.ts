@@ -12,8 +12,17 @@ export async function DELETE(request: NextRequest, { params }: { params: Params 
     try {
         const url = new URL(request.url);
         const id = url.searchParams.get('Id');
+<<<<<<< HEAD
         
         // Delete the challenge
+=======
+        if(!id){
+            return NextResponse.json({
+                success: false,
+                message: "Id not found",
+            }, { status: 400 });
+        }
+>>>>>>> b954ea0b4b5c8703a2c99dbdffbbfa941eb638ae
         const deletedChallenge = await Challenge.findByIdAndDelete(id);
         if (!deletedChallenge) {
             return NextResponse.json({
@@ -21,6 +30,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Params 
                 message: "Challenge not found",
             }, { status: 404 });
         }
+<<<<<<< HEAD
 
         // Remove the challenge from the course's challenges array
         await Course.findByIdAndUpdate(
@@ -42,6 +52,15 @@ export async function DELETE(request: NextRequest, { params }: { params: Params 
             { $pull: { events: { $in: eventIds } } }
         );
 
+=======
+        const course = await Course.findByIdAndUpdate(deletedChallenge.courseId,{$pull:{challenges:deletedChallenge._id}},{new:true})
+        if(!course){
+            return NextResponse.json({
+                success: false,
+                message: "Course not found",
+            }, { status: 404 });
+        }
+>>>>>>> b954ea0b4b5c8703a2c99dbdffbbfa941eb638ae
         return NextResponse.json({
             success: true,
             message: "Challenge and related events deleted successfully",

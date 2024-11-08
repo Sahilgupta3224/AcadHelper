@@ -12,6 +12,12 @@ export async function GET(request: NextRequest) {
         const url = new URL(request.url);
         const CourseId = url.searchParams.get('CourseId');
         console.log(CourseId)
+        if(!CourseId){
+            return NextResponse.json({
+                success: false,
+                message: "Invalid Id",
+            }, { status: 400 });
+        }
         const course = await Course.findById(CourseId)
         if(!course){
             return NextResponse.json({

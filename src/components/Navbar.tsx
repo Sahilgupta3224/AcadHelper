@@ -15,12 +15,14 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Popover from '@mui/material/Popover';
-import Fire from './fire'
+import Fire from './fire';
+import { useRouter } from 'next/router';
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import LoginModal from '@/components/AuthModal';
 import Notification from './Notification';
-import { SessionProvider } from 'next-auth/react';
-
+import { useStore } from '@/store';
+import { Chip } from '@mui/material';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -63,10 +65,12 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Navbar() {
+  const router = useRouter();
+  const { user, setUser } = useStore()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
   const [challengeAnchorEl, setChallengeAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-  const [openLogin,setOpenLogin]=React.useState(false)
+  const [openLogin, setOpenLogin] = React.useState(false)
   // const {notifications,setNotifications}=AppWrapper()
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -88,7 +92,16 @@ export default function Navbar() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const handleOpen=()=>{
+  const calculateTotalPoints = (user: any) => {
+    if (Array.isArray(user.Totalpoints)) {
+      return user.Totalpoints.reduce((total, course) => total + course.points, 0);
+    }
+    return 0;
+  };
+  const totalPoints = calculateTotalPoints(user);
+  console.log(totalPoints);
+
+  const handleOpen = () => {
     console.log("Open Login modal")
     setOpenLogin(true)
   }
@@ -112,7 +125,7 @@ export default function Navbar() {
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      
+
     </Menu>
   );
 
@@ -136,7 +149,7 @@ export default function Navbar() {
       <MenuItem>
         <IconButton size="large" color="inherit">
           <Badge badgeContent={4} color="error">
-            <Fire/>
+            <Fire />
             {/* <LocalFireDepartmentIcon /> */}
           </Badge>
         </IconButton>
@@ -174,7 +187,7 @@ export default function Navbar() {
   const id = open ? 'simple-popover' : undefined;
 
   return (
-    <Box sx={{display:"flex",flexDirection:"column" , flexGrow: 1,justifyContent:"center" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1, justifyContent: "center" }}>
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: 'white', color: 'black', borderBottom: '1px solid #e0e0e0' }} elevation={0}>
         <Toolbar>
           <Typography variant="h6" noWrap component="div" sx={{ display: { xs: 'none', sm: 'block' } }}>
@@ -182,26 +195,40 @@ export default function Navbar() {
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                <Fire/>
-            <Notification/>
+            <Box
+              sx={{
+                fontSize: '1.2rem',
+                fontWeight: 'bold',
+                color: 'black',
+                // marginRight: 1,
+                padding: '8px 12px',
+                // backgroundColor:
+                borderRadius: '8px',
+                // boxShadow: 1,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            ><Chip label={totalPoints} icon={<AutoAwesomeIcon/>}/></Box>
+            <Fire />
+            <Notification />
             <IconButton
               size="large"
               edge="end"
               aria-label="account of current user"
-              aria-controls={undefined} 
+              aria-controls={undefined}
               aria-haspopup="true"
-              onClick={handleClick} 
+              onClick={handleClick}
               color="inherit"
             >
               <AccountCircle />
             </IconButton>
-            <Button variant="outlined" color="inherit" sx={{ ml: 2 }} onClick={handleOpen}>Login</Button>
+            <Button variant="outlined" color="inherit" sx={{ ml: 2 }} onClick={() => { router.push(`/Login`); }}>Login</Button>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
               aria-label="show more"
-              aria-controls={undefined} 
+              aria-controls={undefined}
               aria-haspopup="true"
               onClick={handleClick}
               color="inherit"

@@ -1,7 +1,8 @@
-import { Types } from 'mongoose'; 
+import { Types } from 'mongoose';
 import { NextResponse } from 'next/server';
 import Course from '@/models/courseModel';
 import User from '@/models/userModel';
+import Assignment from '@/models/assignmentModel';
 import { connect } from '@/dbConfig/dbConfig';
 connect();
 
@@ -27,7 +28,7 @@ export const DELETE = async (request: Request) => {
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { $pull: { Courses: { courseId: new Types.ObjectId(courseId) } } },
+      { $pull: { Courses: { courseId: courseId } } },
       { new: true }
     );
     if (!updatedUser) {
@@ -36,10 +37,17 @@ export const DELETE = async (request: Request) => {
         { status: 404 }
       );
     }
-
     requiredCourse.StudentsEnrolled = requiredCourse.StudentsEnrolled.filter(
       (student: any) => !student.equals(userId)
     );
+    const assignments = await Assignment.find({ Course: courseId });
+    const assignmentIds = assignments.map(assignment => assignment._id);
+    const updatedUserWithAssignments = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { pendingAssignments: { assignmentId: { $in: assignmentIds } } } },
+      { new: true }
+    );
+    if (!updatedUserWithAssignments) return NextResponse.json({ error: "User not found" }, { status: 400 });
     const updatedCourse = await requiredCourse.save();
 
     return new NextResponse(JSON.stringify({ message: "User removed from course successfully.", updatedCourse }), { status: 200 });

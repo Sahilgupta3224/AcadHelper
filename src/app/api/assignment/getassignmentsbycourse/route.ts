@@ -26,10 +26,10 @@ export async function GET(request: NextRequest) {
             data: assignments,
         });
     } catch (error: any) {
-        console.error("Error fetching challenges:", error);
+        console.error("Error fetching assignments:", error);
         return NextResponse.json({
             success: false,
-            message: "Failed to fetch challenges.",
+            message: "Failed to fetch assignments.",
             error: error.message,
         }, { status: 500 });
     }

@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
             }, { status: 404 });
         }
         console.log(user)
-        const courseIds = user.Courses.map((course) => course.courseId);
+        const courseIds = user.Courses.map((course:any) => course.courseId);
 
         const challenges = await Challenge.find({
             courseId: { $in: courseIds },

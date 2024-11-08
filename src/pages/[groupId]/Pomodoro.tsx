@@ -271,18 +271,19 @@ export const Pomodoro = () => {
         </div>
     </div>
     <Container maxWidth="sm">
+      <div className='flex'>
       <TextField
-        fullWidth
+        sx={{width:"80%"}}
         variant="outlined"
         label="New Task"
         value={newTask}
         onChange={(e) => setNewTask(e.target.value)}
         onKeyPress={(e) => e.key === 'Enter' && addTask()}
-        margin="normal"
       />
-      <Button variant="contained" color="primary" onClick={addTask} fullWidth>
-        Add Task
+      <Button variant="outlined" color="primary" onClick={addTask} sx={{marginX:"10px"}}>
+        +
       </Button>
+      </div>
       <List>
         {tasks.map((task, index) => (
           <ListItem key={index}>

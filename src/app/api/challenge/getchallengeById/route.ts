@@ -9,7 +9,14 @@ export async function GET(request: NextRequest) {
     try {
         const url = new URL(request.url);
         const Id = url.searchParams.get('Id');
+        if(!Id){
+            return NextResponse.json({
+                success: false,
+                message: "Invalid Id",
+            }, { status: 400 });
+        }
         const chal = await Challenge.findById(Id);
+        console.log(Id)
         if(!chal){
             return NextResponse.json({
                 success: false,

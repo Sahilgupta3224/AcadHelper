@@ -14,7 +14,6 @@ import { useParams, useRouter } from 'next/navigation'
 import toast, { Toaster } from 'react-hot-toast';
 import { useStore } from '@/store';
 
-
 const style = {
     position: 'absolute',
     top: '50%',
@@ -36,8 +35,9 @@ const style = {
   }
   
 export const Settings = () => {
-    const params = useParams<{ groupId:string }>()
+    // const params = useParams<{ groupId:string }>()
     const router = useRouter()
+    const params = useParams();
     const {user,setUser} = useStore()
     const [input,setInput] = useState("")
     const [team,setTeam] = useState({})
@@ -70,7 +70,7 @@ export const Settings = () => {
     useEffect(()=>{
       const fetchTeam = async()=>{
         try{
-          const res = await axios.get(`/api/team/${params.groupId}`,{params:{type:"Team"}})
+          const res = await axios.get(`/api/team/${params?.groupId}`,{params:{type:"Team"}})
           console.log(res?.data?.team)
           setTeam(res?.data?.team)
           setGroupInput({maxteamsize:res?.data?.team.maxteamsize,teamname:res?.data?.team.teamname,description:res?.data?.team.description})
@@ -197,13 +197,15 @@ export const Settings = () => {
 
   return (
     <>
-    Members<Button variant="outlined" onClick={handleOpen}>Add member</Button>
-    {/* EDIT AND DELETE SHOULD ONLY BE VISIBLE TO THE GROUP LEADER */}
-    <Button variant="outlined" onClick={handleOpenEdit}>Edit Group</Button>
-    <Button variant="outlined" onClick={handleOpenDelete}>Delete Group</Button>
-    <Button variant="outlined" onClick={handleOpenLeave}>Leave Group</Button>
+   <div className='flex justify-evenly'>
+    
     <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
       <nav aria-label="main mailbox folders">
+      <Typography id="modal-modal-title" variant="h6" component="h2">
+         Members
+      </Typography>
+
+
         <List>
           {members.map(member=>(
             <ListItem disablePadding id = {member._id}>
@@ -219,6 +221,18 @@ export const Settings = () => {
       </nav>
      
     </Box>
+    {team.leader==user._id ?(
+      <div className='flex flex-col w-40 '>
+    <Button variant="outlined" onClick={handleOpen}>Add member</Button>
+    <Button variant="outlined" onClick={handleOpenEdit} sx={{marginY:"10px"}}>Edit Group</Button>
+    <Button variant="outlined" onClick={handleOpenDelete} color='error'>Delete Group</Button>
+    </div>
+  ):(
+    <Button variant="outlined" onClick={handleOpenLeave} color="error" sx={{height:"3rem"}}>Leave Group</Button>
+  )
+  }
+    </div>
+
     <Modal
         open={open}
         onClose={handleClose}

@@ -1,6 +1,7 @@
 import { connect } from '@/dbConfig/dbConfig';
 import Course from '@/models/courseModel'
 import User from '@/models/userModel';
+import Assignment from '@/models/assignmentModel';
 import mongoose from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -9,10 +10,9 @@ connect()
 //GET all courses from user id
 export async function GET(request:NextRequest){
     try{
-        const {userId} = await request.json() 
-
+        const url = new URL(request.url);
+        const userId = url.searchParams.get('userId');
         const user = await User.findOne({_id:userId})
-        
         if(!user){
             return NextResponse.json({error:'User does not exist'},{status:400})
         }
@@ -68,9 +68,21 @@ export async function DELETE(request:NextRequest){
         if (!course) {
             return NextResponse.json({ error: "Course not found" }, { status: 404 });
         }
-        await Course.findByIdAndDelete(courseId);
-        // i need to pull pending assignments of that courses from all users too
+        const users = course.StudentsEnrolled
+        for (const user of users) {
+            const assignments = await Assignment.find({ Course: courseId });
+            const assignmentIds = assignments.map(assignment => assignment._id);
 
+            await User.findByIdAndUpdate(
+                user,
+                {
+                    $pull: {
+                        pendingAssignments: { assignmentId: { $in: assignmentIds } }
+                    }
+                }
+            );
+        }
+        await Course.findByIdAndDelete(courseId);
         return NextResponse.json({ message: "Course and related data deleted successfully" }, { status: 200 });
     }
     catch(error: any){
