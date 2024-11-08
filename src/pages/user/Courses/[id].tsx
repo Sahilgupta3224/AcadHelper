@@ -17,7 +17,7 @@ import Tab from '@mui/material/Tab';
 import Assignment from "@/Interfaces/assignment";
 import { useStore } from "@/store";
 import { CldUploadWidget } from 'next-cloudinary';
-import { Box, Button, TextField, Typography, Modal, IconButton, Select, MenuItem } from "@mui/material";
+import { Box, Button, TextField, Typography, Modal, IconButton, Select, MenuItem, Chip } from "@mui/material";
 import Leaderboard from "@/components/Leaderboard";
 
 function sortUsersByCoursePoints(users, targetCourseId) {
@@ -58,6 +58,7 @@ const AdminPage: React.FC = () => {
   const courseId = '6729e6d6f4a82d6fedab5625';
   const { user, setUser } = useStore()
   const router = useRouter();
+  const {id} = router.query
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -239,8 +240,8 @@ const AdminPage: React.FC = () => {
 
   return (
     <Layout>
-      <Box sx={{ padding: "24px" }}>
-        <Typography variant="h4" gutterBottom>User Dashboard</Typography>
+      <Box>
+        {/* <Typography variant="h4" gutterBottom>User Dashboard</Typography> */}
         <Tabs
           value={value}
           onChange={handleChange}
@@ -255,92 +256,25 @@ const AdminPage: React.FC = () => {
         </Tabs>
         {value === 0 && (
           <>
-            <Box sx={{ mt: 2 }}>
+            <div className="">
               {assignments.length > 0 ? (
                 assignments.map((assignment) => (
-                  <Box key={assignment._id} sx={{ mb: 1, p: 2, border: '1px solid #ccc', borderRadius: '4px' }}>
-                    <Typography variant="h6">{assignment.title}</Typography>
-                    <Button
-                      variant="contained"
-                      onClick={() => router.push(`/Assignment/user/${assignment._id}`)}
-                    >
-                      View Details
-                    </Button>
-                    <div>
-                    {assignment.status}
-                    </div>
-                  </Box>
+                     <div className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer"  onClick={() => router.push(`/Assignment/user/${assignment._id}`)}>
+                         <h1 className="text-3xl font-bold mb-4 flex justify-between">
+                          {assignment.title}
+                          <div>
+                           <Chip label={assignment.status} sx={{marginRight:"1rem"}} color={assignment.status=='Open' ? "success" : "error"} variant="outlined"/>
+                           <Chip label={assignment.totalPoints} />
+                           </div>
+                          </h1>
+                         <p><strong>Assigned on:</strong> {new Date(assignment.uploadedAt).toISOString().split("T")[0]}</p>
+                         <p><strong>Due date:</strong> {new Date(assignment.DueDate).toISOString().split("T")[0]}</p>
+                     </div>
                 ))
               ) : (
-                <Typography>No assignments found for this course.</Typography>
+                <div className="w-full flex justify-center">No assignments found for this course.</div>
               )}
-            </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-              <Button variant="contained" color="primary" sx={{ width: '200px' }} onClick={() => setOpenUploadAssignmentModal(true)} >
-                Upload Assignment
-              </Button>
-
-              <Modal open={openUploadAssignmentModal} onClose={() => setOpenUploadAssignmentModal(false)}>
-                <Box
-                  sx={{
-                    position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-                    width: 400, bgcolor: 'background.paper', p: 4, borderRadius: 2, boxShadow: 24,
-                  }}
-                >
-                  <Typography variant="h6" gutterBottom>Add New Assignment</Typography>
-                  <TextField
-                    fullWidth
-                    label="Title"
-                    value={assignmentTitle}
-                    onChange={(e) => setAssignmentTitle(e.target.value)}
-                    sx={{ mb: 2 }}
-                  />
-                  <TextField
-                    fullWidth
-                    multiline
-                    label="Description"
-                    value={assignmentDescription}
-                    onChange={(e) => setAssignmentDescription(e.target.value)}
-                    sx={{ mb: 2 }}
-                  />
-                  <TextField
-                    fullWidth
-                    type="date"
-                    label="Due Date"
-                    value={assignmentDueDate}
-                    onChange={(e) => setAssignmentDueDate(e.target.value)}
-                    sx={{ mb: 2 }}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                  <CldUploadWidget
-                    uploadPreset="acad_helper_pdf	"
-                    onSuccess={handleUpload}
-                  >
-                    {({ open }) => (
-                      <Button onClick={() => open()} variant="outlined" color="primary" fullWidth>
-                        Select File
-                      </Button>
-                    )}
-                  </CldUploadWidget>
-
-                  <TextField
-                    fullWidth
-                    type="number"
-                    label="Points"
-                    value={assignmentPoints}
-                    onChange={(e) => setAssignmentPoints(parseInt(e.target.value))}
-                    sx={{ mb: 2 }}
-                  />
-                  <Button variant="contained" color="primary" onClick={handleSubmitAssignment}>
-                    Submit Assignment
-                  </Button>
-                </Box>
-              </Modal>
-
-            </Box>
-
-
-
+            </div>
           </>
         )}
 
@@ -349,62 +283,22 @@ const AdminPage: React.FC = () => {
             <Box sx={{ mt: 2 }}>
               {challenges.length > 0 ? (
                 challenges.map((challenge) => (
-                  <Box key={challenge._id} sx={{ mb: 1, p: 2, border: '1px solid #ccc', borderRadius: '4px' }}>
-                    <Typography variant="h6">{challenge.title}</Typography>
-                    <Button
-                      variant="contained"
-                      onClick={() => router.push(`/Challenge/user/${challenge._id}`)}
-                    >
-                      View Details
-                    </Button>
-                  </Box>
+                  <div className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer" onClick={() => router.push(`/Challenge/user/${challenge._id}`)}>
+                  <h1 className="text-3xl font-bold mb-4 flex justify-between">
+                   {challenge.title}
+                   <div>
+                    <Chip label={challenge.frequency} sx={{marginRight:"1rem"}} color={challenge.frequency=='daily' ? "primary" : "success"} variant="outlined"/>
+                    <Chip label={challenge.points} />
+                    </div>
+                   </h1>
+                  <p><strong>Start date:</strong> {new Date(challenge.startDate).toISOString().split("T")[0]}</p>
+                  <p><strong>Due date:</strong> {new Date(challenge.endDate).toISOString().split("T")[0]}</p>
+              </div>
                 ))
               ) : (
-                <Typography>No challenges found for this course.</Typography>
+                <div className="w-full flex justify-center">No challenges found for this course.</div>
               )}
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-              <Button variant="contained" color="primary" sx={{ width: '200px' }} onClick={() => setOpenUploadModal(true)} >
-                Add Challenge
-              </Button>
-            </Box>
-
-            <Modal open={openUploadModal} onClose={() => setOpenUploadModal(false)}>
-              <Box
-                sx={{
-                  position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-                  width: 400, bgcolor: 'background.paper', p: 4, borderRadius: 2, boxShadow: 24,
-                }}
-              >
-                <Typography variant="h6" gutterBottom>Add New Challenge</Typography>
-                <TextField fullWidth label="Title" value={title} onChange={(e) => setTitle(e.target.value)} sx={{ mb: 2 }} />
-                <TextField fullWidth multiline label="Description" value={description} onChange={(e) => setDescription(e.target.value)} sx={{ mb: 2 }} />
-                <TextField fullWidth type="date" label="Start Date" value={startDate} onChange={(e) => setStartDate(e.target.value)} sx={{ mb: 2 }} InputLabelProps={{ shrink: true }} />
-                {/* <TextField fullWidth label="Document Link" value={challengeDoc} onChange={(e) => setChallengeDoc(e.target.value)} sx={{ mb: 2 }} /> */}
-                <CldUploadWidget
-                    uploadPreset="acad_helper_pdf	"
-                    onSuccess={handleUploadChallenge}
-                  >
-                    {({ open }) => (
-            <Button onClick={() => open()} variant="outlined" color="primary" fullWidth>
-              Select File
-            </Button>
-          )}
-                  </CldUploadWidget>
-                <Select fullWidth value={type} onChange={(e) => setType(e.target.value as string)} sx={{ mb: 2 }}>
-                  <MenuItem value="individual">Individual</MenuItem>
-                  <MenuItem value="team">Team</MenuItem>
-                </Select>
-                <Select fullWidth value={frequency} onChange={(e) => setFrequency(e.target.value as string)} sx={{ mb: 2 }}>
-                  <MenuItem value="daily">Daily</MenuItem>
-                  <MenuItem value="weekly">Weekly</MenuItem>
-                </Select>
-                <TextField fullWidth type="number" label="Points" value={points} onChange={(e) => setPoints(parseInt(e.target.value))} sx={{ mb: 2 }} />
-                <Button variant="contained" color="primary" onClick={handleSubmitChallenge}>
-                  Submit Challenge
-                </Button>
-              </Box>
-            </Modal>
 
           </>
         )}

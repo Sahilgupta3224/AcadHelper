@@ -21,7 +21,8 @@ import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import LoginModal from '@/components/AuthModal';
 import Notification from './Notification';
 import { useStore } from '@/store';
-
+import { Chip } from '@mui/material';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -199,7 +200,7 @@ export default function Navbar() {
                 fontSize: '1.2rem',
                 fontWeight: 'bold',
                 color: 'black',
-                marginRight: 4,
+                // marginRight: 1,
                 padding: '8px 12px',
                 // backgroundColor:
                 borderRadius: '8px',
@@ -207,7 +208,7 @@ export default function Navbar() {
                 display: 'flex',
                 alignItems: 'center',
               }}
-            >Aura Points: {totalPoints}</Box>
+            ><Chip label={totalPoints} icon={<AutoAwesomeIcon/>}/></Box>
             <Fire />
             <Notification />
             <IconButton
@@ -237,6 +238,7 @@ export default function Navbar() {
           </Box>
         </Toolbar>
       </AppBar>
+    
       <LoginModal open={openLogin} handleClose={() => setOpenLogin(false)} />
 
       {renderMobileMenu}

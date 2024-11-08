@@ -9,6 +9,8 @@ import axios from "axios";
 import { toast } from 'react-toastify'; 
 import { useRouter } from 'next/navigation';
 import {useStore} from '@/store'
+import { signIn } from "next-auth/react";
+
 
 interface LoginModalProps {
   open: boolean;
@@ -23,7 +25,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
   const [emailError, setEmailError] = useState<string | null>(null); // State for email error
   const { user, setUser } = useStore(); // Get user and setUser from Zustand store
   const [authType, setAuthType] = useState("login"); 
+  const [Error,setError]=useState("")
   const router = useRouter(); 
+  
+  // const { data: session } = useSession()
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -61,6 +66,18 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
         const userData = response.data.user;
         localStorage.setItem("user", JSON.stringify(userData));
 
+        const res = await signIn("credentials", {
+          email: email,
+          password: password,
+          redirect: false,
+        });
+
+        if (res?.error) {
+          console.log(res);
+          setError("error");
+        }
+  
+
         setUser(userData); // Set user in Zustand store
         console.log("User check",user)
         toast.success("Logged in successfully!");
@@ -70,6 +87,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
         setEmail('');
         setPassword('');
         setTheUsername('');
+        setError("");
       } catch (error: any) {
         console.error("Error while logging in:", error);
         const errorMessage = error.response?.data?.message || "Error while logging in. Please try again.";
@@ -113,6 +131,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
   const handleGoogleSignIn = async () => {
     try {
       // Perform Google sign-in logic here
+      signIn("google")
     } catch (error: any) {
       console.error("Error during Google sign-in:", error);
       const errorMessage = error.response?.data?.message || "An error occurred during Google sign-in.";
