@@ -2,6 +2,7 @@ import User from "@/models/userModel";
 import Task from "@/models/taskModel";
 import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/dbConfig/dbConfig";
+import Event from "@/models/eventModal";
 
 // GET all tasks of a user
 export async function GET(request:NextRequest){
@@ -36,32 +37,63 @@ export async function POST(request:NextRequest){
 
       const newTask = new Task(task)
       const savedTask = await newTask.save()
-      const user = await User.findByIdAndUpdate(userId,{$push:{tasks:savedTask._id}},{new:true})
 
+      
+      const event= new Event({
+        title:task.title,
+        User:userId,
+        taskId:newTask._id
+      })
+      
+      await event.save() 
+
+      const user = await User.findByIdAndUpdate(userId,{$push:{tasks:savedTask._id,events:event}},{new:true})
+      
       return NextResponse.json({message:"Task added sucessfully",tasks:user.tasks,newTask,success:true})
    }catch(error:any){
     return NextResponse.json({error:error.message},{status:500})
    }
 }
 
-export async function DELETE(request:NextRequest){
-    try{
-        const {searchParams} = new URL(request.url)
-        const userId = searchParams.get("userId")
-        const taskId = searchParams.get("taskId")
+export async function DELETE(request: NextRequest) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const userId = searchParams.get("userId");
+        const taskId = searchParams.get("taskId");
 
-        await connect()
+        await connect();
 
-        const deletedTask = await Task.findByIdAndDelete(taskId)
-        if(!deletedTask)return NextResponse.json({error:"Task does not exist"},{status:400})
+        // Find and delete the task
+        const deletedTask = await Task.findByIdAndDelete(taskId);
+        if (!deletedTask) return NextResponse.json({ error: "Task does not exist" }, { status: 400 });
 
-        const deleteTaskInUser = await User.findByIdAndUpdate(userId,{$pull:{tasks:taskId}},{new:true})
-        if(!deleteTaskInUser)return NextResponse.json({error:"User does not exist"},{status:400})
+        // Remove the task from the user's tasks array
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                $pull: {
+                    tasks: taskId,
+                    events: { taskId: taskId } 
+                }
+            },
+            { new: true }
+        );
+        if (!updatedUser) return NextResponse.json({ error: "User does not exist" }, { status: 400 });
 
-        return NextResponse.json({message:"Task deleted sucessfully",tasks:deleteTaskInUser.tasks,success:true})        
-        
-    }catch(error:any){
-        return NextResponse.json({error:error.message},{status:500})
+        // Delete the event(s) associated with the task from the Event collection
+        const deletedEvent = await Event.deleteMany({ taskId: taskId });
+        console.log("Deleted events count:");
+
+        return NextResponse.json({
+            message: "Task and associated event(s) deleted successfully",
+            tasks: updatedUser.tasks,
+            deletedEvent,
+            success: true
+        });
+
+    } catch (error: any) {
+        console.error("Error deleting task and event:", error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
 

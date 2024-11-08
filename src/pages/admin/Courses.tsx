@@ -22,6 +22,7 @@ import { Description } from "@radix-ui/react-dialog";
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import AssignmentDeleteModal from "@/components/AssignmentDeleteModal";
 import CloseIcon from '@mui/icons-material/Close';
+import { useStore } from "@/store";
 
 const AdminPage: React.FC = () => {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
@@ -52,6 +53,7 @@ const AdminPage: React.FC = () => {
 
   const itemsPerPage = 5; 
   const courseId = '6729e6d6f4a82d6fedab5625';
+  const {user}=useStore();
   const router = useRouter();
 
 
@@ -156,7 +158,8 @@ const handleSubmitAssignment = async () => {
       totalPoints: assignmentPoints,
       CourseId: courseId,
       uploadedAt: Date.now(),
-      status: "Open"
+      status: "Open",
+      userId:user._id
     });
     console.log("Assignment uploaded successfully:", response.data);
     setOpenUploadAssignmentModal(false);

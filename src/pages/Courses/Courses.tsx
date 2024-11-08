@@ -6,12 +6,13 @@ import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem, treeItemClasses } from "@mui/x-tree-view/TreeItem";
 import CloseIcon from "@mui/icons-material/Close";
 import Layout from "@/components/layout";
-import "../app/globals.css";
+import '../../app/globals.css';
+
 import {
   sampleAssignments,
   sampleChapters,
   UserLoggedIn,
-} from "../utils/Sample Data/Sample";
+} from "@/utils/Sample Data/Sample";
 import Link from "next/link";
 import {
   FilledTextFieldProps,

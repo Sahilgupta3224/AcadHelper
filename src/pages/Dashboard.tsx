@@ -237,6 +237,7 @@ const Dashboard = () => {
           <div>
           <div>Hi {user?.username}</div>
           <div>{dueTodayCount} Tasks due today</div>
+         
           </div>
           <Box sx={{ position: 'relative', display: 'inline-flex' }}>
               <CircularProgress variant="determinate" value={progress} size="60px"/>

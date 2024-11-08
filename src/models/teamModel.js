@@ -50,7 +50,7 @@ const teamSchema = new mongoose.Schema({
     },
     pendingInvites:{
         type:[String]
-    }
+    }    
 },{timestamps: true})
 
 const Team = mongoose.models.team || mongoose.model("team", teamSchema);

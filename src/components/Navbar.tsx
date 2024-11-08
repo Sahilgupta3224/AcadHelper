@@ -15,10 +15,11 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Popover from '@mui/material/Popover';
-import Fire from './Fire'
+import Fire from './fire'
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import LoginModal from '@/components/AuthModal';
 import Notification from './Notification';
+import { SessionProvider } from 'next-auth/react';
 
 
 
@@ -210,6 +211,7 @@ export default function Navbar() {
           </Box>
         </Toolbar>
       </AppBar>
+    
       <LoginModal open={openLogin} handleClose={() => setOpenLogin(false)} />
 
       {renderMobileMenu}

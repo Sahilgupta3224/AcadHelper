@@ -44,14 +44,14 @@ const userSchema = new mongoose.Schema({
     pendingAssignments:[{
         assignmentId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Assignment"
+            ref: "assignment"
         },
         dueDate: Date
     }],
     completedAssignments:[{
         assignmentId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Assignment"
+            ref: "assignment"
         },
         completedAt: {
             type: Date,
@@ -117,6 +117,15 @@ const userSchema = new mongoose.Schema({
             ref: "Task"
         }
     ],
+    events: [
+        {
+            
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Event"
+            
+        }   
+    
+    ],    
     phone: String,
     gender: String,
     Branch: String,

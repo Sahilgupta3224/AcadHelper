@@ -1,8 +1,10 @@
+import { connect } from "@/dbConfig/dbConfig";
 import Assignment from "@/models/assignmentModel";
 import { NextRequest,NextResponse} from "next/server";
 interface Params {
     id: string;
 }
+connect()
 
 export async function PATCH(request: NextRequest) {
     try {
