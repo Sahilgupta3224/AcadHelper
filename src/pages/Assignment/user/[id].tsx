@@ -6,7 +6,7 @@ import Assignment from "@/Interfaces/assignment";
 import '../../../app/globals.css';
 import toast, { Toaster } from 'react-hot-toast';
 import { CldUploadWidget } from 'next-cloudinary';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Skeleton, LinearProgress } from '@mui/material';
 import { useStore } from "@/store";
 import Layout from "@/components/layout";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -124,13 +124,13 @@ const AssignmentDetails: React.FC = () => {
         }
     };
 
-    if (!assignment) return <div>Loading...</div>;
+    if (!assignment) return <Layout><LinearProgress /></Layout>
     console.log(submissions[0])
     return (
         <Layout>
         <div className="bg-gray-100 min-h-screen py-10 px-5">
         <button
-          onClick={() => router.push(`/user/Courses`)}
+          onClick={() => router.push(`/user/Courses/${assignment.Course}`)}
           className="mx-4 text-blue-400 rounded hover:bg-blue-100 transition"
         >
           <ArrowBackIosNewIcon/>
