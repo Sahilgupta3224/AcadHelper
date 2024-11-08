@@ -445,13 +445,13 @@ const Dashboard = () => {
                 {pendingassignment.map((assignment) => (
                   <div key={assignment._id} className="p-3 mb-2 shadow-md rounded-lg border border-gray-300">
                     <Typography
-  onClick={() => router.push(`/Assignment/user/${assignment._id}`)}
-  variant="subtitle1"
-  className="font-semibold cursor-pointer"
-  component="div"
->
-  {assignment.title}
-</Typography>
+                      onClick={() => router.push(`/Assignment/user/${assignment._id}`)}
+                      variant="subtitle1"
+                      className="font-semibold cursor-pointer"
+                      component="div"
+                    >
+                      {assignment.title}
+                    </Typography>
                     <Typography variant="body2" color="textSecondary">
                       Due Date:{" "}
                       {new Date(assignment.DueDate).toLocaleDateString(undefined, {

@@ -1,16 +1,16 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import {
   formatDate,
   DateSelectArg,
+  EventInput,
   EventClickArg,
   EventApi,
 } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
+import interactionPlugin, { EventDropArg } from "@fullcalendar/interaction";
 import {
   Dialog,
   DialogTitle,
@@ -26,27 +26,105 @@ import {
   Paper,
 } from "@mui/material";
 import Layout from "@/components/layout";
+import axios from "axios";
+import { useStore } from "@/store";
 
 const Calendar: React.FC = () => {
-  const [currentEvents, setCurrentEvents] = useState<EventApi[]>([]);
+  const [currentEvents, setCurrentEvents] = useState<EventInput[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [newEventTitle, setNewEventTitle] = useState<string>("");
+  const [selectedEvent, setSelectedEvent] = useState<EventApi | null>(null);
   const [selectedDate, setSelectedDate] = useState<DateSelectArg | null>(null);
+  const [newEventTime, setNewEventTime] = useState<string>(selectedEvent?.end?.toISOString().slice(0, 16) || "");
+
+  const { user } = useStore();
+
+  interface Event {
+    _id: string;
+    title: string;
+    endDate: string | Date;
+    User: string;
+    assignmentId: string;
+    taskId: string;
+    challengeId: string;
+  }
+
+  const fetchAllEvents = async () => {
+    try {
+      const response = await axios.get("/api/event/get-all-event", {
+        params: {
+          userId: user._id,
+        },
+      });
+      const events: Event[] = response.data.events;
+      const fullCalendarEvents: EventInput[] = events.map((event) => ({
+        id: event._id,
+        title: event.title,
+        start: new Date(event.endDate).toISOString(),
+        end: new Date(event.endDate).toISOString(),
+        extendedProps: {
+          user: event.User,
+          assignmentId: event.assignmentId,
+          taskId: event.taskId,
+          challengeId: event.challengeId,
+        },
+      }));
+
+      setCurrentEvents(fullCalendarEvents);
+    } catch (error) {
+      console.error("Error while fetching all the events", error);
+    }
+  };
+
+  const updateEvent = async () => {
+    try {
+      if (!selectedEvent) return;
+  
+      await axios.patch("/api/event/update-event", {
+        title: newEventTitle,
+        userId: user._id,
+        DueDate: new Date(newEventTime).toISOString(),
+        eventId: selectedEvent.id,
+      });
+  
+      selectedEvent.setProp("title", newEventTitle);
+      selectedEvent.setDates(new Date(newEventTime).toISOString()); // Update time on the calendar
+      fetchAllEvents();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Error while updating the event", error.message);
+    }
+  };
+  
+
+  const handleEventDrop = async (dropInfo: EventDropArg) => {
+    try {
+      const { event } = dropInfo;
+
+      console.log(event)
+
+      const DueDate = event._instance.range.end;
+      const DueDateISO = new Date(DueDate).toISOString();
+      console.log(DueDateISO);
+      
+      const response = await axios.patch("/api/event/update-event", {
+        title: event.title,
+        userId: user._id,
+        DueDate: DueDate,
+        eventId: event.id,
+      });
+      console.log(response)
+      // // Optionally refetch all events or update the state manually
+      fetchAllEvents();
+    } catch (error) {
+      console.error("Error while updating event position", error.message);
+    }
+  };
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedEvents = localStorage.getItem("events");
-      if (savedEvents) {
-        setCurrentEvents(JSON.parse(savedEvents));
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("events", JSON.stringify(currentEvents));
-    }
-  }, [currentEvents]);
+    fetchAllEvents();
+  }, [user]);
 
   const handleDateClick = (selected: DateSelectArg) => {
     setSelectedDate(selected);
@@ -54,36 +132,75 @@ const Calendar: React.FC = () => {
   };
 
   const handleEventClick = (selected: EventClickArg) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete the event "${selected.event.title}"?`
-      )
-    ) {
-      selected.event.remove();
-    }
+    setSelectedEvent(selected.event);
+    setNewEventTitle(selected.event.title || "");
+    setIsEditDialogOpen(true);
   };
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
+    setIsEditDialogOpen(false);
     setNewEventTitle("");
   };
 
-  const handleAddEvent = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newEventTitle && selectedDate) {
-      const calendarApi = selectedDate.view.calendar;
-      calendarApi.unselect();
-
-      const newEvent = {
-        id: `${selectedDate.start.toISOString()}-${newEventTitle}`,
-        title: newEventTitle,
-        start: selectedDate.start,
-        end: selectedDate.end,
-        allDay: selectedDate.allDay,
-      };
-
-      calendarApi.addEvent(newEvent);
+  const handleDeleteEvent = async () => {
+    try {
+      if (!selectedEvent) return;
+  
+      await axios.delete("/api/event/delete-event", {
+        params: {
+          eventId: selectedEvent.id,
+          userId: user._id,
+        },
+      });
+  
+      selectedEvent.remove(); // Remove event from the calendar directly
+      fetchAllEvents(); // Refresh events list
       handleCloseDialog();
+    } catch (error) {
+      console.error("Error while deleting the event", error.message);
+    }
+  };
+  
+
+  const handleAddEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (newEventTitle && selectedDate) {
+        const calendarApi = selectedDate.view.calendar;
+        calendarApi.unselect();
+  
+        const newEvent = {
+          title: newEventTitle,
+          userId:user._id,
+          DueDate: (new Date(selectedDate.end)).toISOString()
+        };
+  
+        const newEventToBeAdded=await axios.post("/api/event/create-event",newEvent);
+
+        const event=newEventToBeAdded.data.event
+
+        const fullCalendarEvents: EventInput ={
+          id: event._id,
+          title: event.title,
+          start: new Date(event.endDate).toISOString(),
+          end: new Date(event.endDate).toISOString(),
+          extendedProps: {
+            user: event.User,
+            assignmentId: event.assignmentId,
+            taskId: event.taskId,
+            challengeId: event.challengeId,
+          }
+        }
+       
+  
+        calendarApi.addEvent(fullCalendarEvents); 
+        console.log(fullCalendarEvents)
+        handleCloseDialog();
+      }
+    } catch (error) {
+      console.log("Error while adding the event ",error)
+      return;
     }
   };
 
@@ -102,12 +219,12 @@ const Calendar: React.FC = () => {
                   No Events Present
                 </Typography>
               ) : (
-                currentEvents.map((event: EventApi) => (
+                currentEvents.map((event) => (
                   <ListItem key={event.id} divider>
                     <ListItemText
                       primary={event.title}
                       primaryTypographyProps={{ fontWeight: "bold", fontSize: "1rem" }}
-                      secondary={formatDate(event.start!, {
+                      secondary={formatDate(event.end!, {
                         year: "numeric",
                         month: "short",
                         day: "numeric",
@@ -131,21 +248,17 @@ const Calendar: React.FC = () => {
             headerToolbar={{
               left: "prev,next today",
               center: "title",
-              right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek", // Different views enabled here
+              right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
             }}
-            initialView="dayGridMonth" // Default initial view
+            initialView="dayGridMonth"
             editable={true}
             selectable={true}
             selectMirror={true}
             dayMaxEvents={true}
             select={handleDateClick}
             eventClick={handleEventClick}
-            eventsSet={(events) => setCurrentEvents(events)}
-            initialEvents={
-              typeof window !== "undefined"
-                ? JSON.parse(localStorage.getItem("events") || "[]")
-                : []
-            }
+            eventDrop={handleEventDrop} 
+            events={currentEvents}
           />
         </Box>
 
@@ -174,6 +287,47 @@ const Calendar: React.FC = () => {
             </form>
           </DialogContent>
         </Dialog>
+
+        {/* Edit Event Dialog  */}
+
+        <Dialog open={isEditDialogOpen} onClose={handleCloseDialog} maxWidth="xs" fullWidth>
+          <DialogTitle align="center">Edit Event</DialogTitle>
+          <DialogContent dividers>
+            <form onSubmit={(e) => { e.preventDefault(); updateEvent(); }} className="flex flex-col gap-4">
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Edit Event Title"
+                value={newEventTitle}
+                onChange={(e) => setNewEventTitle(e.target.value)}
+                required
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                variant="outlined"
+                label=""
+                type="datetime-local"
+                value={newEventTime}
+                onChange={(e) => setNewEventTime(e.target.value)}
+                margin="normal"
+              />
+              <DialogActions className="flex justify-between space-x-4">
+                <Button onClick={handleDeleteEvent} color="error" variant="contained">
+                  Delete
+                </Button>
+                <Button onClick={handleCloseDialog} color="secondary" variant="outlined">
+                  Cancel
+                </Button>
+                <Button type="submit" variant="contained" color="primary">
+                  Save
+                </Button>
+              </DialogActions>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+
       </Box>
     </Layout>
   );

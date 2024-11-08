@@ -238,6 +238,7 @@ export default function Navbar() {
           </Box>
         </Toolbar>
       </AppBar>
+    
       <LoginModal open={openLogin} handleClose={() => setOpenLogin(false)} />
 
       {renderMobileMenu}
