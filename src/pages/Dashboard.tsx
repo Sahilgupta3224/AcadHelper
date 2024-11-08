@@ -281,11 +281,10 @@ const Dashboard = () => {
                   name="title"
                   value={taskInput.title}
                   onChange={handleInputChange}
-                  className=' p-2 rounded-md w-[87%] text-slate-600 outline-none'
+                  className=' p-2 rounded-md w-[100%] text-slate-600 outline-none'
                 ></input>
-                <button className='bg-white p-2 rounded-full h-10 w-10 ml-2' onClick={handleAddTask}>+</button>
               </div>
-              <div className=''>
+              <div className='w-[518px] flex justify-between'>
                 <select
                   name="course"
                   value={taskInput.course}
@@ -316,6 +315,7 @@ const Dashboard = () => {
                   onChange={handleInputChange}
                   className='p-1 h-9 rounded-md'
                 ></input>
+                <button className='bg-white p-2 rounded-full h-10 w-10 ml-2' onClick={handleAddTask}>+</button>
               </div>
             </div>
             <div className='tasks-container h-96 overflow-y-auto w-[500px]'>
@@ -436,10 +436,10 @@ const Dashboard = () => {
             </Modal>
 
           </div>
-          <div className="m-4 w-[500px] bg-white p-4 rounded-md">
-            <Typography variant="h6" className="text-slate-800 font-bold mb-4">
+          <div className="m-4 w-[500px] h-[92%] overflow-y-scroll bg-white p-4 rounded-md">
+            <div className="text-slate-800 font-bold mb-4 text-2xl text-center">
               Pending Assignments
-            </Typography>
+            </div>
             {pendingassignment ? (
               <div>
                 {pendingassignment.map((assignment) => (

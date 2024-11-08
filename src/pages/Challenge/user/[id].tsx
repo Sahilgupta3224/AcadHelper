@@ -6,7 +6,7 @@ import Submission from "@/Interfaces/submission";
 import '../../../app/globals.css';
 import toast, { Toaster } from 'react-hot-toast';
 // import { Modal, Button, Form } from 'react-bootstrap';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Modal, Typography, Box, FormControl, Select, InputLabel, Divider } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Modal, Typography, Box, FormControl, Select, InputLabel, Divider, LinearProgress } from '@mui/material';
 import { useStore } from "@/store";
 import { CldUploadWidget } from 'next-cloudinary';
 import Layout from "@/components/layout";
@@ -190,13 +190,13 @@ const handleUpload = (result: any) => {
   }
 };
 
-  if (!challenge) return <div>Loading...</div>;
+  if (!challenge) return <Layout><LinearProgress /></Layout>;
 
   return (
     <Layout>
     <div className="bg-gray-100 min-h-screen py-10 px-5">
     <button
-          onClick={() => router.push(`/user/Courses`)}
+          onClick={() => router.push(`/user/Courses/${challenge.courseId}`)}
           className="mx-4 text-blue-400 rounded hover:bg-blue-100 transition"
         >
            <ArrowBackIosNewIcon/>
@@ -233,6 +233,7 @@ const handleUpload = (result: any) => {
             )}
           </div>
         </div>
+        <div className="flex">
         <CldUploadWidget uploadPreset="acad_helper_pdf" onSuccess={handleUpload}>
                     {({ open }) => (
                         <Button className="mt-4" onClick={() => open()} variant="outlined" color="primary">
@@ -242,10 +243,11 @@ const handleUpload = (result: any) => {
         </CldUploadWidget>
         <button
           onClick={() => (submissions.length > 0 ? handleEditsub(submissions[0]._id) : handleSubmitOpen())}
-          className="mb-4 ml-4 mr-6 px-4 h-9 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          className="bg-blue-600 px-4 mt-4 ml-2 text-white rounded hover:bg-blue-700 transition"
           >
           {submissions.length > 0 ? "Edit Submission" : "Submit Challenge"}
         </button>
+        </div>
                 
                 {isDocVisible && challengeDoc && (
                     <div>
