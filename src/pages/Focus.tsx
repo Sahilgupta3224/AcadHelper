@@ -1,7 +1,7 @@
 "use client"
 import Timer from '@/components/Timer'
 import Layout from '@/components/layout'
-
+import Auth from '@/components/Auth'
 import React from 'react'
 
 const Focus = () => {
@@ -13,4 +13,4 @@ const Focus = () => {
     </div>
   )
 }
-export default Focus
+export default Auth(Focus)

@@ -5,6 +5,7 @@ import User from '@/models/userModel'
 import Submission from '@/models/submissionModel'
 import {Types} from 'mongoose'
 import { NextResponse } from 'next/server'
+import Team from '@/models/teamModel'
 
 connect()
 
@@ -23,13 +24,56 @@ export const PATCH = async (request:Request)=>{
         {
             return new NextResponse(JSON.stringify({message:"assignment doesn't exist"}))
         }
-        for(const submission of assignment.submissions){
-            const sub =await Submission.findById(submission);
-            if(!sub){
+        const points = assignment.TotalPoints
+        const courseId = assignment.Course
+        const submissions = await Submission.find({ Assignment: assignmentId });
+        for (const submission of submissions) {
+            if (submission.isVerified) {
                 continue;
             }
-            sub.isVerified=true;
-            await sub.save();
+
+            submission.isVerified = true;
+            submission.marksObtained = points;
+
+            if (submission.type === "team") {
+                const team = await Team.findById(submission.groupId);
+                if (team) {
+                    const members = team.Members.map((member: any) => member.memberId);
+                    const pointsPerMember = points / members.length;
+
+                    for (const memberId of members) {
+                        const user = await User.findById(memberId);
+                        if (user) {
+                            const courseIndex = user.Totalpoints.findIndex(
+                                (entry: any) => entry.courseId?.toString() === courseId?.toString()
+                            );
+
+                            if (courseIndex >= 0) {
+                                user.Totalpoints[courseIndex].points += pointsPerMember;
+                            } else {
+                                user.Totalpoints.push({ courseId, points: pointsPerMember });
+                            }
+                            await user.save();
+                        }
+                    }
+                }
+            } else {
+                const user = await User.findById(submission.User);
+                if (user) {
+                    const courseIndex = user.Totalpoints.findIndex(
+                        (entry: any) => entry.courseId.toString() === courseId.toString()
+                    );
+
+                    if (courseIndex >= 0) {
+                        user.Totalpoints[courseIndex].points += points;
+                    } else {
+                        user.Totalpoints.push({ courseId, points });
+                    }
+                    await user.save();
+                }
+            }
+
+            await submission.save();
         }
         
         return new NextResponse(JSON.stringify({message:"Successfully submissions approved",assignment:assignment}),{status:200})

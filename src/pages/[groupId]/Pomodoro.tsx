@@ -13,6 +13,7 @@ import { useStore } from '@/store';
 import { useParams, useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
+import Auth from '@/components/Auth'
 
 const style = {
     position: 'absolute',
@@ -55,7 +56,7 @@ function a11yProps(index: number) {
     );
   }
   
-export const Pomodoro = () => {
+    const Pomodoro = () => {
     const [value, setValue] = useState(0);
     const [tasks, setTasks] = useState([]);
     const {user,setUser} = useStore()
@@ -333,3 +334,5 @@ export const Pomodoro = () => {
   </>
   )
 }
+
+export default Auth(Pomodoro)

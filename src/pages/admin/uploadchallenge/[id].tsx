@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import "../../../app/globals.css";
-import toast from "react-hot-toast";
+import '../../../app/globals.css';
+import toast from 'react-hot-toast';
+import Auth from '@/components/Auth'
 import { useStore } from "@/store";
 
 const UploadChallenge: React.FC = () => {
@@ -127,4 +128,4 @@ const UploadChallenge: React.FC = () => {
   );
 };
 
-export default UploadChallenge;
+export default Auth(UploadChallenge);

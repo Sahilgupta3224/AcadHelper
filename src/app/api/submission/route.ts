@@ -5,6 +5,7 @@ import Assignment from "@/models/assignmentModel";
 import { NextRequest, NextResponse } from "next/server";
 import {connect} from '@/dbConfig/dbConfig'
 import Team from "@/models/teamModel";
+import CourseModel from "@/models/courseModel";
 
 connect()
 

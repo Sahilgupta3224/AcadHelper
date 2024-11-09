@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Submission from "@/Interfaces/submission";
 import User from "@/Interfaces/user";
+import Auth from '@/components/Auth'
 
 const SubmissionDetails: React.FC = () => {
     const router = useRouter();
@@ -74,4 +75,4 @@ const SubmissionDetails: React.FC = () => {
     );
 };
 
-export default SubmissionDetails;
+export default Auth(SubmissionDetails);

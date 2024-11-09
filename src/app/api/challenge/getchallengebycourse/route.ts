@@ -19,12 +19,20 @@ export async function GET(request: NextRequest) {
             }, { status: 400 });
         }
         const course = await Course.findById(CourseId)
+        console.log("course",course)
         if(!course){
             return NextResponse.json({
                 success: false,
                 message: "Course not found",
             }, { status: 404 });
         }
+        if(course.challenges.length==0){
+            return NextResponse.json({
+                success: false,
+                message: "No challenges",
+            }, { status: 404 });
+        }
+        console.log("dkdkdsdhhhhhhhhhhhhhhhhh",course.challenges)
         const challenges = await Challenge.find({ _id: { $in: course.challenges } });
         return NextResponse.json({
             success: true,

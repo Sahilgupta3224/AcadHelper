@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import "../app/globals.css";
@@ -40,6 +40,13 @@ interface InputProps {
 }
 
 const Input: React.FC<InputProps> = ({ type, id, name, label, placeholder, autofocus, value, onChange }) => {
+  const { user } = useStore();
+  const router = useRouter();
+  useEffect(() => {
+    if (user) {
+      router.replace('/Dashboard');
+    }
+  }, [user, router]);
   return (
     <label className="text-gray-500 block mt-3">
       {label}
@@ -62,8 +69,20 @@ const LoginForm: React.FC = () => {
   const {user,setUser} = useStore()
   const router = useRouter();
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
   const handleLogin = async () => {
     try {
+      if (!validateEmail(email)) {
+        toast.error("Please enter a valid email address.");
+        return;
+      }
+      if (!password) {
+        toast.error("Please enter your password.");
+        return;
+      }    
       const response = await axios.post('/api/auth/login', {
         email,
         password,
@@ -82,6 +101,8 @@ const LoginForm: React.FC = () => {
       // console.error("Error during login:", error);
     }
   };
+
+  
 
   return (
     <div className="bg-gray-200 flex justify-center items-center h-screen w-screen">

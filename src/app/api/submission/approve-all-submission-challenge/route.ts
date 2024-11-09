@@ -47,7 +47,7 @@ export const PATCH = async (request: Request) => {
                         const user = await User.findById(memberId);
                         if (user) {
                             const courseIndex = user.Totalpoints.findIndex(
-                                (entry: any) => entry.courseId.toString() === courseId.toString()
+                                (entry: any) => entry.courseId?.toString() === courseId?.toString()
                             );
 
                             if (courseIndex >= 0) {

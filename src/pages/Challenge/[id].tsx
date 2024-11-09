@@ -12,7 +12,10 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-
+import TableContainer from '@mui/material/TableContainer'
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import Auth from '@/components/Auth'
 interface EditChallenge {
   title: string;
   description: string;
@@ -385,4 +388,4 @@ const ChallengeDetails: React.FC = () => {
   );
 };
 
-export default ChallengeDetails;
+export default Auth(ChallengeDetails);

@@ -24,7 +24,14 @@ const rows = [
 ];
 
 const Leaderboard = ({users}) => {
-
+  const calculateTotalPoints = (user: any) => {
+    if (Array.isArray(user.Totalpoints)) {
+      return user.Totalpoints.reduce((total, course) => total + course.points, 0);
+    }
+    return 0;
+  };
+  // const totalPoints = calculateTotalPoints(user);
+  // console.log(totalPoints);
   return (
     <div className=''>
        {/* <div className="w-full flex justify-center m-4 font-bold text-2xl">Leaderboard</div> */}
@@ -50,7 +57,7 @@ const Leaderboard = ({users}) => {
                  {user.username}
               </TableCell>
               <TableCell align="left">{user.institute ? user.institute : "N/A"}</TableCell>
-              <TableCell align="right">{user.points}</TableCell>
+              <TableCell align="right">{calculateTotalPoints(user)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

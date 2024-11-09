@@ -18,6 +18,7 @@ import {useRouter} from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from "@/store";
 import toast, { Toaster } from 'react-hot-toast';
+import Auth from '@/components/Auth'
 
 const style = {
     position: 'absolute',
@@ -101,7 +102,6 @@ const Groups = () => {
           }
         } catch (error) {
           toast.error(error.response.data.error)
-          console.error("Error adding group", error);
         }
       };
 
@@ -175,4 +175,4 @@ const Groups = () => {
   );
 };
 
-export default Groups;
+export default Auth(Groups);

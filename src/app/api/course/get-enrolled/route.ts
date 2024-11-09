@@ -15,7 +15,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: "Course ID is required" }, { status: 400 });
     }
 
-  
     const course = await Course.findById(courseId);
     if (!course) {
       return NextResponse.json({ message: "The course doesn't exist" }, { status: 404 });
@@ -23,10 +22,8 @@ export async function GET(request: Request) {
     
     const userIds = course.StudentsEnrolled;
 
-    // Fetch all user details for enrolled students in parallel
     const users = await Promise.all(userIds.map(id => User.findById(id)));
 
-    // Filter out any null results (if any user was not found)
     const enrolledUsers = users.filter(user => user !== null);
 
     return NextResponse.json({

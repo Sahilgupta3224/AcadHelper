@@ -28,6 +28,7 @@ import axios from "axios";
 import "../../styles/globals.css";
 import User from "@/Interfaces/user";
 import toast from "react-hot-toast";
+import Auth from "@/components/Auth";
 
 function Profile() {
   
@@ -435,4 +436,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default Auth(Profile);

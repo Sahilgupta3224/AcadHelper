@@ -47,7 +47,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { text: "Leaderboard", icon: <LeaderboardIcon /> },
     { text: "Focus", icon: <VideoCallIcon /> },
     { text: "Schedule", icon: <ScheduleIcon /> },
-    { text: "Challenge", icon: <EmojiEventsIcon /> },
   ];
 
   const secondaryItems = [

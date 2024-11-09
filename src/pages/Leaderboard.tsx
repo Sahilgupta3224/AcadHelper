@@ -9,6 +9,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { institutes } from '@/utils/Sample Data/Sample';
+import toast, { Toaster } from 'react-hot-toast';
+import Auth from '@/components/Auth'
 import toast from 'react-hot-toast';
 
 const Leaderboard = () => {
@@ -65,30 +67,31 @@ const Leaderboard = () => {
     }
   return (
     <div>
-        <Layout>
+      <Layout>
         <div className='m-4 w-full text-center text-3xl font-bold p-2'>Global Leaderboard</div>
         <div className="flex justify-center">
-        <InputLabel id="demo-simple-select-label">Institute</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={institute}
-              label="Age"
-              onChange={(e) => setInstitute(e.target.value)}
-              sx={{width:"40%",marginX:"20px"}}
-              placeholder='hi'
-            >
-              {institutes.map(uni=>(
+          <InputLabel id="demo-simple-select-label">Institute</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={institute}
+            label="Age"
+            onChange={(e) => setInstitute(e.target.value)}
+            sx={{ width: "40%", marginX: "20px" }}
+            placeholder='hi'
+          >
+            {institutes.map(uni => (
               <MenuItem value={uni}>{uni}</MenuItem>
-              ))}
-        </Select>
-        <Button variant="outlined" onClick={handleFilter}>Filter</Button>
+            ))}
+          </Select>
+          <Button variant="outlined" onClick={handleFilter}>Filter</Button>
+          <Button variant="outlined" onClick={clearFilter} sx={{ marginLeft: "10px" }}>Clear Filter</Button>
         </div>
 
-        <LeaderboardComponent users={users}/>
-        </Layout>
+        <LeaderboardComponent users={users} />
+      </Layout>
 
     </div>
   )
 }
-export default Leaderboard
+export default Auth(Leaderboard)

@@ -14,54 +14,47 @@ export const PATCH = async (request:Request)=>{
     try {
         const url = new URL(request.url);
         const submissionId = url.searchParams.get('Id');
+        const {deduct} = await request.json()
         if(!submissionId)
         {
             return new NextResponse(JSON.stringify({message:"Enter all the credentials"}),{status:404})
         }
-        
         const findSubmission=await Submission.findById(submissionId)
 
         if(!findSubmission)
         {
             return new NextResponse(JSON.stringify({message:"Submission doesn't exist"}))
         }
-        if(findSubmission.isVerified===true){
+        if(findSubmission.isVerified===false){
             return new NextResponse(JSON.stringify({message:"Already approved"}))
         }
-        findSubmission.isVerified=true
         let points = 0;
         let courseId;
         if (findSubmission.Challenge) {
             const challenge = await Challenge.findById(findSubmission.Challenge);
-            points = challenge.points;
             courseId = challenge.courseId;
-            findSubmission.marksObtained = points;
         } else if (findSubmission.Assignment) {
             const assignment = await Assignment.findById(findSubmission.Assignment);
-            points = assignment.totalPoints;
             courseId = assignment.Course;
-            findSubmission.marksObtained = points;
         }
+        findSubmission.marksObtained-=deduct
+
         if (findSubmission.type === "team") {
             const team = await Team.findById(findSubmission.groupId);
             if (team) {
                 const members = team.Members.map((member:any) => member.memberId);
-                const pointsPerMember = points / members.length;
-                
+                const pointsPerMember = deduct / members.length;
                 for (const memberId of members) {
                     const user = await User.findById(memberId);
-                    if (user) {
-                        console.log(user._id)
-                        const courseIndex = user.Totalpoints.findIndex(
-                            (entry: any) => entry.courseId?.toString() === courseId.toString()
-                        );
-                        if (courseIndex >= 0) {
-                            user.Totalpoints[courseIndex].points += pointsPerMember;
-                        } else {
-                            user.Totalpoints.push({ courseId, points: pointsPerMember });
-                        }
-                        await user.save();
+                    const courseIndex = user.Totalpoints.findIndex(
+                        (entry: any) => entry.courseId.equals(courseId)
+                    );
+                    if (courseIndex >= 0 && user.Totalpoints[courseIndex]) {
+                        user.Totalpoints[courseIndex].points -= deduct;
+                    } else {
+                        user.Totalpoints.push({ courseId, points: 0 });
                     }
+                    await user.save();
                 }
             }
         } else {
@@ -69,21 +62,18 @@ export const PATCH = async (request:Request)=>{
             const courseIndex = user.Totalpoints.findIndex(
                 (entry: any) => entry.courseId.equals(courseId)
             );
-
             if (courseIndex >= 0) {
-                user.Totalpoints[courseIndex].points += points;
-            } else {
-                user.Totalpoints.push({ courseId, points });
+                user.Totalpoints[courseIndex].points -= deduct;
             }
             await user.save();
         }
         await findSubmission.save()
         
-        return new NextResponse(JSON.stringify({message:"Successfully submission approved",submission:findSubmission}),{status:200})
+        return new NextResponse(JSON.stringify({message:"Successfully bonus points given",submission:findSubmission}),{status:200})
 
     } catch (error:any) {
         console.log(error)
-        return new NextResponse(JSON.stringify({message:"Error while approving to a assignment submission",error:error}),{status:500})
+        return new NextResponse(JSON.stringify({message:"Error while giving bonus points",error:error}),{status:500})
     }
 }
 

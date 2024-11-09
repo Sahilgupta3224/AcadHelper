@@ -35,7 +35,8 @@ interface EditChallenge {
   startDate: Date;
   points: number;
 }
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import Auth from '@/components/Auth'
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 //Modal style
 const style = {
@@ -414,4 +415,4 @@ const ChallengeDetails: React.FC = () => {
   );
 };
 
-export default ChallengeDetails;
+export default Auth(ChallengeDetails);

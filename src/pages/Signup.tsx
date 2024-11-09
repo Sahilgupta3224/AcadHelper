@@ -68,9 +68,37 @@ const SignupForm: React.FC = () => {
   const router = useRouter();
   const {user,setUser} = useStore()
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password) => {
+    return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password); 
+  };
+  const validateUsername = (username) => {
+    return /^[a-zA-Z0-9_]{3,15}$/.test(username); 
+  };
 
   const handleSignup = async () => {
     try {
+      if (!validateEmail(email)) {
+        toast.error("Please enter a valid email address.");
+        return;
+      }
+      if (!validateUsername(username)) {
+        toast.error("Username must be 3-15 characters and only contain letters, numbers, or underscores.");
+        return;
+      }
+  
+      if (!validatePassword(password)) {
+        toast.error("Password must be at least 8 characters long and contain both letters and numbers.");
+        return;
+      }
+      if (!institute) {
+        toast.error("Please select an institute.");
+        return;
+      }
       const response = await axios.post('/api/auth/signup', {
         email,
         password,

@@ -17,6 +17,7 @@ import Layout from "@/components/layout";
 import "../../../app/globals.css";
 import { useRouter } from "next/router";
 import axios from "axios";
+import { AdminAuth } from "@/components/AdminAuth";
 import Challenge from "@/Interfaces/challenge";
 import Assignment from "@/Interfaces/assignment";
 import { dummyAssignments, dummyChallenges } from "@/pages/SampleData/Sample";
@@ -29,13 +30,19 @@ import { CldUploadWidget } from "next-cloudinary";
 import AssignmentModal from "@/components/AssignmentModal";
 import SearchUserModal from "@/components/SearchUser";
 import KickUserModal from "@/components/KickUserModal";
+import Course from "@/Interfaces/course";
+import Auth from '@/components/Auth'
 import User from "@/Interfaces/user";
 import toast from "react-hot-toast";
 
 const AdminPage: React.FC = () => {
-  const [enrolledUsers, setEnrolledUsers] = React.useState<User[]>([]);
-  const [openSearch, setOpenSearch] = React.useState<boolean>(false);
-  const [openKick, setOpenKick] = React.useState<boolean>(false);
+  const router = useRouter();
+  const { query } = router
+  console.log(query)
+  const { id } = router.query;
+  const [enrolledUsers,setEnrolledUsers]=React.useState<User[]>([])
+  const [openSearch,setOpenSearch]=React.useState<boolean>(false);
+  const [openKick,setOpenKick]=React.useState<boolean>(false);
   const [currentAssignmentPage, setCurrentAssignmentPage] = React.useState(1);
   const [currentChallengePage, setCurrentChallengePage] = React.useState(1);
   const [currentUserPage, setCurrentUserPage] = React.useState(1);
@@ -43,6 +50,7 @@ const AdminPage: React.FC = () => {
   const [assignments, setassignments] = useState<Assignment[]>([]);
   const [value, setValue] = useState(0);
   const [open, setOpen] = useState(false);
+  const [course,setcourse]= useState<Course>()
   const [openAssignment, setopenAssignment] = useState(false);
   const [challengeIdToDelete, setChallengeIdToDelete] = useState<string | null>(
     null
@@ -65,13 +73,10 @@ const AdminPage: React.FC = () => {
   const [assignmentDescription, setAssignmentDescription] = useState("");
   const [assignmentDueDate, setAssignmentDueDate] = useState("");
   const [assignmentDoc, setAssignmentDoc] = useState("");
-  const [assignmentPoints, setAssignmentPoints] = useState<
-    number | undefined
-  >();
-  const [yo, setyo] = useState(false);
-  const courseId = "6729e6d6f4a82d6fedab5625";
-  const { user, setUser } = useStore();
-  const router = useRouter();
+  const [assignmentPoints, setAssignmentPoints] = useState<number | undefined>();
+  const [yo, setyo] = useState(false)
+  const { user, setUser } = useStore()
+  const courseId=id
   const itemsPerPage = 5;
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -95,6 +100,17 @@ const AdminPage: React.FC = () => {
       toast.error("Upload failed or result is invalid.");
     }
   };
+
+  const getcourse=async()=>{
+    try{
+      const res = await axios.get(`/api/course/${courseId}`);
+      setcourse(res.data.course)
+      console.log(res.data.course)
+    }
+    catch(e){
+      console.error(e);
+    }
+  }
 
   const handleUploadChallenge = (result: any) => {
     if (result && result.info) {
@@ -340,14 +356,20 @@ const AdminPage: React.FC = () => {
     fetchAssignments();
     fetchChallenges();
     fetchEnrolledUsers();
-  }, [courseId, yo]);
+    getcourse();
+  }, [courseId,yo]);
 
   return (
     <Layout>
       <Box sx={{ padding: "24px" }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Typography variant="h4" gutterBottom>
           Admin Dashboard
         </Typography>
+        <Typography variant="h4" gutterBottom>
+            Course-Code: {course?.CourseCode}
+        </Typography>
+        </Box>
         <Tabs
           value={value}
           onChange={handleChange}
@@ -1057,4 +1079,4 @@ const AdminPage: React.FC = () => {
   );
 };
 
-export default AdminPage;
+export default Auth(AdminPage);
