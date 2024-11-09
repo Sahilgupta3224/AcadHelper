@@ -2,7 +2,6 @@
 import Layout from '@/components/layout'
 import {useEffect, useState} from 'react';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
@@ -18,6 +17,10 @@ import {useRouter} from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from "@/store";
 import toast, { Toaster } from 'react-hot-toast';
+import { Types } from "mongoose";
+import Team from '@/utils/Interfaces/teamInterface';
+
+
 import Auth from '@/components/Auth'
 
 const style = {
@@ -31,10 +34,11 @@ const style = {
     boxShadow: 24,
     p: 4,
   };
+
 const Groups = () => {
     const router = useRouter()
     const {user,setUser} = useStore()
-    const [groups,setGroups] = useState([])
+    const [groups,setGroups] = useState<Team[]>([])
     const [groupInput,setGroupInput] = useState({leader:user?._id,maxteamsize:5,teamname:"",description:"",Members:[]})
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -43,9 +47,6 @@ const Groups = () => {
         const { name, value } = e.target;
         setGroupInput(prev => ({ ...prev, [name]: value }));
     };
-
-    console.log(user)
-    console.log(groupInput)
 
     // Fetching all groups of a user
     useEffect(()=>{
@@ -59,8 +60,7 @@ const Groups = () => {
            if(data.success){
              setGroups(data.teams)
            }
-         }catch(error){
-          //  console.error("Error fetching groups:", error);
+         }catch(error:any){
            toast.error(error.response.data.error)
          }
         }
@@ -68,6 +68,7 @@ const Groups = () => {
      },[])
      console.log("Groups",groups)
 
+    // Add group
     const handleAddGroup = async(e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault()
         try {
@@ -88,19 +89,18 @@ const Groups = () => {
             return;
            }
           
-
           const {data} = await axios.post("/api/team",{team:groupInput,userId:user?._id})
     
           if (data.success) {
             setGroups(data.teams)
             console.log(data)
-            setGroupInput({leader:user?._id,maxteamsize:5,teamname:"",description:""});
+            setGroupInput({leader:user?._id,maxteamsize:5,teamname:"",description:"",Members:[]});
             router.refresh(); // Optionally refresh or update groups display
     
           } else {
             console.error(data.error || "Group addition failed");
           }
-        } catch (error) {
+        } catch (error:any) {
           toast.error(error.response.data.error)
         }
       };
@@ -133,7 +133,8 @@ const Groups = () => {
             <div className='p-4'>You don't have any groups yet</div>
           )
           }
-           
+
+        {/* Add group icon */}
         </div>
         <Fab color="primary" aria-label="add" sx={{
             position: 'absolute',

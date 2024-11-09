@@ -222,7 +222,6 @@ export default function Navbar() {
             >
               <AccountCircle />
             </IconButton>
-            <Button variant="outlined" color="inherit" sx={{ ml: 2 }} onClick={() => { router.push(`/Login`); }}>Login</Button>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton

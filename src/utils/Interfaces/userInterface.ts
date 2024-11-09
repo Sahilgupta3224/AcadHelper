@@ -1,28 +1,3 @@
-// import { Types } from "mongoose";
-
-// interface CourseInfo {
-//   courseId: Types.ObjectId;
-//   enrolledAt: Date;
-//   color?: string;
-// }
-
-// interface AssignmentInfo {
-//   assignmentId: Types.ObjectId;
-//   dueDate?: Date;
-//   completedAt?: Date;
-// }
-
-// interface TeamInfo {
-//   teamId: Types.ObjectId;
-//   joinedAt?: Date;
-//   invitedAt?: Date;
-// }
-
-// interface ChallengeInfo {
-//   challengeId: Types.ObjectId;
-//   solvedAt: Date;
-// }
-// userInterface.ts
 export interface User {
   _id: string;
   username: string;
@@ -41,6 +16,7 @@ export interface User {
   teams: string[];
   createdAt: string;
   updatedAt: string;
+  inbox: [Object]
   __v: number;
 }
 

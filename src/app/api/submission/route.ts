@@ -116,19 +116,24 @@ async function checkAndAwardBadges(userId, courseId) {
 export async function POST(request: NextRequest) {
     try {
         const data = await request.json();
-        const { user, assignment, challenge, documentLink, Course, type, groupId } = data;
-
+        let { user, assignment, challenge, documentLink,Course,type,groupId} = data;
+        if(groupId=="")groupId=null
         if (!user || !documentLink) {
             return NextResponse.json({
                 success: false,
                 message: "User and documentLink are required.",
             }, { status: 400 });
         }
-
-        console.log("Course", Course);
-        const courseId = Course;
-
-        // Create and save the new submission
+        console.log("Course",Course)
+        const course =  await CourseModel.findById(Course)
+        const isAdmin = course.Admins.includes(user);
+        if (isAdmin) {
+            return NextResponse.json({
+                success: false,
+                message: "Admin can't make submissions",
+            }, { status: 403 });
+        }
+        
         const newSubmission = new Submission({
             User: user,
             Assignment: assignment,

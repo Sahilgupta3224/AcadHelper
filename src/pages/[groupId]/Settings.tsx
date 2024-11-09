@@ -13,6 +13,8 @@ import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation'
 import toast, { Toaster } from 'react-hot-toast';
 import { useStore } from '@/store';
+import Team from '@/utils/Interfaces/teamInterface';
+import User from '@/utils/Interfaces/userInterface';
 import Auth from '@/components/Auth'
 const style = {
     position: 'absolute',
@@ -25,30 +27,22 @@ const style = {
     boxShadow: 24,
     p: 4,
   };
-  //DELETE THIS LATER
-  const group = {
-    _id:1234,
-    leader:1234,
-    maxteamsize:5,
-    teamname:"group1",
-    description:"nice group"
-  }
   
-    const Settings = () => {
-    // const params = useParams<{ groupId:string }>()
+export const Settings = () => {
     const router = useRouter()
     const params = useParams();
     const {user,setUser} = useStore()
     const [input,setInput] = useState("")
-    const [team,setTeam] = useState({})
+    const [team,setTeam] = useState<Team|null>(null)
     const [groupInput,setGroupInput] = useState({maxteamsize:0,teamname:"",description:""})
-    const [members,setMembers] = useState([])
+    const [members,setMembers] = useState<User[]>([])
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
         setInput(e.target.value);
     };
+
     // For edit group
     const [openEdit, setOpenEdit] = useState(false);
     const handleOpenEdit = () => setOpenEdit(true);
@@ -57,7 +51,7 @@ const style = {
         const { name, value } = e.target; 
         setGroupInput(prev => ({ ...prev, [name]: value }));
     };
-    console.log(groupInput)
+
     const [openDelete, setOpenDelete] = useState(false);
     const handleOpenDelete = () => setOpenDelete(true);
     const handleCloseDelete = () => setOpenDelete(false);
@@ -66,7 +60,7 @@ const style = {
     const handleOpenLeave = () => setOpenLeave(true);
     const handleCloseLeave = () => setOpenLeave(false);
 
-
+    // Fetching group details
     useEffect(()=>{
       const fetchTeam = async()=>{
         try{
@@ -89,8 +83,6 @@ const style = {
         const fetchGroupMembers = async()=>{
          try{
            const {data} = await axios.get(`/api/team/${params?.groupId}`,{params:{type:"Members"}})
-          //  console.log(data)
-          
            if(data.success){
                 setMembers(data.members)
                 toast.success("Loaded members")
@@ -110,9 +102,7 @@ const style = {
         if(res.data.success){
             router.push('/Groups')
             toast.success("Group left successfully")
-            console.log("Group left successfully",res.data.updatedUser)
         }
-
        }catch(e){
             console.log("Error leaving group",e)
             toast.error("Error leaving group");
@@ -122,13 +112,12 @@ const style = {
     //Delete a group(by group admin)
     const handleDelete = async()=>{
         try{
-            if(user._id!=team.leader){
-                alert("You are not authorised to delete this group")
+            if(user._id!=team?.leader.toString()){
+                toast.error("You are not authorised to delete this group")
                 return
             }
             const res = await axios.delete("/api/team",{params:{teamId:team._id}})
             if(res.data.success){
-                console.log("Group deleted successfully",res.data.oldGroup)
                 toast.success("Group deleted successfully")
                 router.push('/Groups')
             }
@@ -138,7 +127,6 @@ const style = {
             toast.error("Error deleting group")
         }
     }
-    console.log(team)
 
     //Edit group details
     const handleEditGroup = async()=>{
@@ -163,10 +151,9 @@ const style = {
              }
           
             if(groupInput){
-                const res = await axios.put(`/api/team/${team._id}`,{team:groupInput})
+                const res = await axios.put(`/api/team/${team?._id}`,{team:groupInput})
                  if(res.data.success){
                   toast.success("Group edited successfully")
-                  console.log("Group edited successfully",res.data.updatedTeam)
                   handleCloseEdit()
                 }
             }
@@ -175,27 +162,23 @@ const style = {
             console.log(e)
            }
     }
-
+    
+    // Add member to group
     const handleAddMember = async()=>{
        try{
         if(input){
             const res = await axios.post(`/api/team/${params?.groupId}`,{email:input})
              if(res.data.success){
                 toast.success("Invitation sent")
-                console.log("Invitation sent",res.data.updatedTeam)
                 handleClose()
-                
             }
-            // console.log(res.data)
-            
         }
         else{
           toast.error("Field cannot be empty")
           return
         }
 
-       }catch(e){
-        console.log(e)
+       }catch(e:any){
          toast.error(e.response.data.error)
        }
     }
@@ -227,16 +210,16 @@ const style = {
       </nav>
      
     </Box>
-    {team.leader==user._id ?(
-      <div className='flex flex-col w-40 '>
+    {team?.leader.toString()==user._id ?(
+    <div className='flex flex-col w-40 '>
     <Button variant="outlined" onClick={handleOpen}>Add member</Button>
     <Button variant="outlined" onClick={handleOpenEdit} sx={{marginY:"10px"}}>Edit Group</Button>
     <Button variant="outlined" onClick={handleOpenDelete} color='error'>Delete Group</Button>
     </div>
-  ):(
+    ):(
     <Button variant="outlined" onClick={handleOpenLeave} color="error" sx={{height:"3rem"}}>Leave Group</Button>
-  )
-  }
+    )
+    }
     </div>
 
     <Modal
@@ -254,7 +237,7 @@ const style = {
           />
           <div className='w-full mt-4 flex justify-end' ><Button onClick = {handleAddMember} variant="outlined">Invite</Button></div>
         </Box>
-      </Modal>
+    </Modal>
       <Modal
         open={openEdit}
         onClose={handleCloseEdit}
@@ -266,14 +249,14 @@ const style = {
             Edit Group
           </Typography>
           <div className='flex my-4'>
-          <TextField id="outlined-basic-name" name="teamname" defaultValue={team.teamname} label="Group Name" variant="outlined" sx={{marginRight:"1rem"}}
+          <TextField id="outlined-basic-name" name="teamname" defaultValue={team?.teamname} label="Group Name" variant="outlined" sx={{marginRight:"1rem"}}
           onChange={handleEditInputChange}
           />
-          <TextField id="outlined-basic-name" name="maxteamsize" defaultValue={team.maxteamsize} label="Size limit" variant="outlined"
+          <TextField id="outlined-basic-name" name="maxteamsize" defaultValue={team?.maxteamsize} label="Size limit" variant="outlined"
           onChange = {handleEditInputChange}
           />
           </div>
-          <TextField id="outlined-basic-desc" name="description" defaultValue={team.description} label="Group Description" variant="outlined" multiline rows={4} sx={{width:"100%"}}
+          <TextField id="outlined-basic-desc" name="description" defaultValue={team?.description} label="Group Description" variant="outlined" multiline rows={4} sx={{width:"100%"}}
           onChange={handleEditInputChange}/>
           <div className='w-full mt-4 flex justify-end' onClick = {handleEditGroup}><Button>Edit</Button></div>
         </Box>

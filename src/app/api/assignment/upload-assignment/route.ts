@@ -16,11 +16,26 @@ export async function POST(request: Request) {
         if (!title || !AssignmentDoc || !description || !uploadedAt || !DueDate || !totalPoints || !CourseId) {
             return NextResponse.json({ message: "Required fields are empty" }, { status: 400 });
         }
+<<<<<<< Updated upstream
  
+=======
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return NextResponse.json({ message: "User not found" }, { status: 400 });
+        }
+
+>>>>>>> Stashed changes
         const course = await Course.findById(CourseId);
         if (!course) {
-            return NextResponse.json({ message: "Course needs to be created first" }, { status: 400 });
+            return NextResponse.json({ message: "Course not found" }, { status: 400 });
         }
+
+        if (!course.Admins.includes(userId)) {
+            return NextResponse.json({ message: "User is not authorized to upload the assignment" }, { status: 400 });
+        }
+ 
+        
 
         const newAssignment = new Assignment({
             title,

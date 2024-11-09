@@ -91,6 +91,7 @@ const AssignmentDetails: React.FC = () => {
         const submitwala = {
             documentLink: assignmentDoc
         }
+        if(!assignmentDoc)toast.error('Select file first')
         try {
             const response = await axios.patch(`/api/submission/edit-submission?Id=${id}`, submitwala);
             console.log(response.data)
@@ -121,8 +122,7 @@ const AssignmentDetails: React.FC = () => {
             toast.success("Made submission successfully")
         }
         catch (e: any) {
-            console.error("Error while removing:", e);
-            toast.error("Error occurred")
+            console.error("Error while submitting:", e);
         }
     }
 
@@ -223,6 +223,7 @@ const AssignmentDetails: React.FC = () => {
                 
             </div>
         </div>
+        <Toaster/>
         </Layout>
     );
 };

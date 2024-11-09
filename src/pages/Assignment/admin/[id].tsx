@@ -272,22 +272,22 @@ const AssignmentDetails: React.FC = () => {
     }
   };
 
-  if (!assignment) return <div>Loading...</div>;
+  if (!assignment) return <Layout><LinearProgress/></Layout>;
 
   return (
     <Layout>
     <div className=" bg-gray-100 min-h-screen p-10">
       <div>
       <button
-          onClick={() => router.push(`/admin/Courses`)}
+          onClick={() => router.push(`/admin/Courses/${assignment.Course}`)}
           className="mb-4 text-blue-400 rounded hover:bg-blue-100 transition"
         >
           <ArrowBackIosNewIcon/>
         </button>
         <div className="flex justify-between mb-6">
           <div className="flex flex-col">
-            <h1 className="text-3xl font-bold">Title: {assignment.title}</h1>
-            <p className="text-gray-700 font-bold p-2 w-[50vw]">Description: {assignment.description}</p>
+            <h1 className="text-3xl font-bold w-[50vw] break-words">Title: {assignment.title}</h1>
+            <p className="text-gray-700 m-1 w-[50vw] break-words">Description: {assignment.description}</p>
           </div>
           <div className="flex flex-col items-end">
             <div className="mb-4">
@@ -302,7 +302,6 @@ const AssignmentDetails: React.FC = () => {
             {assignment.AssignmentDoc && (
               <div className="mb-4">
                 <span className="font-semibold">Assignment :</span>{" "}
-                <span className="font-semibold">Assignment Document:</span>{" "}
                 <a href={assignment.AssignmentDoc} target="_blank" rel="noopener noreferrer" className="text-blue-500">
                   View Document
                 </a>
@@ -335,7 +334,7 @@ const AssignmentDetails: React.FC = () => {
                <TableCell align="left">Approve</TableCell>
                <TableCell align="left">Disapprove</TableCell>
                <TableCell align="left">Delete</TableCell>
-               <TableCell align="left">Deduct/Bonus</TableCell>
+               <TableCell align="center">Deduct/Bonus</TableCell>
              </TableRow>
            </TableHead>
            <TableBody>
@@ -367,10 +366,10 @@ const AssignmentDetails: React.FC = () => {
                  <DeleteIcon/>
                </button>
             </TableCell>
-            <TableCell align="right">
-               <button className="mb-2 flex justify-between p-4" onClick={() => {handleOpenModal(submission._id)}}>
+            <TableCell align="center">
+               <Button onClick={() => {handleOpenModal(submission._id)}} variant="outlined">
                   Deduct/Bonus
-               </button>
+               </Button>
             </TableCell>
           </TableRow>
           ))}
