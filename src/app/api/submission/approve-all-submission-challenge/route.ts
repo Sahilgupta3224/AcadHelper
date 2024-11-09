@@ -13,7 +13,7 @@ connect();
 export const PATCH = async (request: Request) => {
     try {
         const url = new URL(request.url);
-        const challengeId = url.searchParams.get('challengeId');
+        const challengeId = url.searchParams.get('Id');
 
         if (!challengeId) {
             return new NextResponse(JSON.stringify({ message: "Challenge ID is required" }), { status: 400 });

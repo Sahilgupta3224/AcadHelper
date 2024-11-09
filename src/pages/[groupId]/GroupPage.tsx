@@ -1,13 +1,14 @@
+// GroupPage.tsx
 "use client"
 import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { Pomodoro } from './Pomodoro';
+import Pomodoro from './Pomodoro'; // Adjusted for default import
 import Layout from '@/components/layout';
-import { Settings } from './Settings';
+import Settings from './Settings'; // Adjusted for default import
 import { useParams } from 'next/navigation'
-import Auth from '@/components/Auth'
+import Auth from '@/components/Auth';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -40,29 +41,30 @@ function a11yProps(index: number) {
 
 function GroupPage() {
   const [value, setValue] = React.useState(0);
-  const params = useParams<{ groupId:string }>()
+  const params = useParams<{ groupId: string }>();
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
   return (
     <Layout>
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Group Tasks" {...a11yProps(0)} />
-          <Tab label="Settings" {...a11yProps(1)} />
-        </Tabs>
+      <Box sx={{ width: '100%' }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+            <Tab label="Group Tasks" {...a11yProps(0)} />
+            <Tab label="Settings" {...a11yProps(1)} />
+          </Tabs>
+        </Box>
+        <CustomTabPanel value={value} index={0}>
+          <Pomodoro />
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={1}>
+          <Settings />
+        </CustomTabPanel>
       </Box>
-      <CustomTabPanel value={value} index={0}>
-        <Pomodoro/>
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={1}>
-        <Settings/>
-      </CustomTabPanel>
-    </Box>
     </Layout>
   );
 }
 
-export default Auth(GroupPage)
+export default Auth(GroupPage);

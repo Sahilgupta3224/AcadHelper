@@ -47,10 +47,6 @@ function Profile() {
   const router = useRouter();
   const id=user._id
 
-
-
-
-
   const calTotalPoints=()=>{
     let points:number=0;
 

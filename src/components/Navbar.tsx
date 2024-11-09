@@ -93,6 +93,9 @@ export default function Navbar() {
   };
 
   const calculateTotalPoints = (user: any) => {
+    if(!user?.Totalpoints){
+      return 0;
+    }
     if (Array.isArray(user.Totalpoints)) {
       return user.Totalpoints.reduce((total, course) => total + course.points, 0);
     }
@@ -220,7 +223,7 @@ export default function Navbar() {
               onClick={handleClick}
               color="inherit"
             >
-              <AccountCircle />
+              <AccountCircle onClick={() => { router.push(`/Profile/${user._id}`); }} />
             </IconButton>
             {/* <Button variant="outlined" color="inherit" sx={{ ml: 2 }} onClick={() => { router.push(`/Login`); }}>Login</Button> */}
           </Box>

@@ -127,18 +127,32 @@ export async function POST(request: NextRequest) {
 
         console.log("Course", Course);
         const courseId = Course;
-
+        let newSubmission
         // Create and save the new submission
-        const newSubmission = new Submission({
-            User: user,
-            Assignment: assignment,
-            Challenge: challenge,
-            documentLink,
-            submittedAt: new Date(),
-            Course,
-            type,
-            groupId
-        });
+        if(!groupId){
+            newSubmission = new Submission({
+                User: user,
+                Assignment: assignment,
+                Challenge: challenge,
+                documentLink,
+                submittedAt: new Date(),
+                Course,
+                type,
+                // groupId
+            });
+        }
+        else{
+            newSubmission = new Submission({
+                User: user,
+                Assignment: assignment,
+                Challenge: challenge,
+                documentLink,
+                submittedAt: new Date(),
+                Course,
+                type,
+                groupId
+            });
+        }
         await newSubmission.save();
 
         // Update user submissions (individual or group)

@@ -54,7 +54,9 @@ function SearchUserModal({ open, setOpen, courseId }) {
       };
       console.log(obj);
       const response = await axios.post('/api/course/makeadmin', obj);
+      handleClose()
       console.log(response);
+      
     } catch (error) {
       console.log('Error while making the user admin', error);
     }

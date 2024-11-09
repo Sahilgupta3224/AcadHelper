@@ -182,6 +182,7 @@ const ChallengeDetails: React.FC = () => {
 
   const approveall = async () => {
     try {
+      console.log(challengeId)
       const response = await axios.patch(`/api/submission/approve-all-submission-challenge?Id=${challengeId}`);
       console.log(response.data)
       setyo(!yo);

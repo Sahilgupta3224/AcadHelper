@@ -322,14 +322,6 @@ function Profile() {
               InputProps={{ readOnly: true }}
               variant="outlined"
             />
-            <TextField
-              label="Points Earned Through Challenge"
-              value="shikhar"
-              fullWidth
-              margin="normal"
-              InputProps={{ readOnly: true }}
-              variant="outlined"
-            />
            
             <TextField
               label="Username"

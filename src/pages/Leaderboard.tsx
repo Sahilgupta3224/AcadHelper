@@ -11,36 +11,35 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { institutes } from '@/utils/Sample Data/Sample';
 import toast, { Toaster } from 'react-hot-toast';
 import Auth from '@/components/Auth'
-import toast from 'react-hot-toast';
 
 const Leaderboard = () => {
     const [users,setUsers] = useState([])
     const [institute,setInstitute] = useState("")
+    const fetchUsers = async()=>{
+      try{
+      const {data} = await axios.get('/api/user/getAllUsers')
+      console.log(data)
+      if(data?.success){
+          const usersWithPoints = data.users.map(user => {
+              const totalPoints = user.Totalpoints.reduce((sum, course) => sum + course.points, 0);
+              return {
+                ...user,
+                totalPoints
+              };
+            });
+        
+            // Sort users by totalPoints in descending order 
+            usersWithPoints.sort((a, b) => b.totalPoints - a.totalPoints);
+          setUsers(usersWithPoints)
+      }
+      
+      }catch(error){
+          console.log("Error fetching users",error)
+          toast.error("Error fetching users")
+          return
+      }
+  }
     useEffect(()=>{
-        const fetchUsers = async()=>{
-            try{
-            const {data} = await axios.get('/api/user/getAllUsers')
-            console.log(data)
-            if(data?.success){
-                const usersWithPoints = data.users.map(user => {
-                    const totalPoints = user.Totalpoints.reduce((sum, course) => sum + course.points, 0);
-                    return {
-                      ...user,
-                      totalPoints
-                    };
-                  });
-              
-                  // Sort users by totalPoints in descending order 
-                  usersWithPoints.sort((a, b) => b.totalPoints - a.totalPoints);
-                setUsers(usersWithPoints)
-            }
-            
-            }catch(error){
-                console.log("Error fetching users",error)
-                toast.error("Error fetching users")
-                return
-            }
-        }
         fetchUsers()
     },[])
 
@@ -64,6 +63,10 @@ const Leaderboard = () => {
             console.log(e)
             toast.error(`${e}`)
         }
+    }
+    const clearFilter=()=>{
+      setInstitute("")
+      fetchUsers()
     }
   return (
     <div>
