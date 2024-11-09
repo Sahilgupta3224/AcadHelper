@@ -1,3 +1,4 @@
+"use client"
 import Timer from '@/components/Timer'
 import Layout from '@/components/layout'
 
@@ -7,7 +8,7 @@ const Focus = () => {
   return (
     <div>
         <Layout>
-        <Timer/>
+          <Timer/>
         </Layout>
     </div>
   )

@@ -54,7 +54,7 @@ function a11yProps(index: number) {
 
 
 export default function Fire() {
-  const {user,setUser} = useStore()
+  const {user} = useStore()
   const [daily,setDaily] = useState([])
   const [weekly,setWeekly] = useState([])
   useEffect(()=>{
@@ -64,8 +64,9 @@ export default function Fire() {
         if(data.success){
           setDaily(data.data)
         }
-    }catch(e){
-        console.log(e)
+    }catch(e:any){
+        // console.log(e)
+        toast.error("Error while fetching challenge")
       }
     }
     const fetchWeekly = async()=>{
@@ -74,14 +75,15 @@ export default function Fire() {
         if(data.success){
           setWeekly(data.data)
         }
-    }catch(e){
-        console.log(e)
+    }catch(e:any){
+        // console.log(e)
+        toast.error("Error while fetching the challenge")
       }
     }
     fetchDaily()
     fetchWeekly()
   },[])
-  console.log(daily,weekly)
+  // console.log(daily,weekly)
   
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
@@ -129,8 +131,10 @@ export default function Fire() {
           </Box>
           <CustomTabPanel value={value} index={0}>
           <div className='overflow-y-auto max-h-60'>
-              {daily.length>0 ? daily.map(challenge=>(
-                <Link href = {`/Challenge/${challenge._id}`}>
+              {daily.length>0 ? daily.map((challenge,idx)=>(
+                <Link 
+                key={`${idx}+${challenge?._id}`}
+                href = {`/Challenge/${challenge?._id}`}>
                 <ListItem>
                 <ListItemAvatar>
                 <Avatar>
@@ -150,8 +154,10 @@ export default function Fire() {
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
           <div className='overflow-y-auto max-h-60'>
-          {weekly.length>0 ? weekly.map(challenge=>(
-                <Link href = {`/Challenge/${challenge._id}`}>
+          {weekly.length>0 ? weekly.map((challenge,idx)=>(
+                <Link
+                key={`${idx*3}+${challenge?._id}`} 
+                href = {`/Challenge/${challenge._id}`}>
                 <ListItem>
                 <ListItemAvatar>
                 <Avatar>

@@ -1,3 +1,4 @@
+"use client"
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -6,13 +7,12 @@ import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem, treeItemClasses } from "@mui/x-tree-view/TreeItem";
 import CloseIcon from "@mui/icons-material/Close";
 import Layout from "@/components/layout";
-import '../../app/globals.css';
-
+import "../app/globals.css";
 import {
   sampleAssignments,
   sampleChapters,
   UserLoggedIn,
-} from "@/utils/Sample Data/Sample";
+} from "../utils/Sample Data/Sample";
 import Link from "next/link";
 import {
   FilledTextFieldProps,
@@ -124,18 +124,18 @@ export default function Courses() {
   
   const handleAddCourse = async(e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    console.log(courseInput)
-      try {
-        if(!courseInput.name){
-          toast.error("Course name cannot be empty")
-          return
-        }
-        if(!courseInput.description){
-          toast.error("Course description cannot be empty")
-          return
-        }
+    try {
+        console.log(courseInput)
+        // if(!courseInput.name){
+        //   toast.error("Course name cannot be empty")
+        //   return
+        // }
+        // if(!courseInput.description){
+        //   toast.error("Course description cannot be empty")
+        //   return
+        // }
         const {data} = await axios.post("/api/course/createcourse",courseInput)
-  
+        console.log(data)
         if (data.success) {
           console.log(data)
           setCourseInput({name:"",description:"",userId:user._id});
@@ -237,7 +237,7 @@ export default function Courses() {
       <CustomTabPanel value={value} index={0}>
         <div className="grid grid-cols-3 gap-4">
         { enrolledCourses.length>0 ? enrolledCourses.map(course=>(
-          <Link key={course.id} href = {`/user/Courses/${course._id}`}>
+          <Link href = {`/user/Courses/${course._id}`}>
               <Card sx={{ maxWidth: 345 }}>
               <CardMedia
                 sx={{ height: 140 }}
@@ -262,8 +262,8 @@ export default function Courses() {
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <div className="grid grid-cols-3 gap-4">
-      { adminCourses.length>0 ? adminCourses.map((course,idx)=>(
-          <Link key={`${course._id}`+idx*2} href = {`/admin/Courses/${course._id}`}>
+      { adminCourses.length>0 ? adminCourses.map(course=>(
+          <Link href = {`/admin/Courses/${course._id}`}>
               <Card sx={{ maxWidth: 345 }}>
               <CardMedia
                 sx={{ height: 140 }}

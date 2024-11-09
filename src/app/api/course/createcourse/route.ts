@@ -11,10 +11,10 @@ export async function POST(request: NextRequest) {
         const { name, description, userId } = reqBody;
         let CourseCode = generateRandomCode()
         let course = Course.findOne({CourseCode:CourseCode})
-        while(course){
-            CourseCode = generateRandomCode()
-            course = Course.findOne({CourseCode:CourseCode})
-        }
+        // while(course){
+        //     CourseCode = generateRandomCode()
+        //     course = Course.findOne({CourseCode:CourseCode})
+        // }
         console.log(reqBody);
         const newCourse = new Course({
             name,

@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
@@ -26,7 +27,7 @@ const AssignmentDetails: React.FC = () => {
     const router = useRouter();
     const { query } = router
     const { user, setUser } = useStore()
-    console.log(query)
+    // console.log(query)
     const { id } = router.query;
     const [assignmentDoc, setAssignmentDoc] = useState("")
     const [assignment, setassignment] = useState<Assignment | null>(null);
@@ -36,7 +37,7 @@ const AssignmentDetails: React.FC = () => {
     const [show, setShow] = useState(false)
     const [errorMessage, setErrorMessage] = useState("");
     const [editedassignment, seteditedassignment] = useState<EditAssignment | null>(null);
-    console.log(id)
+    // console.log(id)
     const assignmentId = typeof id === 'string' ? id : '';
     useEffect(() => {
         if (assignmentId) {
@@ -44,8 +45,10 @@ const AssignmentDetails: React.FC = () => {
                 try {
                     const response = await axios.get(`/api/assignment/getassignmentById?Id=${assignmentId}`);
                     setassignment(response.data.data);
+                    toast.success("Fetched assignments")
                 } catch (error) {
                     console.error("Error fetching challenge details:", error);
+                    toast.error("Error fetching the assignments")
                 }
             };
             fetchAssignment();
@@ -59,8 +62,10 @@ const AssignmentDetails: React.FC = () => {
                     const submissionsResponse = await axios.get(`/api/submission/getsubmissionbyassignmentanduser?assignmentId=${assignmentId}&userId=${user._id}`);
                     setSubmissions(submissionsResponse.data.data);
                     console.log(submissionsResponse)
+                    toast.success("Successfully fetched Submissions")
                 } catch (error) {
                     console.error("Error fetching submissions:", error);
+                    toast.error("Error fetching submission")
                 }
             };
             fetchSubmissions();
@@ -72,9 +77,11 @@ const AssignmentDetails: React.FC = () => {
             const response = await axios.patch(`/api/submission/remove-submission?Id=${id}`);
             console.log(response.data)
             setyo(!yo);
+            toast.success("Deleted Submission")
         }
         catch (e: any) {
             console.error("Error while removing:", e);
+            toast.error("Error removing the submission")
         }
     }
 
@@ -89,12 +96,14 @@ const AssignmentDetails: React.FC = () => {
             setAssignmentDoc("")
             setIsDocVisible(false);
             setyo(!yo);
+            toast.success("Edited submission")
         }
         catch (e: any) {
-            console.error("Error while removing:", e);
+            toast.error("Error while editing submission")
+            console.error("Error while editing:", e);
         }
     }
-    console.log(assignment)
+    // console.log(assignment)
     const handlesub = async () => {
         const submitwala = {
             user: user._id,
@@ -108,9 +117,11 @@ const AssignmentDetails: React.FC = () => {
             setAssignmentDoc("")    
             setIsDocVisible(false);
             setyo(!yo);
+            toast.success("Made submission successfully")
         }
         catch (e: any) {
             console.error("Error while removing:", e);
+            toast.error("Error occurred")
         }
     }
 
@@ -119,8 +130,10 @@ const AssignmentDetails: React.FC = () => {
             setAssignmentDoc(result.info.url)
             setIsDocVisible(true);
             console.log("Upload result info:", result.info);
+            toast.success("Upload successful")
         } else {
             console.error("Upload failed or result is invalid.");
+            toast.error("Upload failed or result is invalid.");
         }
     };
 
@@ -162,7 +175,7 @@ const AssignmentDetails: React.FC = () => {
                     </div>
                 </div>
                 <div className="">
-                <CldUploadWidget uploadPreset="acad_helper_pdf" onSuccess={handleUpload}>
+                <CldUploadWidget uploadPreset="r99tyjot" onSuccess={handleUpload}>
                     {({ open }) => (
                         <Button sx={{height:"2.5rem"}} onClick={() => open()} variant="outlined" color="primary">
                             Select File

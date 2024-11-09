@@ -1,3 +1,4 @@
+"use client"
 import Layout from '@/components/layout'
 import React, { useEffect, useState } from 'react'
 import '../app/globals.css';
@@ -8,6 +9,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { institutes } from '@/utils/Sample Data/Sample';
+import toast from 'react-hot-toast';
 
 const Leaderboard = () => {
     const [users,setUsers] = useState([])
@@ -33,6 +35,8 @@ const Leaderboard = () => {
             
             }catch(error){
                 console.log("Error fetching users",error)
+                toast.error("Error fetching users")
+                return
             }
         }
         fetchUsers()
@@ -56,6 +60,7 @@ const Leaderboard = () => {
             }
         }catch(e){
             console.log(e)
+            toast.error(`${e}`)
         }
     }
   return (

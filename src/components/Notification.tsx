@@ -41,7 +41,7 @@ export default function Notification() {
         console.log(e)
       }
   }
-  console.log(user)
+  // console.log(user)
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 

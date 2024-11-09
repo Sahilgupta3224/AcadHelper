@@ -11,6 +11,7 @@ import Modal from '@mui/material/Modal';
 import axios from 'axios';
 import { useStore } from '@/store';
 import { useParams, useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 
 const style = {
@@ -79,7 +80,11 @@ export const Pomodoro = () => {
           console.log(res?.data?.team)
           setTasks(res.data.team.tasks || []);
         }catch(e){
-          console.log(e)
+          // console.log(e) 
+          toast.error(
+            "Error while fetching team"
+          )
+
         }
       }
       fetchTeam()
@@ -175,6 +180,7 @@ export const Pomodoro = () => {
       }
       }catch(error){
         console.log(error)
+        toast.error("Error while adding the task")
       }
     
   };
@@ -206,6 +212,7 @@ export const Pomodoro = () => {
       }
     }catch(e){
       console.log("Error deleting task",e)
+      toast.error("Error while deleting the task")
     }
     
   };

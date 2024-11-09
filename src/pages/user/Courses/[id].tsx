@@ -1,3 +1,4 @@
+"use client"
 import * as React from "react";
 import { useState, useEffect } from "react";
 import CloseIcon from "@mui/icons-material/Close";
@@ -31,6 +32,8 @@ function sortUsersByCoursePoints(users, targetCourseId) {
   });
 }
 const AdminPage: React.FC = () => {
+  const router = useRouter()
+
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [assignments, setassignments] = useState<Assignment[]>([]);
   const [value, setValue] = useState(0);
@@ -55,10 +58,13 @@ const AdminPage: React.FC = () => {
   const [assignmentDoc, setAssignmentDoc] = useState("");
   const [assignmentPoints, setAssignmentPoints] = useState<number | undefined>();
   const [yo, setyo] = useState(false)
-  const courseId = '6729e6d6f4a82d6fedab5625';
+  // const courseId = '6729e6d6f4a82d6fedab5625';
   const { user, setUser } = useStore()
-  const router = useRouter();
   const {id} = router.query
+  const courseId=id
+  console.log(id)
+
+  console.log(courseId)
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };

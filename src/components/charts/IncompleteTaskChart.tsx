@@ -10,12 +10,15 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Button, ButtonGroup } from '@mui/material';
-import { tasks } from '@/utils/Sample Data/Sample';
 
 // Sample task data (same as before)
 
 
-// Function to get the week number from a date
+
+const CompletedTasksChart = ({tasks}) => {
+  const [timeframe, setTimeframe] = useState('week');
+
+  // Function to get the week number from a date
 const getWeekNumber = (date) => {
   const startDate = new Date(date.getFullYear(), 0, 1);
   const days = Math.floor((date - startDate) / (24 * 60 * 60 * 1000));
@@ -63,8 +66,6 @@ const processCompletedTaskDataByDay = (tasks) => {
   return Object.entries(IncompletedTaskCount).map(([dayKey, count]) => ({ weekKey: dayKey, count }));
 };
 
-const CompletedTasksChart = () => {
-  const [timeframe, setTimeframe] = useState('week');
   
   let processedData;
   switch (timeframe) {
