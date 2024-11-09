@@ -4,6 +4,7 @@ import { Box, Typography, List, ListItem, ListItemText, ListItemSecondaryAction,
 import DeleteIcon from "@mui/icons-material/Delete";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Layout from "@/components/layout";
+import Auth from '@/components/Auth'
 
 interface Notification {
   id: number;
@@ -61,4 +62,4 @@ const Notification: React.FC = () => {
   );
 };
 
-export default Notification;
+export default Auth(Notification);

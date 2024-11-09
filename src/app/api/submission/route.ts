@@ -5,6 +5,7 @@ import Assignment from "@/models/assignmentModel";
 import { NextRequest, NextResponse } from "next/server";
 import {connect} from '@/dbConfig/dbConfig'
 import Team from "@/models/teamModel";
+import CourseModel from "@/models/courseModel";
 
 connect()
 
@@ -19,6 +20,15 @@ export async function POST(request: NextRequest) {
             }, { status: 400 });
         }
         console.log("Course",Course)
+        const course =  await CourseModel.findById(Course)
+        const isAdmin = course.Admins.includes(user);
+        if (isAdmin) {
+            return NextResponse.json({
+                success: false,
+                message: "Admin can't make submissions",
+            }, { status: 403 });
+        }
+        
         const newSubmission = new Submission({
             User:user,
             Assignment:assignment,

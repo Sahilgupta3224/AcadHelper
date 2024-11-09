@@ -7,6 +7,7 @@ import '../../app/globals.css';
 import toast, { Toaster } from 'react-hot-toast';
 import { CldUploadWidget } from 'next-cloudinary';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem } from '@mui/material';
+import Auth from '@/components/Auth'
 
 interface EditAssignment {
   title: string;
@@ -324,4 +325,4 @@ const AssignmentDetails: React.FC = () => {
   );
 };
 
-export default AssignmentDetails;
+export default Auth(AssignmentDetails);

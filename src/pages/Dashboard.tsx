@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation"
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
+import Auth from '@/components/Auth'
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -118,7 +119,7 @@ const Dashboard = () => {
           console.log(data)
         }
       } catch (error) {
-        console.error("Error fetching courses:", error);
+        toast.error("Error fetching courses:", error.response.data.message);
       }
     }
     const fectchpendingassignments = async () => {
@@ -479,4 +480,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default Auth(Dashboard)

@@ -13,6 +13,7 @@ import {
   UserLoggedIn,
 } from "../utils/Sample Data/Sample";
 import Link from "next/link";
+import Auth from '@/components/Auth'
 import {
   FilledTextFieldProps,
   FormControl,
@@ -74,7 +75,7 @@ function a11yProps(index: number) {
   };
 }
 
-export default function Courses() {
+  function Courses() {
   const {user,setUser} = useStore()
   const [enrolledCourses,setEnrolledCourses] = React.useState([])
   const [adminCourses,setAdminCourses] = React.useState([])
@@ -336,3 +337,5 @@ export default function Courses() {
     </Layout>
   );
 }
+
+export default Auth(Courses)

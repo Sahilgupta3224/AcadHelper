@@ -11,6 +11,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin, { EventDropArg } from "@fullcalendar/interaction";
+import Auth from '@/components/Auth'
 import {
   Dialog,
   DialogTitle,
@@ -28,6 +29,7 @@ import {
 import Layout from "@/components/layout";
 import axios from "axios";
 import { useStore } from "@/store";
+import toast, { Toaster } from 'react-hot-toast';
 
 const Calendar: React.FC = () => {
   const [currentEvents, setCurrentEvents] = useState<EventInput[]>([]);
@@ -37,7 +39,7 @@ const Calendar: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<EventApi | null>(null);
   const [selectedDate, setSelectedDate] = useState<DateSelectArg | null>(null);
   const [newEventTime, setNewEventTime] = useState<string>(selectedEvent?.end?.toISOString().slice(0, 16) || "");
-
+  const [change,setchange] = useState(false);
   const { user } = useStore();
 
   interface Event {
@@ -73,7 +75,7 @@ const Calendar: React.FC = () => {
 
       setCurrentEvents(fullCalendarEvents);
     } catch (error) {
-      console.error("Error while fetching all the events", error);
+      toast.error(error.message);
     }
   };
 
@@ -87,13 +89,13 @@ const Calendar: React.FC = () => {
         DueDate: new Date(newEventTime).toISOString(),
         eventId: selectedEvent.id,
       });
-  
       selectedEvent.setProp("title", newEventTitle);
       selectedEvent.setDates(new Date(newEventTime).toISOString()); // Update time on the calendar
       fetchAllEvents();
       handleCloseDialog();
+      setchange(!change)
     } catch (error) {
-      console.error("Error while updating the event", error.message);
+      toast.error(error.message);
     }
   };
   
@@ -115,16 +117,17 @@ const Calendar: React.FC = () => {
         eventId: event.id,
       });
       console.log(response)
+      setchange(!change)
       // // Optionally refetch all events or update the state manually
       fetchAllEvents();
     } catch (error) {
-      console.error("Error while updating event position", error.message);
+      toast.error(error.message);
     }
   };
 
   useEffect(() => {
     fetchAllEvents();
-  }, [user]);
+  }, [user,change]);
 
   const handleDateClick = (selected: DateSelectArg) => {
     setSelectedDate(selected);
@@ -153,12 +156,12 @@ const Calendar: React.FC = () => {
           userId: user._id,
         },
       });
-  
       selectedEvent.remove(); // Remove event from the calendar directly
       fetchAllEvents(); // Refresh events list
       handleCloseDialog();
+      setchange(!change)
     } catch (error) {
-      console.error("Error while deleting the event", error.message);
+      toast.error(error.message);
     }
   };
   
@@ -197,9 +200,10 @@ const Calendar: React.FC = () => {
         calendarApi.addEvent(fullCalendarEvents); 
         console.log(fullCalendarEvents)
         handleCloseDialog();
+        setchange(!change)
       }
     } catch (error) {
-      console.log("Error while adding the event ",error)
+      toast.error(error);
       return;
     }
   };
@@ -333,4 +337,4 @@ const Calendar: React.FC = () => {
   );
 };
 
-export default Calendar;
+export default Auth(Calendar);

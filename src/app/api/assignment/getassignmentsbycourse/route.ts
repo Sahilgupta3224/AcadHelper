@@ -12,6 +12,12 @@ export async function GET(request: NextRequest) {
     try {
         const url = new URL(request.url);
         const CourseId = url.searchParams.get('CourseId');
+        if(!CourseId){
+            return NextResponse.json({
+                success: false,
+                message: "Invalid CourseId",
+            }, { status: 404 });
+        }
         console.log(CourseId)
         const course = await Course.findById(CourseId)
         if(!course){
@@ -20,7 +26,8 @@ export async function GET(request: NextRequest) {
                 message: "Course not found",
             }, { status: 404 });
         }
-        const assignments = await Assignment.find({ _id: { $in: course.assignments } });
+        console.log("course",course)
+        const assignments = await Assignment.find({_id: { $in: course.assignments } });
         return NextResponse.json({
             success: true,
             data: assignments,

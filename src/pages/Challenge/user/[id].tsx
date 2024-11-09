@@ -19,6 +19,7 @@ interface EditChallenge {
   startDate: Date;
   points: number;
 }
+import Auth from '@/components/Auth'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 //Modal style
@@ -322,4 +323,4 @@ const handleUpload = (result: any) => {
   );
 };
 
-export default ChallengeDetails;
+export default Auth(ChallengeDetails);

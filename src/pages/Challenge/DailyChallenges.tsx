@@ -7,7 +7,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import '../../app/globals.css'
-
+import Auth from '@/components/Auth'
 const Groups = () => {
   const [isMounted, setIsMounted] = React.useState(false);
 
@@ -45,4 +45,4 @@ const Groups = () => {
   );
 };
 
-export default Groups;
+export default Auth(Groups);

@@ -13,6 +13,8 @@ import axios from "axios";
 import Challenge from "@/Interfaces/challenge";
 import Submission from "@/Interfaces/submission";
 import Tabs from '@mui/material/Tabs';
+import toast, { Toaster } from 'react-hot-toast';
+import Auth from '@/components/Auth'
 import Tab from '@mui/material/Tab';
 import Assignment from "@/Interfaces/assignment";
 import { useStore } from "@/store";
@@ -31,6 +33,10 @@ function sortUsersByCoursePoints(users, targetCourseId) {
   });
 }
 const AdminPage: React.FC = () => {
+  const router = useRouter();
+  const { query } = router
+  console.log(query)
+  const { id } = router.query;
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [assignments, setassignments] = useState<Assignment[]>([]);
   const [value, setValue] = useState(0);
@@ -55,10 +61,8 @@ const AdminPage: React.FC = () => {
   const [assignmentDoc, setAssignmentDoc] = useState("");
   const [assignmentPoints, setAssignmentPoints] = useState<number | undefined>();
   const [yo, setyo] = useState(false)
-  const courseId = '6729e6d6f4a82d6fedab5625';
+  const courseId=id
   const { user, setUser } = useStore()
-  const router = useRouter();
-  const {id} = router.query
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -79,8 +83,8 @@ const AdminPage: React.FC = () => {
     
       } catch (error) {
         console.log("Error while fetching all the enrolled users of the course",error);
-        return;
-      }
+        return;
+    }
     }
     fetchEnrolledUsers()
   },[])
@@ -155,23 +159,24 @@ const AdminPage: React.FC = () => {
 
   const fetchChallenges = async () => {
     try {
+      console.log(courseId)
       const response = await axios.get(`/api/challenge/getchallengebycourse?CourseId=${courseId}`);
       console.log(response.data.data)
       setChallenges(response.data.data);
       console.log(challenges)
-    } catch (error) {
-      console.error("Error fetching challenges:", error);
+    } catch (error:any) {
+      toast.error(error.response.data.error)
     }
   };
 
   const fetchAssignments = async () => {
     try {
-      const response = await axios.get(`/api/assignment/getassignmentsbycourse?CourseId=${courseId}`);
+      const response = await axios.get(`/api/assignment/getassignmentsbycourse?CourseId=${id}`);
       console.log(response.data.data)
       setassignments(response.data.data);
       console.log(assignments)
-    } catch (error) {
-      console.error("Error fetching challenges:", error);
+    } catch (error:any) {
+      toast.error(error.response.data.error)
     }
   };
   const DeleteChallenge = async () => {
@@ -202,8 +207,8 @@ const AdminPage: React.FC = () => {
     if (courseId) {
       try {
         const response = await axios.get(`/api/submission/getsubmissionbycourseanduser?CourseId=${courseId}&userId=${user._id}`);
-        // setSubmissions(response.data)
-        console.log(response.data)
+        setSubmissions(response.data.data)
+        console.log(response.data.data)
       } catch (error) {
         console.error("Error deleting challenges:", error);
       }
@@ -232,6 +237,7 @@ const AdminPage: React.FC = () => {
   useEffect(() => {
     fetchChallenges();
     fetchAssignments();
+    GetsubmissionBycourse();
   }, [courseId, yo]);
 
   const handleChallengeClick = (challengeId: string) => {
@@ -313,15 +319,15 @@ const AdminPage: React.FC = () => {
 
         {value === 3 && (
           <>
-            <Box sx={{ display: 'flex', justifyContent: 'flex', mb: 2 }}>
+            <Box >
               {/* <Button variant="contained" color="primary" sx={{ width: '200px' }}>
                 My Submissions
               </Button> */}
-              <div className="mt-10">
-                    <h2 className="text-2xl font-bold mb-4">Submissions</h2>
+              <div className="">
+                    <h2 className="text-2xl font-bold mt-10 mb-4 ml-10">My Submissions</h2>
                     {submissions.length > 0 ? (
                         submissions.map((submission) => (
-                            <div key={submission._id} className="bg-white shadow-md rounded-lg p-4 mb-4">
+                            <div key={submission._id} className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer">
                                 <div className="flex justify-between items-center">
                                     <div>
                                         {/* <p><strong>Submitted By:</strong> {submission.user.name}</p> */}
@@ -421,4 +427,4 @@ const AdminPage: React.FC = () => {
   );
 };
 
-export default AdminPage;
+export default Auth(AdminPage);

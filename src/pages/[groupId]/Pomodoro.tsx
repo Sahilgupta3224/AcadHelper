@@ -11,7 +11,7 @@ import Modal from '@mui/material/Modal';
 import axios from 'axios';
 import { useStore } from '@/store';
 import { useParams, useRouter } from 'next/navigation';
-
+import Auth from '@/components/Auth'
 
 const style = {
     position: 'absolute',
@@ -54,7 +54,7 @@ function a11yProps(index: number) {
     );
   }
   
-export const Pomodoro = () => {
+    const Pomodoro = () => {
     const [value, setValue] = useState(0);
     const [tasks, setTasks] = useState([]);
     const {user,setUser} = useStore()
@@ -326,3 +326,5 @@ export const Pomodoro = () => {
   </>
   )
 }
+
+export default Auth(Pomodoro)

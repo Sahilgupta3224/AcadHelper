@@ -7,7 +7,7 @@ import { Pomodoro } from './Pomodoro';
 import Layout from '@/components/layout';
 import { Settings } from './Settings';
 import { useParams } from 'next/navigation'
-
+import Auth from '@/components/Auth'
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -38,7 +38,7 @@ function a11yProps(index: number) {
   };
 }
 
-export default function GroupPage() {
+function GroupPage() {
   const [value, setValue] = React.useState(0);
   const params = useParams<{ groupId:string }>()
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -64,3 +64,5 @@ export default function GroupPage() {
     </Layout>
   );
 }
+
+export default Auth(GroupPage)

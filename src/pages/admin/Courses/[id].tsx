@@ -6,6 +6,7 @@ import Layout from "@/components/layout";
 import "../../../app/globals.css";
 import { useRouter } from "next/router";
 import axios from "axios";
+import { AdminAuth } from "@/components/AdminAuth";
 import Challenge from "@/Interfaces/challenge";
 import Assignment from "@/Interfaces/assignment";
 import {dummyAssignments,dummyChallenges }from '@/pages/SampleData/Sample'
@@ -19,6 +20,7 @@ import AssignmentModal from "@/components/AssignmentModal";
 import SearchUserModal from "@/components/SearchUser";
 import KickUserModal from "@/components/KickUserModal";
 import Course from "@/Interfaces/course";
+import Auth from '@/components/Auth'
 import User from "@/Interfaces/user";
 
 const AdminPage: React.FC = () => {
@@ -151,7 +153,7 @@ const handleSubmitAssignment = async () => {
       totalPoints: assignmentPoints,
       CourseId: courseId,
       uploadedAt: Date.now(),
-      status: "Open"
+      status: "Open",
     });
     console.log("Assignment uploaded successfully:", response.data);
     setAssignmentTitle("");
@@ -293,7 +295,8 @@ const handleCloseAssignmentModal = () => {
   setopenAssignment(false);
   setAssignmentIdToDelete(null);
 };
-
+console.log(router.query.id)
+console.log(user)
 React.useEffect(() => {
     fetchAssignments();
     fetchChallenges();
@@ -825,4 +828,4 @@ React.useEffect(() => {
   );
 };
 
-export default AdminPage;
+export default Auth(AdminPage);

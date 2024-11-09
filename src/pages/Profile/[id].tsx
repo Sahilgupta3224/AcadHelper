@@ -13,6 +13,7 @@ import {
   CardContent,
   Card,
 } from '@mui/material';
+import Auth from '@/components/Auth'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 // import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 // import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
@@ -340,4 +341,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default Auth(Profile);

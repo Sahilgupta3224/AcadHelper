@@ -13,7 +13,7 @@ import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation'
 import toast, { Toaster } from 'react-hot-toast';
 import { useStore } from '@/store';
-
+import Auth from '@/components/Auth'
 const style = {
     position: 'absolute',
     top: '50%',
@@ -34,7 +34,7 @@ const style = {
     description:"nice group"
   }
   
-export const Settings = () => {
+    const Settings = () => {
     // const params = useParams<{ groupId:string }>()
     const router = useRouter()
     const params = useParams();
@@ -303,3 +303,4 @@ export const Settings = () => {
 )
 }
 
+export default Auth(Settings)

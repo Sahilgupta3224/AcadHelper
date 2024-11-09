@@ -10,22 +10,12 @@ export async function POST(request: Request) {
         await connect();
         const reqbody = await request.json();
         console.log(reqbody);
-        const { userId, title, description, DueDate, uploadedAt, AssignmentDoc, CourseId, status, totalPoints } = reqbody;
+        const {title, description, DueDate, uploadedAt, AssignmentDoc, CourseId, status, totalPoints } = reqbody;
 
         // Validate required fields
         if (!title || !AssignmentDoc || !description || !uploadedAt || !DueDate || !totalPoints || !CourseId) {
             return NextResponse.json({ message: "Required fields are empty" }, { status: 400 });
         }
-
-        const user = await User.findById(userId);
-        if (!user) {
-            return NextResponse.json({ message: "User not found" }, { status: 400 });
-        }
-
-        if (user.isAdmin === false) {
-            return NextResponse.json({ message: "User is not authorized to upload the assignment" }, { status: 400 });
-        }
-
  
         const course = await Course.findById(CourseId);
         if (!course) {
@@ -44,7 +34,6 @@ export async function POST(request: Request) {
         });
 
         await newAssignment.save();
-
      
         course.assignments.push(newAssignment._id);
         await course.save();

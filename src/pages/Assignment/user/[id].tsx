@@ -8,6 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { CldUploadWidget } from 'next-cloudinary';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Skeleton, LinearProgress } from '@mui/material';
 import { useStore } from "@/store";
+import Auth from '@/components/Auth'
 import Layout from "@/components/layout";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
@@ -160,6 +161,7 @@ const AssignmentDetails: React.FC = () => {
                             </div>
                         )}
                     </div>
+                    
                 </div>
                 <div className="">
                 <CldUploadWidget uploadPreset="acad_helper_pdf" onSuccess={handleUpload}>
@@ -212,4 +214,4 @@ const AssignmentDetails: React.FC = () => {
     );
 };
 
-export default AssignmentDetails;
+export default Auth(AssignmentDetails);

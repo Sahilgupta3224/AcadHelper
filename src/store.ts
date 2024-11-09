@@ -22,8 +22,8 @@ interface User {
 }
 
 interface Store {
-  user: User;
-  setUser: (newUser: User) => void;
+  user: User|null;
+  setUser: (newUser: User| null) => void;
 }
 
 // Default user state
@@ -49,24 +49,29 @@ const defaultUser: User = {
 };
 
 // Function to get the initial user data from localStorage
-const getUserFromLocalStorage = (): User => {
-    if (typeof window === 'undefined') return defaultUser;
+const getUserFromLocalStorage = (): User | null => {
+    if (typeof window === 'undefined') return null;
     const userData = localStorage.getItem("user");
-    return userData && userData !== "undefined" ? JSON.parse(userData) : defaultUser;
+    return userData && userData !== "undefined" ? JSON.parse(userData) : null;
   };
   
 
 // Create the Zustand store with localStorage persistence
 export const useStore = create<Store>((set) => ({
   user: getUserFromLocalStorage(),
-  setUser: (newUser: User) => {
+  setUser: (newUser: User | null) => {
     set({ user: newUser });
-    if(typeof window!=="undefined")localStorage.setItem("user", JSON.stringify(newUser));
+    if(typeof window!=="undefined"){
+      if (newUser) {
+        localStorage.setItem("user", JSON.stringify(newUser));
+      } else {
+        localStorage.removeItem("user");
+      }
+    }
   },
 }));
 
 // Clear localStorage on user logout
 export const clearUser = () => {
-  useStore.setState({ user: defaultUser });
-  localStorage.removeItem("user");
+  useStore.getState().setUser(null);
 };
