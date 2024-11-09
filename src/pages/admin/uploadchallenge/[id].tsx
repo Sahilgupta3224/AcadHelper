@@ -5,6 +5,7 @@ import '../../../app/globals.css';
 import toast from 'react-hot-toast';
 import Auth from '@/components/Auth'
 import { useStore } from "@/store";
+import { AdminAuth } from "@/components/AdminAuth";
 
 const UploadChallenge: React.FC = () => {
   const router = useRouter();
@@ -126,4 +127,4 @@ const UploadChallenge: React.FC = () => {
   );
 };
 
-export default Auth(UploadChallenge);
+export default AdminAuth(UploadChallenge);

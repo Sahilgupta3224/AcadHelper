@@ -13,6 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import Auth from '@/components/Auth'
+import { AdminAssignmentAuth } from "@/components/AdminAssignmentAuth";
 interface EditAssignment {
   title: string;
   description?: string;

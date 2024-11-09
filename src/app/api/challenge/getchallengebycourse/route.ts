@@ -28,9 +28,10 @@ export async function GET(request: NextRequest) {
         }
         if(course.challenges.length==0){
             return NextResponse.json({
-                success: false,
+                success: true,
+                data:[],
                 message: "No challenges",
-            }, { status: 404 });
+            });
         }
         console.log("dkdkdsdhhhhhhhhhhhhhhhhh",course.challenges)
         const challenges = await Challenge.find({ _id: { $in: course.challenges } });

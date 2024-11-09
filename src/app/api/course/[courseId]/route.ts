@@ -6,9 +6,9 @@ import Assignment from '@/models/assignmentModel';
 import { NextRequest, NextResponse } from 'next/server';
 
 //GET one course from course id
-export async function GET(request:NextRequest,context:{params:any}){
-    const courseId = context.params.courseId
+export async function GET(request:NextRequest,{ params }: { params: { courseId: string } }){
     try{
+        const { courseId } = params;
         await connect()
 
         const course = await Course.findOne({_id:courseId})

@@ -22,6 +22,7 @@ import KickUserModal from "@/components/KickUserModal";
 import Course from "@/Interfaces/course";
 import Auth from '@/components/Auth'
 import User from "@/Interfaces/user";
+import toast from "react-hot-toast";
 
 const AdminPage: React.FC = () => {
   const router = useRouter();
@@ -175,7 +176,7 @@ const fetchChallenges = async () => {
     setChallenges(response.data.data);
     console.log(challenges)
   } catch (error) {
-    console.error("Error fetching challenges:", error);
+    toast.error(error.response.data.error);
   }
 };
 
@@ -828,4 +829,4 @@ React.useEffect(() => {
   );
 };
 
-export default Auth(AdminPage);
+export default AdminAuth(AdminPage);

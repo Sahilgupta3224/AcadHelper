@@ -169,9 +169,9 @@ export default function Navbar() {
         </IconButton>
         <p>Profile</p>
       </MenuItem>
-      <MenuItem className='flex flex-col justify-center' onClick={handleOpen}>
+      {/* <MenuItem className='flex flex-col justify-center' onClick={handleOpen}>
         <Button variant="outlined" color="inherit" >Login</Button>
-      </MenuItem>
+      </MenuItem> */}
     </Menu>
   );
 
@@ -222,7 +222,7 @@ export default function Navbar() {
             >
               <AccountCircle />
             </IconButton>
-            <Button variant="outlined" color="inherit" sx={{ ml: 2 }} onClick={() => { router.push(`/Login`); }}>Login</Button>
+            {/* <Button variant="outlined" color="inherit" sx={{ ml: 2 }} onClick={() => { router.push(`/Login`); }}>Login</Button> */}
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
