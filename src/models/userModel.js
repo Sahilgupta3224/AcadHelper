@@ -124,7 +124,6 @@ const userSchema = new mongoose.Schema({
                 ref: "Event"
             
         }   
-    
     ],    
     phone: String,
     gender: String,
@@ -133,7 +132,11 @@ const userSchema = new mongoose.Schema({
     forgotPasswordTokenExpiry: Date,
     verifyToken: String,
     verifyTokenExpiry: Date,
-    badges:[String],
+    badges:[{
+        title:String,
+        course:String,
+        image:String
+    }],
     NoOfEarlySubmits: {type:Number,default:0},
     institute:{type:String}
     },{timestamps: true})

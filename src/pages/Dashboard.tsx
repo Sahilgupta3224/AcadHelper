@@ -246,13 +246,17 @@ const Dashboard = () => {
   return (
     <>
       <Layout>
-        <div className='flex w-full bg-gradient-to-r from-blue-200 to-cyan-200'>
-          <div className='tasks'>
-            <div className='m-4 bg-white w-[500px] rounded-md p-4 flex justify-between text-slate-800 font-bold text-xl'>
+        <div className='flex gap-2 justify-space-between items-center w-full max-h-screen h-screen bg-gradient-to-r from-blue-200 to-cyan-200'>
+          <div className='tasks w-1/2 h-[90%]'>
+            <div className='m-2 bg-white w-full rounded-md p-4 flex justify-between text-slate-800 font-bold text-xl'>
+              
+              
               <div>
-                <div>Hi {user?.username}</div>
+                <div>Hi { user?.username}</div>
                 <div>{dueTodayCount} Tasks due today</div>
               </div>
+
+
               <Box sx={{ position: 'relative', display: 'inline-flex' }}>
                 <CircularProgress variant="determinate" value={progress} size="60px" />
                 <Box
@@ -275,8 +279,11 @@ const Dashboard = () => {
                 </Box>
               </Box>
             </div>
-            <div className=''>
-              <div className='m-4 w-[500px]'>
+
+
+            <div className='flex flex-col w-full  gap-2 items-start'>
+
+              <div className='m-2 w-full'>
                 <input
                   placeholder="Add Task"
                   name="title"
@@ -285,22 +292,25 @@ const Dashboard = () => {
                   className=' p-2 rounded-md w-[100%] text-slate-600 outline-none'
                 ></input>
               </div>
-              <div className='w-[518px] flex justify-between'>
+
+
+              <div className='w-full flex justify-between items-center'>
                 <select
                   name="course"
                   value={taskInput.course}
                   onChange={handleInputChange}
-                  className='p-2 ml-4 mb-4 rounded-md'>
+                  className='p-2 m-2 rounded-md'>
                   <option value="" disabled>Select Course</option>
                   {courses?.map(course => (
-                    <option value={course.name}>{course.name}</option>
+                    <option key={course._id} value={course.name}>{course.name}</option>
                   ))}
                 </select>
+
                 <select
                   name="color"
                   value={taskInput.color}
                   onChange={handleInputChange}
-                  className='p-2 mb-4 mx-2 rounded-md'>
+                  className='p-2 m-2 rounded-md'>
                   <option value="" disabled>Select Color</option>
                   <option value="border-l-black">⚫ Black</option>
                   <option value="border-l-red-400">🔴 Red</option>
@@ -309,24 +319,27 @@ const Dashboard = () => {
                   <option value="border-l-purple-400">🟣 Purple</option>
                   <option value="border-l-blue-400">🔵 Blue</option>
                 </select>
+
                 <input
                   type='date'
                   name="dueDate"
                   value={taskInput.dueDate}
                   onChange={handleInputChange}
-                  className='p-1 h-9 rounded-md'
+                  className='p-1 h-9 m-2 rounded-md'
                 ></input>
                 <button className='bg-white p-2 rounded-full h-10 w-10 ml-2' onClick={handleAddTask}>+</button>
               </div>
             </div>
-            <div className='tasks-container h-96 overflow-y-auto w-[500px]'>
+
+
+            <div className='tasks-container h-96 overflow-y-auto w-[100%]'>
               {tasks.map((task, index) => (
                 <div
                   key={task._id}
                   className={`border-l-8 ${task.color} p-2 m-4 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow duration-200 ease-in-out`}
                 >
                   <div className="">
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-between gap-2">
                       <Checkbox
                         checked={task.completed}
                         onChange={() => handleCheckboxChange(task._id, task.completed)}
@@ -343,7 +356,7 @@ const Dashboard = () => {
                     </div>
 
 
-                    <div className="flex space-x-4 mx-12">
+                    <div className="flex justify-between items-center space-x-4 mx-12">
                       {/* <div className="text-sm font-medium text-blue-600">{task.course}</div> */}
                       {task.course && <Chip label={task.course} />}
                       {task.dueDate && (
@@ -437,7 +450,9 @@ const Dashboard = () => {
             </Modal>
 
           </div>
-          <div className="m-4 w-[500px] h-[92%] overflow-y-scroll bg-white p-4 rounded-md">
+
+
+          <div className="m-4 w-1/2 h-[90%] overflow-y-scroll bg-white p-4 rounded-md">
             <div className="text-slate-800 font-bold mb-4 text-2xl text-center">
               Pending Assignments
             </div>

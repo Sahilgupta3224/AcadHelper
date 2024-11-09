@@ -11,6 +11,8 @@ import Modal from '@mui/material/Modal';
 import axios from 'axios';
 import { useStore } from '@/store';
 import { useParams, useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+
 import Auth from '@/components/Auth'
 
 const style = {
@@ -79,7 +81,11 @@ function a11yProps(index: number) {
           console.log(res?.data?.team)
           setTasks(res.data.team.tasks || []);
         }catch(e){
-          console.log(e)
+          // console.log(e) 
+          toast.error(
+            "Error while fetching team"
+          )
+
         }
       }
       fetchTeam()
@@ -175,6 +181,7 @@ function a11yProps(index: number) {
       }
       }catch(error){
         console.log(error)
+        toast.error("Error while adding the task")
       }
     
   };
@@ -206,6 +213,7 @@ function a11yProps(index: number) {
       }
     }catch(e){
       console.log("Error deleting task",e)
+      toast.error("Error while deleting the task")
     }
     
   };

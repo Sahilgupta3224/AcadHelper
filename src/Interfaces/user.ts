@@ -1,33 +1,33 @@
 import { Types } from "mongoose";
 
 interface UserCourse {
-  courseId: Types.ObjectId;
+  courseId: string;
   enrolledAt: Date;
   color?: string;
 }
 
 interface UserPendingAssignment {
-  assignmentId: Types.ObjectId;
+  assignmentId:string;
   dueDate?: Date;
 }
-
+ 
 interface UserCompletedAssignment {
-  assignmentId: Types.ObjectId;
+  assignmentId: string;
   completedAt: Date;
 }
 
 interface UserTeam {
-  teamId: Types.ObjectId;
+  teamId: string;
   joinedAt: Date;
 }
 
 interface UserPendingInvite {
-  teamId: Types.ObjectId;
+  teamId: string;
   invitedAt: Date;
 }
 
 interface UserChallengeSolved {
-  challengeId: Types.ObjectId;
+  challengeId:string;
   solvedAt: Date;
 }
 
@@ -40,14 +40,29 @@ interface User {
   isVerified: boolean;
   isAdmin: boolean;
   Courses?: UserCourse[];
-  pendingAssignments?: UserPendingAssignment[];
-  completedAssignments?: UserCompletedAssignment[];
-  teams?: UserTeam[];
-  pendingInvites?: UserPendingInvite[];
-  challengessolved?: UserChallengeSolved[];
-  submissions?: Types.ObjectId[];
-  CoursesAsAdmin?: Types.ObjectId[];
-  tasks?: Types.ObjectId[];
+  Totalpoints:[{
+    courseId:{
+        type:string
+    },
+    points:{
+        type:Number,
+        default:0
+  }}];
+  challengessolved:[{
+    challengeId: {
+        type:string
+    },
+    solvedAt: {
+        type: Date,
+    }
+  }];
+  pendingAssignments?: UserPendingAssignment[] | [];
+  completedAssignments?: UserCompletedAssignment[] | [];
+  teams?: UserTeam[]|[];
+  pendingInvites?: UserPendingInvite[]|[];
+  submissions?: string[]|[];
+  CoursesAsAdmin?: string[]|[];
+  tasks?: string[]|[];
   phone?: string;
   gender?: string;
   Branch?: string;

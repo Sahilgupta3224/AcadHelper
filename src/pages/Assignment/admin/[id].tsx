@@ -3,10 +3,25 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import Submission from "@/Interfaces/submission";
 import Assignment from "@/Interfaces/assignment";
-import '../../../app/globals.css';
-import toast, { Toaster } from 'react-hot-toast';
-import { CldUploadWidget } from 'next-cloudinary';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, TableContainer, Paper, Table, TableCell, TableHead, TableRow, TableBody } from '@mui/material';
+import "../../../app/globals.css";
+import toast, { Toaster } from "react-hot-toast";
+import { CldUploadWidget } from "next-cloudinary";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  MenuItem,
+  TableContainer,
+  Paper,
+  Table,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableBody,
+} from "@mui/material";
 import Layout from "@/components/layout";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -22,11 +37,10 @@ interface EditAssignment {
   status: "Open" | "Closed" | "Graded";
 }
 
-
 const AssignmentDetails: React.FC = () => {
   const router = useRouter();
-  const { query } = router
-  console.log(query)
+  const { query } = router;
+  // console.log(query);
   const { id } = router.query;
   const [assignment, setassignment] = useState<Assignment | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -37,17 +51,22 @@ const AssignmentDetails: React.FC = () => {
   const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null);
   const [deduct,setDeduct]=useState();
   const [errorMessage, setErrorMessage] = useState("");
-  const [editedassignment, seteditedassignment] = useState<EditAssignment | null>(null);
-  console.log(id)
-  const assignmentId = typeof id === 'string' ? id : '';
+  const [editedassignment, seteditedassignment] =
+    useState<EditAssignment | null>(null);
+  // console.log(id);
+  const assignmentId = typeof id === "string" ? id : "";
   useEffect(() => {
     if (assignmentId) {
       const fetchAssignment = async () => {
         try {
-          const response = await axios.get(`/api/assignment/getassignmentById?Id=${assignmentId}`);
+          const response = await axios.get(
+            `/api/assignment/getassignmentById?Id=${assignmentId}`
+          );
           setassignment(response.data.data);
+          toast.success("Fetched the challenge details")
         } catch (error) {
           console.error("Error fetching challenge details:", error);
+          toast.error("Error fetching challenge details:")
         }
       };
       fetchAssignment();
@@ -58,10 +77,14 @@ const AssignmentDetails: React.FC = () => {
     if (assignmentId) {
       const fetchSubmissions = async () => {
         try {
-          const submissionsResponse = await axios.get(`/api/submission/getsubmissionbyassignment?assignmentId=${assignmentId}`);
+          const submissionsResponse = await axios.get(
+            `/api/submission/getsubmissionbyassignment?assignmentId=${assignmentId}`
+          );
           setSubmissions(submissionsResponse.data.data);
+          toast.success("Fetched the submissions");
         } catch (error) {
           console.error("Error fetching submissions:", error);
+          toast.error("Error while fetching the submissions")
         }
       };
       fetchSubmissions();
@@ -70,30 +93,41 @@ const AssignmentDetails: React.FC = () => {
 
   const handleClose = () => {
     setShow(false);
-    setErrorMessage('')
-  }
+    setErrorMessage("");
+  };
 
   const handleShow = () => {
     setShow(true);
-    console.log(assignment)
+    console.log(assignment);
     seteditedassignment({
       title: assignment?.title || "",
       description: assignment?.description || "",
-      DueDate:assignment?.DueDate || new Date(),
-      AssignmentDoc:assignment?.AssignmentDoc||"",
-      totalPoints:assignment?.totalPoints||0,
-      status:assignment?.status||"Open"
-    })
-  }
+      DueDate: assignment?.DueDate || new Date(),
+      AssignmentDoc: assignment?.AssignmentDoc || "",
+      totalPoints: assignment?.totalPoints || 0,
+      status: assignment?.status || "Open",
+    });
+  };
 
   const handleEdit = async () => {
     const submitbutton = async () => {
       try {
-        if (editedassignment?.title === "" || editedassignment?.description === "" || editedassignment?.AssignmentDoc ==="" || (editedassignment?.status !== "Open" && editedassignment?.status !== "Graded" && editedassignment?.status !== 'Closed')) {
+        if (
+          editedassignment?.title === "" ||
+          editedassignment?.description === "" ||
+          editedassignment?.AssignmentDoc === "" ||
+          (editedassignment?.status !== "Open" &&
+            editedassignment?.status !== "Graded" &&
+            editedassignment?.status !== "Closed")
+        ) {
           setErrorMessage("All entries should be filled");
+          toast.error("All entries much be filled")
           return;
         }
-        const res = await axios.patch(`/api/assignment/editassignment?Id=${assignment?._id}`, editedassignment);
+        const res = await axios.patch(
+          `/api/assignment/editassignment?Id=${assignment?._id}`,
+          editedassignment
+        );
         console.log(res.data);
         seteditedassignment({
           title: "",
@@ -101,25 +135,29 @@ const AssignmentDetails: React.FC = () => {
           AssignmentDoc: "",
           status: "Open",
           DueDate: new Date(),
-          totalPoints: 0
+          totalPoints: 0,
         });
         setErrorMessage("");
-        setyo(prev => !prev)
-        handleClose()
+        setyo((prev) => !prev);
+        handleClose();
+        toast.success("Edited successfully")
       } catch (err) {
         console.log(err);
+        toast.error("Error while editing")
       }
-    }
-    submitbutton()
+    };
+    submitbutton();
   };
 
   const approve = async (id: string) => {
     try {
-      const response = await axios.patch(`/api/submission/approve-a-submission?Id=${id}`);
-      console.log(response.data)
+      const response = await axios.patch(
+        `/api/submission/approve-a-submission?Id=${id}`
+      );
+      console.log(response.data);
       setyo(!yo);
-    }
-    catch (e: any) {
+      toast.success("Approved")
+    } catch (e: any) {
       if (e.response && e.response.status === 400) {
         toast.error(e.response.data.message);
       } else {
@@ -127,30 +165,40 @@ const AssignmentDetails: React.FC = () => {
       }
       console.error("Error while approving:", e);
     }
-  }
+  };
+
+
   const deletesub = async (id: string) => {
     try {
-      const response = await axios.patch(`/api/submission/remove-submission?Id=${id}`);
-      console.log(response.data)
+      const response = await axios.patch(
+        `/api/submission/remove-submission?Id=${id}`
+      );
+      console.log(response.data);
       setyo(!yo);
-    }
-    catch (e: any) {
+      toast.success("Deleted the submission")
+    } catch (e: any) {
       console.error("Error while removing:", e);
+      toast.error("Error while deleting the submission")
     }
-  }
+  };
+
+
   const disapprove = async (id: string) => {
     try {
-      const response = await axios.patch(`/api/submission/disapprove-submission?Id=${id}`);
-      console.log(response.data)
+      const response = await axios.patch(
+        `/api/submission/disapprove-submission?Id=${id}`
+      );
+      console.log(response.data);
       setyo(!yo);
-    }
-    catch (e: any) {
+      toast.success("Disapproved successfully")
+    } catch (e: any) {
       if (e.response && e.response.status === 400) {
         toast.error(e.response.data.message);
       } else {
         toast.error("An unexpected error occurred. Please try again.");
       }
       console.error("Error while approving:", e);
+
     }
   }
 
@@ -194,11 +242,13 @@ const AssignmentDetails: React.FC = () => {
 
   const approveall = async () => {
     try {
-      const response = await axios.patch(`/api/submission/approve-all-submission-assignment?Id=${assignmentId}`);
-      console.log(response.data)
+      const response = await axios.patch(
+        `/api/submission/approve-all-submission-assignment?Id=${assignmentId}`
+      );
+      console.log(response.data);
       setyo(!yo);
-    }
-    catch (e: any) {
+      toast.success("Approved all")
+    } catch (e: any) {
       if (e.response && e.response.status === 400) {
         toast.error(e.response.data.message);
       } else {
@@ -206,14 +256,19 @@ const AssignmentDetails: React.FC = () => {
       }
       console.error("Error while approving:", e);
     }
-  }
+  };
 
   const handleUpload = (result: any) => {
     if (result && result.info) {
-        seteditedassignment((prev) => ({ ...prev!, AssignmentDoc: result.info.url }));
+      seteditedassignment((prev) => ({
+        ...prev!,
+        AssignmentDoc: result.info.url,
+      }));
       console.log("Upload result info:", result.info);
+      toast.success("Uploaded result")
     } else {
       console.error("Upload failed or result is invalid.");
+      toast.error("Upload failed")
     }
   };
 
