@@ -51,7 +51,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const secondaryItems = [
     { text: "Rewards", icon: <RedeemIcon /> },
-    { text: "Settings", icon: <SettingsIcon /> },
+    // { text: "Settings", icon: <SettingsIcon /> },
   ];
 
   return (

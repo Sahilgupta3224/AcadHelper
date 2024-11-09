@@ -1,4 +1,4 @@
-// "use client"
+"use client"
 import Layout from '@/components/layout'
 import {useState,useEffect} from 'react'
 import Box from '@mui/material/Box';
@@ -77,6 +77,7 @@ const style = {
 
         }catch(e){
           console.log(e)
+          toast.error(`${e}`)
         }
       }
       fetchTeam()
@@ -92,9 +93,11 @@ const style = {
           
            if(data.success){
                 setMembers(data.members)
+                toast.success("Loaded members")
            }
          }catch(error){
-           console.error("Error fetching group members:", error);
+          //  console.error("Error fetching group members:", error);
+           toast.error(`Error fetching group members: ${error}`)
          }
         }
         fetchGroupMembers()
@@ -112,6 +115,7 @@ const style = {
 
        }catch(e){
             console.log("Error leaving group",e)
+            toast.error("Error leaving group");
        }
     }
 
@@ -131,6 +135,7 @@ const style = {
 
         }catch(e){
             console.log("Error deleting group",e)
+            toast.error("Error deleting group")
         }
     }
     console.log(team)
@@ -147,13 +152,13 @@ const style = {
               return
           }
           
-            if (isNaN(groupInput.maxteamsize) || groupInput.maxteamsize <= 0) {
-                  toast.error("Maximum group size must be a positive integer");
+            if (isNaN(groupInput.maxteamsize) || groupInput.maxteamsize <= 0 ||groupInput.maxteamsize<=10) {
+                  toast.error("Maximum group size must be a positive integer and should be less than or equal to 10");
                   return;
              }
             
              if(!Number.isInteger(Number(groupInput.maxteamsize))){
-              toast.error("Maximum group size must be a positive integer");
+              toast.error("Maximum group size must be a positive integer <=10");
               return;
              }
           
@@ -182,6 +187,7 @@ const style = {
                 
             }
             // console.log(res.data)
+            
         }
         else{
           toast.error("Field cannot be empty")
@@ -208,7 +214,7 @@ const style = {
 
         <List>
           {members.map(member=>(
-            <ListItem disablePadding id = {member._id}>
+            <ListItem key={member._id} disablePadding id = {member._id}>
             <ListItemButton>
               <ListItemIcon>
               <Avatar alt={member.username} src="/static/images/avatar/2.jpg" />

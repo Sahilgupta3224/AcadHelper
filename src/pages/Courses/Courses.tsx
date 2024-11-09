@@ -238,7 +238,7 @@ function a11yProps(index: number) {
       <CustomTabPanel value={value} index={0}>
         <div className="grid grid-cols-3 gap-4">
         { enrolledCourses.length>0 ? enrolledCourses.map(course=>(
-          <Link href = {`/user/Courses/${course._id}`}>
+          <Link key={course.id} href = {`/user/Courses/${course._id}`}>
               <Card sx={{ maxWidth: 345 }}>
               <CardMedia
                 sx={{ height: 140 }}
@@ -263,8 +263,8 @@ function a11yProps(index: number) {
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <div className="grid grid-cols-3 gap-4">
-      { adminCourses.length>0 ? adminCourses.map(course=>(
-          <Link href = {`/admin/Courses/${course._id}`}>
+      { adminCourses.length>0 ? adminCourses.map((course,idx)=>(
+          <Link key={`${course._id}`+idx*2} href = {`/admin/Courses/${course._id}`}>
               <Card sx={{ maxWidth: 345 }}>
               <CardMedia
                 sx={{ height: 140 }}

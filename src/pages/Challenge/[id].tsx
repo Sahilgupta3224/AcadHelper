@@ -30,7 +30,7 @@ interface EditChallenge {
 const ChallengeDetails: React.FC = () => {
   const router = useRouter();
   const { query } = router
-  console.log(query)
+  // console.log(query)
   const { id } = router.query;
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -38,7 +38,7 @@ const ChallengeDetails: React.FC = () => {
   const [show, setShow] = useState(false)
   const [errorMessage, setErrorMessage] = useState("");
   const [editedchallenge, seteditedchallenge] = useState<EditChallenge | null>(null);
-  console.log(id)
+  // console.log(id)
   const challengeId = typeof id === 'string' ? id : '';
 
   
@@ -48,8 +48,10 @@ const ChallengeDetails: React.FC = () => {
         try {
           const response = await axios.get(`/api/challenge/getchallengeById?Id=${challengeId}`);
           setChallenge(response.data.data);
+          toast.success("Fetched Challenges")
         } catch (error) {
           console.error("Error fetching challenge details:", error);
+          toast.error("Error fetching challenge details:")
         }
       };
       fetchChallenge();
@@ -62,8 +64,10 @@ const ChallengeDetails: React.FC = () => {
         try {
           const submissionsResponse = await axios.get(`/api/submission/getsubmissionbychallenge?challengeId=${challengeId}`);
           setSubmissions(submissionsResponse.data.data);
+          toast.success("Fetched submissions")
         } catch (error) {
           console.error("Error fetching submissions:", error);
+          toast.error("Error while fetching submission")
         }
       };
       fetchSubmissions();
@@ -117,8 +121,10 @@ const ChallengeDetails: React.FC = () => {
         setErrorMessage("");
         setyo(prev => !prev)
         handleClose()
+        toast.success("Edited successfully")
       } catch (err) {
         console.log(err);
+        toast.error("Error while editing")
       }
     }
     submitbutton()
@@ -129,6 +135,7 @@ const ChallengeDetails: React.FC = () => {
       const response = await axios.patch(`/api/submission/approve-a-submission?Id=${id}`);
       console.log(response.data)
       setyo(!yo);
+      toast.success("Approved")
     }
     catch (e: any) {
       if (e.response && e.response.status === 400) {
@@ -144,6 +151,7 @@ const ChallengeDetails: React.FC = () => {
       const response = await axios.patch(`/api/submission/remove-submission?Id=${id}`);
       console.log(response.data)
       setyo(!yo);
+      toast.success("Deleted submission")
     }
     catch (e: any) {
       // if (e.response && e.response.status === 400) {
@@ -152,6 +160,7 @@ const ChallengeDetails: React.FC = () => {
       //   toast.error("An unexpected error occurred. Please try again.");
       // }
       console.error("Error while removing:", e);
+      toast.error("Error while deleting the submission")
     }
   }
   const disapprove = async (id: string) => {
@@ -159,6 +168,7 @@ const ChallengeDetails: React.FC = () => {
       const response = await axios.patch(`/api/submission/disapprove-submission?Id=${id}`);
       console.log(response.data)
       setyo(!yo);
+      toast.success("Disapproved successfully")
     }
     catch (e: any) {
       if (e.response && e.response.status === 400) {
@@ -175,6 +185,7 @@ const ChallengeDetails: React.FC = () => {
       const response = await axios.patch(`/api/submission/approve-all-submission-challenge?Id=${challengeId}`);
       console.log(response.data)
       setyo(!yo);
+      toast.success("Approved to all")
     }
     catch (e: any) {
       if (e.response && e.response.status === 400) {

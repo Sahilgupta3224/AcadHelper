@@ -10,10 +10,6 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Button, ButtonGroup } from '@mui/material';
-import { tasks } from '@/utils/Sample Data/Sample';
-
-// Sample task data (same as before)
-
 
 // Function to get the week number from a date
 const getWeekNumber = (date) => {
@@ -23,9 +19,14 @@ const getWeekNumber = (date) => {
 };
 
 // Function to process tasks for completed tasks by week
-const processCompletedTaskData = (tasks) => {
+const processCompletedTaskData = (tasks = []) => {
+  if (!Array.isArray(tasks)) {
+    console.error('Expected tasks to be an array, but got:', tasks);
+    return [];
+  }
+
   const completedTaskCount = {};
-  tasks.forEach(task => {
+  tasks.forEach((task) => {
     if (task.completed) {
       const createdDate = new Date(task.createdAt);
       const weekNumber = getWeekNumber(createdDate);
@@ -38,9 +39,14 @@ const processCompletedTaskData = (tasks) => {
 };
 
 // Function to process tasks for completed tasks by month
-const processCompletedTaskDataByMonth = (tasks) => {
+const processCompletedTaskDataByMonth = (tasks = []) => {
+  if (!Array.isArray(tasks)) {
+    console.error('Expected tasks to be an array, but got:', tasks);
+    return [];
+  }
+
   const completedTaskCount = {};
-  tasks.forEach(task => {
+  tasks.forEach((task) => {
     if (task.completed) {
       const createdDate = new Date(task.createdAt);
       const monthKey = `${createdDate.getFullYear()}-${createdDate.getMonth() + 1}`; // "YYYY-MM"
@@ -51,9 +57,14 @@ const processCompletedTaskDataByMonth = (tasks) => {
 };
 
 // Function to process tasks for completed tasks by day
-const processCompletedTaskDataByDay = (tasks) => {
+const processCompletedTaskDataByDay = (tasks = []) => {
+  if (!Array.isArray(tasks)) {
+    console.error('Expected tasks to be an array, but got:', tasks);
+    return [];
+  }
+
   const completedTaskCount = {};
-  tasks.forEach(task => {
+  tasks.forEach((task) => {
     if (task.completed) {
       const createdDate = new Date(task.createdAt);
       const dayKey = createdDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
@@ -63,9 +74,9 @@ const processCompletedTaskDataByDay = (tasks) => {
   return Object.entries(completedTaskCount).map(([dayKey, count]) => ({ weekKey: dayKey, count }));
 };
 
-const CompletedTasksChart = () => {
+const CompletedTasksChart = ({ tasks = [] }) => {
   const [timeframe, setTimeframe] = useState('week');
-  
+
   let processedData;
   switch (timeframe) {
     case 'month':
@@ -78,8 +89,8 @@ const CompletedTasksChart = () => {
       processedData = processCompletedTaskData(tasks);
   }
 
-  const maxCount = Math.max(...processedData.map(data => data.count), 0); // Maximum count for Y axis
-  const axisPadding = 2; // Padding for Y axis
+  const maxCount = Math.max(...processedData.map((data) => data.count), 0);
+  const axisPadding = 2;
 
   return (
     <div>

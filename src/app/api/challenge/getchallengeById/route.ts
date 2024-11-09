@@ -3,12 +3,13 @@ import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import {connect} from '@/dbConfig/dbConfig'
 
-connect()
+
 
 export async function GET(request: NextRequest) {
     try {
         const url = new URL(request.url);
         const Id = url.searchParams.get('Id');
+        await connect()
         if(!Id){
             return NextResponse.json({
                 success: false,

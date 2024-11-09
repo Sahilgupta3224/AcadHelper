@@ -19,8 +19,8 @@ const UploadChallenge: React.FC = () => {
   const [points, setPoints] = useState<number | undefined>();
   const [courseId, setCourseId] = useState("");
   const [createdBy, setCreatedBy] = useState("");
-  const {user,setUser} = useStore()
-  const {id} = router.query
+  const { user, setUser } = useStore();
+  const { id } = router.query;
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -36,7 +36,7 @@ const UploadChallenge: React.FC = () => {
         createdBy: user._id,
         courseId: id,
       });
-      console.log(response.data)
+      console.log(response.data);
       toast.success("Challenge uploaded successfully!");
       router.push(`/Challenge/${response.data.Challenge._id}`);
     } catch (error: any) {
@@ -45,11 +45,13 @@ const UploadChallenge: React.FC = () => {
     }
   };
 
-  
   return (
     <div className="flex flex-col items-center bg-gray-100 min-h-screen py-10 px-5">
       <h1 className="text-3xl font-bold mb-6">Upload Challenge</h1>
-      <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-6 rounded shadow-md">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md bg-white p-6 rounded shadow-md"
+      >
         <input
           type="text"
           placeholder="Title"
@@ -98,7 +100,7 @@ const UploadChallenge: React.FC = () => {
           <option value="individual">Individual</option>
           <option value="team">Team</option>
         </select>
-        
+
         <select
           value={frequency}
           onChange={(e) => setFrequency(e.target.value as "daily" | "weekly")}
