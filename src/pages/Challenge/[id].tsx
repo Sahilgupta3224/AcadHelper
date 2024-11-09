@@ -6,7 +6,7 @@ import Submission from "@/Interfaces/submission";
 import '../../app/globals.css';
 import toast, { Toaster } from 'react-hot-toast';
 // import { Modal, Button, Form } from 'react-bootstrap';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, TableBody, TableHead, TableCell, TableRow } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, TableBody, TableHead, TableCell, TableRow, LinearProgress } from '@mui/material';
 import Layout from "@/components/layout";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -198,22 +198,22 @@ const ChallengeDetails: React.FC = () => {
     }
   }
 
-  if (!challenge) return <div>Loading...</div>;
+  if (!challenge) return <Layout><LinearProgress/></Layout>;
 
   return (
     <Layout>
     <div className="bg-gray-100 min-h-screen py-10 px-5">
       <div className='m-4'>
       <button
-          onClick={() => router.push(`/admin/Courses`)}
+          onClick={() => router.push(`/admin/Courses/${challenge.courseId}`)}
           className="mb-4 text-blue-400 rounded hover:bg-blue-100 transition"
         >
           <ArrowBackIosNewIcon/>
         </button>
         <div className="flex justify-between mb-6">
           <div className="flex flex-col">
-            <h1 className="text-3xl font-bold">Title: {challenge.title}</h1>
-            <p className="text-gray-700 w-[50vw] px-1"> Description: {challenge.description}</p>
+            <h1 className="text-3xl font-bold w-[50vw] break-words">Title: {challenge.title}</h1>
+            <p className="text-gray-700 w-[50vw] break-words px-1"> Description: {challenge.description}</p>
           </div>
           <div className="flex flex-col items-end">
             <div className="mb-4">

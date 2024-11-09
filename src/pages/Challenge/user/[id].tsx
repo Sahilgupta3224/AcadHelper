@@ -60,21 +60,23 @@ const ChallengeDetails: React.FC = () => {
   const challengeId = typeof id === 'string' ? id : '';
 
   //Fetching all teams of the user
-  useEffect(()=>{
-    const fetchGroups = async()=>{
-      try{
-        const {data} = await axios.get("/api/team/",{params:{userId:user._id}})
-      if(data.success){
-        setGroups(data.teams)
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const { data } = await axios.get("/api/team/", {
+          params: { userId: user._id },
+        });
+        if (data.success) {
+          setGroups(data.teams);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(error.response.data.error);
       }
-    }
-      catch(error){
-        console.log(error)
-      }
-    }  
-    fetchGroups()
-  },[])
-  console.log(groups)
+    };
+    fetchGroups();
+  }, []);
+  console.log(groups);
 
   useEffect(() => {
     if (challengeId) {
@@ -84,6 +86,7 @@ const ChallengeDetails: React.FC = () => {
           setChallenge(response.data.data);
         } catch (error) {
           console.error("Error fetching challenge details:", error);
+          toast.error(error.response.data.message);
         }
       };
       fetchChallenge();
@@ -92,16 +95,19 @@ const ChallengeDetails: React.FC = () => {
 
   useEffect(() => {
     if (challengeId) {
-        const fetchSubmissions = async () => {
-            try {
-                const submissionsResponse = await axios.get(`/api/submission/getsubmissionbychallengeanduser?challengeId=${challengeId}&userId=${user._id}`);
-                setSubmissions(submissionsResponse.data.data);
-                console.log(submissionsResponse)
-            } catch (error) {
-                console.error("Error fetching submissions:", error);
-            }
-        };
-        fetchSubmissions();
+      const fetchSubmissions = async () => {
+        try {
+          const submissionsResponse = await axios.get(
+            `/api/submission/getsubmissionbychallengeanduser?challengeId=${challengeId}&userId=${user._id}`
+          );
+          setSubmissions(submissionsResponse.data.data);
+          console.log(submissionsResponse);
+        } catch (error) {
+          console.error("Error fetching submissions:", error);
+          toast.error(error.message);
+        }
+      };
+      fetchSubmissions();
     }
 }, [challengeId, yo]);
 
@@ -134,33 +140,34 @@ const ChallengeDetails: React.FC = () => {
     }
     catch (e: any) {
       console.error("Error while removing:", e);
+      toast.error(e.response.data.message);
     }
   }
 
-  const handleEditsub= async (id: string) => {
-    if(!challengeDoc)toast.error("Select file first")
+  const handleEditsub = async (id: string) => {
+    if (!challengeDoc) toast.error("Select file first")
     const submitwala = {
         documentLink: challengeDoc
     }
     try {
-        const response = await axios.patch(`/api/submission/edit-submission?Id=${id}`, submitwala);
-        console.log(response.data)
-        setchallengeDoc("")
-        setIsDocVisible(false);
-        setyo(!yo);
+      const response = await axios.patch(`/api/submission/edit-submission?Id=${id}`, submitwala);
+      console.log(response.data)
+      setchallengeDoc("")
+      setIsDocVisible(false);
+      setyo(!yo);
     }
     catch (e: any) {
-        console.error("Error while editing:", e);
+      console.error("Error while editing:", e);
     }
-}
-
-const handlesub = async (type,groupId="") => {
-  console.log(type,groupId)
-  if(type=="team" && groupId==""){
-    toast.error("Select a group")
-    return;
   }
-  const submitwala = {
+
+  const handlesub = async (type, groupId = "") => {
+    console.log(type, groupId)
+    if (type == "team" && groupId == "") {
+      toast.error("Select a group")
+      return;
+    }
+    const submitwala = {
       user: user._id,
       challenge: challengeId,
       documentLink: challengeDoc,
@@ -176,12 +183,11 @@ const handlesub = async (type,groupId="") => {
       setIsDocVisible(false);
       setyo(!yo);
       setSubmitOpen(false)
-  }
-  catch (e: any) {
-    console.log(e)
+    }
+    catch (e: any) {
       toast.error(e.response.data.message)
+    }
   }
-}
 
 const handleUpload = (result: any) => {
   if (result && result.info) {
@@ -204,99 +210,99 @@ const handleUpload = (result: any) => {
         >
            <ArrowBackIosNewIcon/>
         </button>
-      <div className="m-4">
-        <div className="flex justify-between mb-6">
-          <div className="flex flex-col">
-            <h1 className="text-3xl font-bold">Title: {challenge.title}</h1>
-            <p className="text-gray-700 p-1 max-w-500px break-words">Description: {challenge.description}</p>
-          </div>
-          <div className="flex flex-col items-end">
-            <div className="mb-4">
-              <span className="font-semibold">Type:</span> {challenge.type}
+        <div className="m-4">
+          <div className="flex justify-between mb-6">
+            <div className="flex flex-col">
+              <h1 className="text-3xl font-bold">Title: {challenge.title}</h1>
+              <p className="text-gray-700 p-1 max-w-500px break-words">Description: {challenge.description}</p>
             </div>
-            <div className="mb-4">
-              <span className="font-semibold">Frequency:</span> {challenge.frequency}
-            </div>
-            <div className="mb-4">
-              <span className="font-semibold">Points:</span> {challenge.points}
-            </div>
-            <div className="mb-4">
-              <span className="font-semibold">Start Date:</span> {new Date(challenge.startDate).toLocaleDateString()}
-            </div>
-            <div className="mb-4">
-              <span className="font-semibold">End Date:</span> {new Date(challenge.endDate).toLocaleDateString()}
-            </div>
-            {challenge.challengeDoc && (
+            <div className="flex flex-col items-end">
               <div className="mb-4">
-                <span className="font-semibold">Challenge Document:</span>{" "}
-                <a href={challenge.challengeDoc} target="_blank" rel="noopener noreferrer" className="text-blue-500">
-                  View Document
-                </a>
+                <span className="font-semibold">Type:</span> {challenge.type}
               </div>
+              <div className="mb-4">
+                <span className="font-semibold">Frequency:</span> {challenge.frequency}
+              </div>
+              <div className="mb-4">
+                <span className="font-semibold">Points:</span> {challenge.points}
+              </div>
+              <div className="mb-4">
+                <span className="font-semibold">Start Date:</span> {new Date(challenge.startDate).toLocaleDateString()}
+              </div>
+              <div className="mb-4">
+                <span className="font-semibold">End Date:</span> {new Date(challenge.endDate).toLocaleDateString()}
+              </div>
+              {challenge.challengeDoc && (
+                <div className="mb-4">
+                  <span className="font-semibold">Challenge Document:</span>{" "}
+                  <a href={challenge.challengeDoc} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                    View Document
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="flex">
+            <CldUploadWidget uploadPreset="acad_helper_pdf" onSuccess={handleUpload}>
+              {({ open }) => (
+                <Button className="mt-4" onClick={() => open()} variant="outlined" color="primary">
+                  Select File
+                </Button>
+              )}
+            </CldUploadWidget>
+            <button
+              onClick={() => {
+                if (submissions.length > 0) {
+                  handleEditsub(submissions[0]._id);
+                } else {
+                  if (!challengeDoc) {
+                    toast.error("Select file first");
+                  } else if (challenge.type == "individual") {
+                    handlesub("individual")
+                  } else {
+                    handleSubmitOpen();
+                  }
+                }
+              }}
+              className="bg-blue-600 px-4 mt-4 ml-2 text-white rounded hover:bg-blue-700 transition"
+            >
+              {submissions.length > 0 ? "Edit Submission" : "Submit Challenge"}
+            </button>
+          </div>
+
+          {isDocVisible && challengeDoc && (
+            <div>
+              <a href={challengeDoc} className="text-blue-500 " target="_blank" rel="noopener noreferrer">
+                View Uploaded Document
+              </a>
+            </div>
+          )}
+          <div className="mt-10">
+            <h2 className="text-2xl font-bold mb-4">Submissions</h2>
+            {submissions.length > 0 ? (
+              submissions.map((submission) => (
+                <div key={submission._id} className="bg-white shadow-md rounded-lg p-4 mb-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      {/* <p><strong>Submitted By:</strong> {submission.user.name}</p> */}
+                      <p><strong>Submitted At:</strong> {new Date(submission.submittedAt).toLocaleString()}</p>
+                    </div>
+                    <a href={submission.documentLink} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                      View Submission
+                    </a>
+                    <Button onClick={() => { deletesub(submission._id) }}>Delete submission</Button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-600">No submissions yet.</p>
             )}
           </div>
-        </div>
-        <div className="flex">
-        <CldUploadWidget uploadPreset="acad_helper_pdf" onSuccess={handleUpload}>
-                    {({ open }) => (
-                        <Button className="mt-4" onClick={() => open()} variant="outlined" color="primary">
-                            Select File
-                        </Button>
-                    )}
-        </CldUploadWidget>
-        <button
-          onClick={() => {
-            if (submissions.length > 0) {
-              handleEditsub(submissions[0]._id);
-            } else {
-              if (!challengeDoc) {
-                toast.error("Select file first");
-              }else if(challenge.type=="individual"){
-                handlesub("individual")
-              }else{
-                handleSubmitOpen();
-              }
-            }
-          }}
-          className="bg-blue-600 px-4 mt-4 ml-2 text-white rounded hover:bg-blue-700 transition"
-          >
-          {submissions.length > 0 ? "Edit Submission" : "Submit Challenge"}
-        </button>
-        </div>
-                
-                {isDocVisible && challengeDoc && (
-                    <div>
-                        <a href={challengeDoc} className="text-blue-500 " target="_blank" rel="noopener noreferrer">
-                            View Uploaded Document
-                        </a>
-                    </div>
-                )}
-                <div className="mt-10">
-                    <h2 className="text-2xl font-bold mb-4">Submissions</h2>
-                    {submissions.length > 0 ? (
-                        submissions.map((submission) => (
-                            <div key={submission._id} className="bg-white shadow-md rounded-lg p-4 mb-4">
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        {/* <p><strong>Submitted By:</strong> {submission.user.name}</p> */}
-                                        <p><strong>Submitted At:</strong> {new Date(submission.submittedAt).toLocaleString()}</p>
-                                    </div>
-                                    <a href={submission.documentLink} target="_blank" rel="noopener noreferrer" className="text-blue-500">
-                                        View Submission
-                                    </a>
-                                    <Button onClick={()=>{deletesub(submission._id)}}>Delete submission</Button>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-gray-600">No submissions yet.</p>
-                    )}
-                </div>
-       
 
+
+        </div>
       </div>
-    </div>
-    <Modal
+      <Modal
         open={submitOpen}
         onClose={handleSubmitClose}
         aria-labelledby="modal-modal-title"
@@ -319,11 +325,11 @@ const handleUpload = (result: any) => {
               {
                 groups.length>0 && groups.map(group=>
                     <MenuItem value={group._id}>{group.teamname}</MenuItem>
-                )
+                  ))
               }
-            </Select>
-          </FormControl>
-          <Button type="button" variant="outlined" sx={{marginLeft:"1rem"}} onClick={()=>handlesub("team",selectedGroup)}>Submit</Button>
+              </Select>
+            </FormControl>
+            <Button type="button" variant="outlined" sx={{ marginLeft: "1rem" }} onClick={() => handlesub("team", selectedGroup)}>Submit</Button>
           </div>
           
         </Box>

@@ -19,7 +19,6 @@ import InputLabel from '@mui/material/InputLabel';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import mongoose from 'mongoose';
-import Timer from '@/components/Timer';
 import { useStore } from '@/store';
 import toast, { Toaster } from 'react-hot-toast';
 import Chip from '@mui/material/Chip';
@@ -32,7 +31,6 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  // width: 400,
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,

@@ -116,8 +116,8 @@ async function checkAndAwardBadges(userId, courseId) {
 export async function POST(request: NextRequest) {
     try {
         const data = await request.json();
-        const { user, assignment, challenge, documentLink, Course, type, groupId } = data;
-
+        let { user, assignment, challenge, documentLink,Course,type,groupId} = data;
+        if(groupId=="")groupId=null
         if (!user || !documentLink) {
             return NextResponse.json({
                 success: false,

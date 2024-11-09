@@ -13,6 +13,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import { Box, Button, TextField, Typography, Modal, IconButton, Badge, Pagination,Select, MenuItem, Chip } from "@mui/material";
 import Layout from "@/components/layout";
 import "../../../app/globals.css";
 import { useRouter } from "next/router";
@@ -33,7 +34,8 @@ import KickUserModal from "@/components/KickUserModal";
 import Course from "@/Interfaces/course";
 import Auth from '@/components/Auth'
 import User from "@/Interfaces/user";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
+import { TreeItem2Label } from "@mui/x-tree-view";
 
 const AdminPage: React.FC = () => {
   const router = useRouter();
@@ -123,73 +125,85 @@ const AdminPage: React.FC = () => {
     }
   };
 
-  const handleSubmitChallenge = async () => {
-    try {
-      let End = new Date(startDate);
-      if (frequency === "daily") {
-        End.setDate(End.getDate() + 1);
-      }
-      if (frequency === "weekly") {
-        End.setDate(End.getDate() + 7);
-      }
-      const response = await axios.post("/api/challenge/uploadchallenge", {
-        title,
-        description,
-        startDate,
-        endDate: End.toISOString().split("T")[0],
-        challengeDoc,
-        type,
-        frequency,
-        points,
-        createdBy: user._id,
-        courseId,
-      });
-      setChallenges((prev) => [...prev, response.data.Challenge]);
-      setTitle("");
-      setDescription("");
-      setStartDate("");
-      setEndDate("");
-      setChallengeDoc("");
-      setType("individual");
-      setFrequency("daily");
-      setPoints(undefined);
-      setOpenUploadModal(false);
-      setyo(!yo);
-
-      toast.success("Submitted Challenge");
-    } catch (error) {
-      console.error("Error uploading challenge:", error);
-      toast.error("Error uploading challenge:");
+const handleSubmitChallenge = async () => {
+  console.log(title,description,startDate,challengeDoc,type,frequency,points)
+  if(!title || !description || !startDate || !challengeDoc || !type || !frequency || !points){
+    toast.error("Required fields cannot be empty")
+  }
+  if(title.length>100){
+    toast.error("Title cannot be greater than 100 characters")
+  }
+  if(assignmentPoints>500){
+    toast.error("Points cannot be greater than 500")
+  }
+  try {
+    let End = new Date(startDate);
+    if (frequency === "daily") {
+      End.setDate(End.getDate() + 1)
     }
-  };
-
-  const handleSubmitAssignment = async () => {
-    try {
-      const response = await axios.post("/api/assignment/upload-assignment", {
-        title: assignmentTitle,
-        description: assignmentDescription,
-        DueDate: assignmentDueDate,
-        AssignmentDoc: assignmentDoc,
-        totalPoints: assignmentPoints,
-        CourseId: courseId,
-        uploadedAt: Date.now(),
-        status: "Open",
-      });
-      console.log("Assignment uploaded successfully:", response.data);
-      setAssignmentTitle("");
-      setAssignmentDescription("");
-      setAssignmentDueDate("");
-      setAssignmentDoc("");
-      setAssignmentPoints(undefined);
-      setOpenUploadAssignmentModal(false);
-      setyo(!yo);
-
-      toast.success("Uploaded the assignment");
-    } catch (error) {
-      console.error("Error uploading assignment:", error);
-      toast.error("Error uploading assignment:");
+    if (frequency === "weekly") {
+      End.setDate(End.getDate() + 7)
     }
-  };
+    const response = await axios.post("/api/challenge/uploadchallenge", {
+      title,
+      description,
+      startDate,
+      endDate: End.toISOString().split('T')[0],
+      challengeDoc,
+      type,
+      frequency,
+      points,
+      createdBy: user._id,
+      courseId,
+    });
+    setChallenges((prev) => [...prev, response.data.Challenge]);
+    setTitle("");
+    setDescription("");
+    setStartDate("");
+    setEndDate("");
+    setChallengeDoc("");
+    setType("individual");
+    setFrequency("daily");
+    setPoints(undefined);
+    setOpenUploadModal(false);
+    setyo(!yo)
+    toast.success("Challenge uploaded successfully")
+  } catch (error) {
+    toast.error(error.response.data.message)
+  }
+};
+
+const handleSubmitAssignment = async () => {
+  if(title.length>100){
+    toast.error("Title cannot be greater than 100 characters")
+  }
+  if(assignmentPoints>500){
+    toast.error("Points cannot be greater than 500")
+  }
+  try {
+    const response = await axios.post("/api/assignment/upload-assignment", {
+      userId: user._id,
+      title: assignmentTitle,
+      description: assignmentDescription,
+      DueDate: assignmentDueDate,
+      AssignmentDoc: assignmentDoc,
+      totalPoints: assignmentPoints,
+      CourseId: courseId,
+      uploadedAt: Date.now(),
+      status: "Open"
+    });
+    toast.success("Assignment uploaded successfully")
+    setAssignmentTitle("");
+    setAssignmentDescription("");
+    setAssignmentDueDate("");
+    setAssignmentDoc("");
+    setAssignmentPoints(undefined);
+    setOpenUploadAssignmentModal(false);
+    setyo(!yo)
+  } catch (error:any) {
+    toast.error(error.response.data.message)
+  }
+};
 
 const fetchChallenges = async () => {
   try {
@@ -357,15 +371,7 @@ const fetchChallenges = async () => {
 
   return (
     <Layout>
-      <Box sx={{ padding: "24px" }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Typography variant="h4" gutterBottom>
-          Admin Dashboard
-        </Typography>
-        <Typography variant="h4" gutterBottom>
-            Course-Code: {course?.CourseCode}
-        </Typography>
-        </Box>
+      <Box>
         <Tabs
           value={value}
           onChange={handleChange}
@@ -375,165 +381,50 @@ const fetchChallenges = async () => {
         >
           <Tab label="Assignments" />
           <Tab label="Challenges" />
-          <Tab label="Basic Operations" />
+          <Tab label="Settings" />
         </Tabs>
         {value === 0 && (
           <>
-            <Box sx={{ mt: 1 }}>
-              <AssignmentModal
-                open={open}
-                handleClose={handleClose}
-                courseId={courseId}
-              />
-              <Box
-                sx={{
-                  display: "flex",
-                  width: "100%",
-                  justifyContent: "center",
-                  alignContent: "center",
-                  gap: 10,
-                }}
-              >
-                <Pagination
-                  count={Math.ceil(assignments.length / itemsPerPage)}
-                  variant="outlined"
-                  color="secondary"
-                  page={currentAssignmentPage}
-                  onChange={handleAssignmentPageChange}
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ width: "200px" }}
-                  onClick={() => setOpenUploadAssignmentModal(true)}
-                >
-                  Upload Assignment
-                </Button>
+            <Box sx={{ mt:1 }}>
+              <div className="flex flex-end justify-end">
+            <Button variant="outlined" color="primary" sx={{ width: '200px',marginX:"2rem" }} onClick={() => setOpenUploadAssignmentModal(true)} >
+                Upload Assignment
+            </Button>
+            </div>
+            <AssignmentModal open={open} handleClose={handleClose} courseId={courseId}/>
+                          <Box
+                          sx={{display:"flex",width:"100%",justifyContent:"center",alignContent:"center",gap:10}}
+                          >
+                            <Pagination
+                             count={Math.ceil(assignments.length / itemsPerPage)}
+                             variant="outlined" 
+                             color="secondary" 
+                              page={currentAssignmentPage}
+                              onChange={handleAssignmentPageChange}
+                             />
+              
               </Box>
 
               {paginatedAssignments.length > 0 ? (
-                paginatedAssignments.map((assignment) => (
-                  <Box
-                    key={assignment._id}
-                    sx={{
-                      mt: 1,
-                      mb: 3,
-                      p: 2,
-                      border: "1px solid #ccc",
-                      borderRadius: "8px",
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                      backgroundColor: "#fafafa",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
-                    >
-                      <Typography variant="h5" gutterBottom>
-                        {assignment.title}
-                      </Typography>
-                      <Box sx={{ mb: 2 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ display: "inline", fontWeight: "bold" }}
-                        >
-                          Total Points:
-                        </Typography>
-                        <Badge
-                          badgeContent={assignment.totalPoints}
-                          color="secondary"
-                          sx={{ ml: 2 }}
-                        />
-                      </Box>
-                    </Box>
+                        paginatedAssignments.map((assignment) => (
+                          <div className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer"  onClick={() => router.push(`/Assignment/admin/${assignment._id}`)}>
+                          <h1 className="text-3xl font-bold mb-4 flex justify-between">
+                           <div className="truncate w-[80%]">{assignment.title}</div>
+                           <div>
+                            <Chip label={assignment.status} sx={{marginRight:"1rem"}} color={assignment.status=='Open' ? "success" : "error"} variant="outlined"/>
+                            <Chip label={assignment.totalPoints} />
+                            </div>
+                           </h1>
+                          <p><strong>Assigned on:</strong> {new Date(assignment.uploadedAt).toISOString().split("T")[0]}</p>
+                          <p><strong>Due date:</strong> {new Date(assignment.DueDate).toISOString().split("T")[0]}</p>
+                      </div>
 
-                    <Box
-                      sx={{
-                        display: "flex",
-                        width: "100%",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        sx={{ mb: 1, backgroundColor: "aliceblue" }}
-                      >
-                        <strong>Uploaded At:</strong>{" "}
-                        {new Date(assignment.uploadedAt).toLocaleString()}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ mb: 1, backgroundColor: "aliceblue" }}
-                      >
-                        <strong>Due Date:</strong>{" "}
-                        {assignment.DueDate?.toLocaleString()}
-                      </Typography>
-                    </Box>
-
-                    <Typography variant="body1" sx={{ mb: 1 }}>
-                      <strong>Description:</strong> <br />
-                      {assignment.description}
-                    </Typography>
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-around",
-                        alignItems: "center",
-                        gap: 2,
-                        mt: 2,
-                      }}
-                    >
-                      {/* Status Button */}
-                      <Box
-                        sx={{ display: "flex", gap: 2, alignContent: "center" }}
-                      >
-                        <Typography>Status</Typography>
-                        <Button variant="outlined" color="primary">
-                          {assignment.status}
-                        </Button>
-                      </Box>
-
-                      {/* View Document Button */}
-                      <Button
-                        variant="outlined"
-                        color="secondary"
-                        href={assignment.AssignmentDoc}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        sx={{
-                          animation: "fadeIn 1.5s ease-in-out",
-                          "@keyframes fadeIn": {
-                            "0%": { opacity: 0 },
-                            "100%": { opacity: 1 },
-                          },
-                        }}
-                      >
-                        View Document
-                      </Button>
-
-                      <Button
-                        variant="outlined"
-                        sx={{ mt: 2 }}
-                        onClick={() =>
-                          router.push(`/Assignment/admin/${assignment._id}`)
-                        }
-                      >
-                        View Details
-                      </Button>
-                    </Box>
-                  </Box>
-                ))
-              ) : (
-                <Typography variant="body1" color="textSecondary">
-                  No assignments available.
-                </Typography>
-              )}
+                    ))
+                ) : (
+                    <div className="m-4">
+                            No assignments available.
+                    </div>
+                )}
 
               <Modal
                 open={openUploadAssignmentModal}
@@ -600,10 +491,8 @@ const fetchChallenges = async () => {
                     type="number"
                     label="Points"
                     value={assignmentPoints}
-                    onChange={(e) =>
-                      setAssignmentPoints(parseInt(e.target.value))
-                    }
-                    sx={{ mb: 2 }}
+                    onChange={(e) => setAssignmentPoints(parseInt(e.target.value))}
+                    sx={{ my: 2 }}
                   />
                   <Button
                     variant="contained"
@@ -620,33 +509,22 @@ const fetchChallenges = async () => {
 
         {value === 1 && (
           <>
-            <Box sx={{ mt: 2 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignContent: "center",
-                  gap: 10,
-                  mb: 2,
-                }}
-              >
-                <Pagination
-                  count={Math.ceil(challenges.length / itemsPerPage)}
-                  page={currentChallengePage}
-                  onChange={handleChallengePageChange}
-                  variant="outlined"
-                  color="secondary"
-                />
+          <Box>
+          <div className="flex justify-end">
+          <Button variant="outlined" color="primary" sx={{ width: '200px',marginRight:"2rem" }} onClick={() => setOpenUploadModal(true)}>
+                     Add Challenge
+          </Button>
+          </div>
 
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ width: "200px" }}
-                  onClick={() => setOpenUploadModal(true)}
-                >
-                  Add Challenge
-                </Button>
-              </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'center',alignContent:"center",gap:10, mb: 2 }}>
+                  <Pagination  
+                    count={Math.ceil(challenges.length / itemsPerPage)}
+                    page={currentChallengePage}
+                    onChange={handleChallengePageChange}
+                    variant="outlined" 
+                    color="secondary" />
+            </Box>
+
 
               <Modal
                 open={openUploadModal}
@@ -697,15 +575,10 @@ const fetchChallenges = async () => {
                     onSuccess={handleUploadChallenge}
                   >
                     {({ open }) => (
-                      <Button
-                        onClick={() => open()}
-                        variant="outlined"
-                        color="primary"
-                        fullWidth
-                      >
-                        Select File
-                      </Button>
-                    )}
+            <Button onClick={() => open()} variant="outlined" color="primary" fullWidth sx={{mb:2}}>
+              Select File
+            </Button>
+          )}
                   </CldUploadWidget>
                   <Select
                     fullWidth
@@ -743,183 +616,72 @@ const fetchChallenges = async () => {
                 </Box>
               </Modal>
 
-              {paginatedChallenges.length > 0 ? (
-                paginatedChallenges.map((challenge) => (
-                  <Box
-                    key={challenge._id}
-                    sx={{
-                      mb: 3,
-                      p: 2,
-                      border: "1px solid #ccc",
-                      borderRadius: "8px",
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                      backgroundColor: "#fafafa",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        width: "100%",
-                        p: 1,
-                      }}
-                    >
-                      <Typography variant="h5" gutterBottom>
-                        {challenge.title}
-                      </Typography>
-                      <Box
-                        sx={{
-                          mb: 1,
-                          display: "flex",
-                          gap: 2,
-                          alignContent: "center",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{ display: "inline", fontWeight: "bold" }}
-                        >
-                          Total Points:
-                        </Typography>
-                        <Badge
-                          badgeContent={challenge.points}
-                          color="secondary"
-                        />
-                      </Box>
-                    </Box>
+            {paginatedChallenges.length > 0 ? (
 
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignContent: "center",
-                        gap: 2,
-                        width: "100%",
-                      }}
-                    >
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        <strong>Start Date:</strong>{" "}
-                        {new Date(challenge.startDate).toLocaleString()}
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        <strong>End Date:</strong>{" "}
-                        {new Date(challenge.endDate).toLocaleString()}
-                      </Typography>
-                    </Box>
-
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      <strong>Description: </strong>
-                      <br /> {challenge.description}
-                    </Typography>
-
-                    <Box
-                      sx={{
-                        mt: 2,
-                        display: "flex",
-                        justifyContent: "space-evenly",
-                        alignContent: "center",
-                      }}
-                    >
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        <strong>Type:</strong>{" "}
-                        {challenge.type.charAt(0).toUpperCase() +
-                          challenge.type.slice(1)}
-                      </Typography>
-
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        <strong>Frequency:</strong>{" "}
-                        {challenge.frequency.charAt(0).toUpperCase() +
-                          challenge.frequency.slice(1)}
-                      </Typography>
-
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={() =>
-                          router.push(`/Challenge/${challenge._id}`)
-                        }
-                      >
-                        View Details
-                      </Button>
-                    </Box>
-                  </Box>
-                ))
-              ) : (
-                <Typography>No challenges found for this course.</Typography>
-              )}
-            </Box>
-          </>
+              paginatedChallenges.map((challenge) => (
+                <div className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer" onClick={() => router.push(`/Challenge/${challenge._id}`)}>
+                  <h1 className="text-3xl font-bold mb-4 flex justify-between">
+                   <div className="truncate w-[80%]">{challenge.title}</div>
+                   <div>
+                   <Chip label={challenge.type} sx={{marginRight:"1rem"}} color="secondary" variant="outlined"/>
+                    <Chip label={challenge.frequency} sx={{marginRight:"1rem"}} color={challenge.frequency=='daily' ? "primary" : "success"} variant="outlined"/>
+                    <Chip label={challenge.points} />
+                    </div>
+                   </h1>
+                  <p><strong>Start date:</strong> {new Date(challenge.startDate).toISOString().split("T")[0]}</p>
+                  <p><strong>Due date:</strong> {new Date(challenge.endDate).toISOString().split("T")[0]}</p>
+              </div>
+              ))
+            ) : (
+              <div className="m-4">No challenges found for this course.</div>
+            )}
+          </Box>
+          
+        </>
         )}
 
         {/* admin features -> view the users ,making the user admin etc */}
         {value === 2 && (
           <>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "flex-end",
-                mb: 2,
-                mt: 2,
-              }}
-            >
-              <Box
-                sx={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "space-evenly",
-                  alignItems: "center",
-                }}
+          <div className="flex justify-between p-4">
+          
+          <div>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={()=>setOpenSearch(true)}
+                sx={{marginLeft:"1rem",marginRight:"1rem"}}
               >
-                <Pagination
-                  count={Math.ceil(enrolledUsers.length / itemsPerPage)}
-                  page={currentUserPage}
-                  onChange={handleUserPageChange}
-                  variant="outlined"
-                  color="secondary"
-                />
+                Make Admin
+              </Button>
 
-                <SearchUserModal
-                  open={openSearch}
-                  setOpen={setOpenSearch}
-                  courseId={courseId}
-                />
-                <KickUserModal
-                  open={openKick}
-                  setOpen={setOpenKick}
-                  courseId={courseId}
-                />
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => setOpenSearch(true)}
-                >
-                  Make Admin
-                </Button>
-
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => setOpenKick(true)}
-                >
-                  Kick Out User
-                </Button>
-              </Box>
-
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  mb: 2,
-                  mt: 2,
-                }}
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={()=>setOpenKick(true)}
               >
-                <Typography variant="h5" gutterBottom>
-                  Enrolled Users
-                </Typography>
+                Remove User
+              </Button>
+            </div>
+            <Typography variant="h6" gutterBottom>
+              Course Code: {course?.CourseCode}
+            </Typography>
+            </div>
+            <div className="flex justify-center">
+              <Pagination  
+              count={Math.ceil(enrolledUsers.length / itemsPerPage)}
+              page={currentUserPage}
+              onChange={handleUserPageChange} 
+              variant="outlined" 
+              color="secondary" />
+              <SearchUserModal open={openSearch} setOpen={setOpenSearch} courseId={courseId}/>
+              <KickUserModal open={openKick} setOpen={setOpenKick} courseId={courseId}/>
+            </div>
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', mb: 2, mt: 2,padding:"2rem"}}>
+              <Typography variant="h5" gutterBottom>
+                Enrolled Users
+              </Typography>
 
                 {paginatedUsers.length > 0 ? (
                   paginatedUsers.map((user) => (
@@ -953,13 +715,6 @@ const fetchChallenges = async () => {
                         >
                           View Profile
                         </Button>
-                        <Button
-                          variant="outlined"
-                          color="secondary"
-                          onClick={() => kickOut(user)}
-                        >
-                          Remove
-                        </Button>
                       </Box>
                     </Box>
                   ))
@@ -968,9 +723,11 @@ const fetchChallenges = async () => {
                     No users enrolled in this course.
                   </Typography>
                 )}
-              </Box>
-            </Box>
-          </>
+          </Box>
+
+
+          
+        </>
         )}
 
         <Modal
@@ -1070,6 +827,7 @@ const fetchChallenges = async () => {
             </Box>
           </Box>
         </Modal>
+        <Toaster/>
       </Box>
     </Layout>
   );

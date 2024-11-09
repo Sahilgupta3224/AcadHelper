@@ -62,7 +62,7 @@ const AdminPage: React.FC = () => {
   const [assignmentDoc, setAssignmentDoc] = useState("");
   const [assignmentPoints, setAssignmentPoints] = useState<number | undefined>();
   const [yo, setyo] = useState(false)
-  const courseId=id
+  const courseId = id
   const { user, setUser } = useStore()
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -294,6 +294,7 @@ const AdminPage: React.FC = () => {
                   <h1 className="text-3xl font-bold mb-4 flex justify-between">
                    {challenge.title}
                    <div>
+                    <Chip label={challenge.type} sx={{marginRight:"1rem"}} color="secondary" variant="outlined"/>
                     <Chip label={challenge.frequency} sx={{marginRight:"1rem"}} color={challenge.frequency=='daily' ? "primary" : "success"} variant="outlined"/>
                     <Chip label={challenge.points} />
                     </div>
@@ -324,8 +325,8 @@ const AdminPage: React.FC = () => {
               {/* <Button variant="contained" color="primary" sx={{ width: '200px' }}>
                 My Submissions
               </Button> */}
-              <div className="">
-                    <h2 className="text-2xl font-bold mt-10 mb-4 ml-10">My Submissions</h2>
+              <div className="mt-10">
+                    <h2 className="text-2xl font-bold m-4">Submissions</h2>
                     {submissions.length > 0 ? (
                         submissions.map((submission) => (
                             <div key={submission._id} className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer">
@@ -341,7 +342,7 @@ const AdminPage: React.FC = () => {
                             </div>
                         ))
                     ) : (
-                        <p className="text-gray-600">No submissions yet.</p>
+                        <p className="text-gray-600 m-4">No submissions yet.</p>
                     )}
                 </div>
             </Box>

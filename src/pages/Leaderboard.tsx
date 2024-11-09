@@ -61,7 +61,7 @@ const Leaderboard = () => {
             }
         }catch(e){
             console.log(e)
-            toast.error(`${e}`)
+            toast.error(e.response.data.message)
         }
     }
     const clearFilter=()=>{

@@ -5,7 +5,6 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { Container, Typography, TextField, Button, List, ListItem, ListItemText, IconButton, Checkbox } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
 import '../../app/globals.css';
 import Modal from '@mui/material/Modal';
 import axios from 'axios';
@@ -56,12 +55,8 @@ function a11yProps(index: number) {
     );
   }
   
-    const Pomodoro = () => {
-    const [value, setValue] = useState(0);
-    const [tasks, setTasks] = useState([]);
-    const {user,setUser} = useStore()
-    const [newTask, setNewTask] = useState<string>("");
-    const params = useParams()
+export const Pomodoro = () => {
+    const [value, setValue] = useState(0);    
     const [timer,setTimer] = useState({pomodoro:25,short:5,long:15})
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -74,27 +69,15 @@ function a11yProps(index: number) {
     };
     const [isActive, setIsActive] = useState({pomodoro:false,short:false,long:false}); // Timer status (active or not)
     const [paused,setPaused] = useState<boolean>(true) // Pause status
-    useEffect(()=>{
-      const fetchTeam = async()=>{
-        try{
-          const res = await axios.get(`/api/team/${params.groupId}`,{params:{type:"Team"}})
-          console.log(res?.data?.team)
-          setTasks(res.data.team.tasks || []);
-        }catch(e){
-          // console.log(e) 
-          toast.error(
-            "Error while fetching team"
-          )
 
-        }
-      }
-      fetchTeam()
-    },[])
 
     // Convert minutes input to seconds and start the timer
     const startTimer = () => {
+        // resetTimer()
         const tabName = value === 0 ? "pomodoro" : value === 1 ? "short" : "long";
-        if (!isActive[tabName]) {
+        resetTimer()
+        console.log(isActive)
+        if (!isActive[tabName] ) {
             let seconds = 0;
             let name = ""
             if (value === 0){
@@ -169,55 +152,6 @@ function a11yProps(index: number) {
         return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
-
-  // Function to add a new task
-  const addTask = async() => {
-    // console.log(newTask)
-      try{
-      const {data} = await axios.post("/api/team/tasks",{task:{text:newTask,completed:false},userId:user._id,teamId:params.groupId})
-      if(data.success){
-      setTasks([...tasks, { text: newTask, completed: false }]);
-      setNewTask("");
-      }
-      }catch(error){
-        console.log(error)
-        toast.error("Error while adding the task")
-      }
-    
-  };
-
-  // Function to toggle task completion
-  const toggleComplete = async(currTask) => {
-    const updatedTasks = tasks.map(task =>
-      task._id === currTask._id ? { ...task, completed: !task.completed } : task
-    );
-    setTasks(updatedTasks);
-    try{
-      const {data} = await axios.put("/api/team/tasks",{taskId:currTask._id,teamId:params.groupId,completed:!currTask.completed})
-      console.log(data)
-    }catch(e){
-      console.log(e)
-    }
-    
-  };
-  // Function to delete a task
-  const deleteTask = async(id) => { 
-    try{
-      const {data} = await axios.delete("/api/team/tasks",{params:{teamId:params.groupId,taskId:id}})
-      if(data.success){
-        setTasks(prevTasks => {
-          const updatedTasks = prevTasks.filter(task => task._id!== id);
-          console.log("Updated tasks after deletion:", updatedTasks); 
-          return updatedTasks;
-        });
-      }
-    }catch(e){
-      console.log("Error deleting task",e)
-      toast.error("Error while deleting the task")
-    }
-    
-  };
-
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -278,59 +212,7 @@ function a11yProps(index: number) {
           </CustomTabPanel>
         </div>
     </div>
-    <Container maxWidth="sm">
-      <div className='flex'>
-      <TextField
-        sx={{width:"80%"}}
-        variant="outlined"
-        label="New Task"
-        value={newTask}
-        onChange={(e) => setNewTask(e.target.value)}
-        onKeyPress={(e) => e.key === 'Enter' && addTask()}
-      />
-      <Button variant="outlined" color="primary" onClick={addTask} sx={{marginX:"10px"}}>
-        +
-      </Button>
-      </div>
-      <List>
-        {tasks.map((task, index) => (
-          <ListItem key={index}>
-            <Checkbox checked={task.completed} tabIndex={-1} disableRipple  onClick={() => toggleComplete(task)}/>
-            <ListItemText
-              primary={task.text}
-              style={{ textDecoration: task.completed ? 'line-through' : 'none' }}
-            />
-            <IconButton edge="end" onClick={() => deleteTask(task._id)}>
-              <DeleteIcon />
-            </IconButton>
-          </ListItem>
-        ))}
-      </List>
-    </Container>
-    <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-           Set Timer 
-          </Typography>
-          <div className='flex my-4 justify-center'>
-          <TextField id="outlined-basic-name" name="pomodoro" label="Pomodoro" variant="outlined" defaultValue={timer.pomodoro} sx={{marginRight:"2rem",width:"6rem"}}
-          onChange={handleTimerChange}
-          />
-          <TextField id="outlined-basic-name" name="short" label="Short Break" variant="outlined" defaultValue={timer.short} sx={{marginRight:"2rem",width:"6rem"}}
-          onChange = {handleTimerChange}
-          />
-          <TextField id="outlined-basic-desc" name="long" label="Long Break" variant="outlined" defaultValue={timer.long} sx={{width:"6rem"}}
-          onChange={handleTimerChange}/>
-          </div>
-
-          {/* <div className='w-full mt-4 flex justify-end'><Button onClick={handle}>Edit</Button></div> */}
-        </Box>
-      </Modal>
+    
   </>
   )
 }
