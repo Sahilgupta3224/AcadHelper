@@ -108,9 +108,9 @@ export default function Fire() {
   return (
     <div>
       <IconButton size="large" color="inherit" onClick={handleClick}>
-              <Badge badgeContent={17} color="error">
+              {/* <Badge badgeContent={17} color="error"> */}
                 <LocalFireDepartmentIcon />
-              </Badge>
+              {/* </Badge> */}
             </IconButton>
       <Popover
         id={id}
@@ -124,9 +124,18 @@ export default function Fire() {
       >
           <Box sx={{ width: '100%' }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-              <Tab label="Daily challenge" {...a11yProps(0)} />
-              <Tab label="Weekly challenge" {...a11yProps(1)} />
+            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" centered
+            sx={{
+              '& .MuiTabs-flexContainer': {
+                justifyContent: 'center', 
+              },
+              minHeight: 0, 
+            }}
+            >
+              <Tab label="Daily challenge" {...a11yProps(0)} 
+              />
+              <Tab label="Weekly challenge" {...a11yProps(1)} 
+              />
             </Tabs>
           </Box>
           <CustomTabPanel value={value} index={0}>

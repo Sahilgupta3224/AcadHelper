@@ -23,6 +23,7 @@ import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function Notification() {
   const {user,setUser} = useStore()
@@ -56,10 +57,21 @@ export default function Notification() {
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
+  const handleDelete = async(notificationId)=>{
+    try{
+      const {data} = await axios.delete("/api/notification",{params:{userId:user._id,notificationId}})
+      if(data.success){
+        setUser(data.updatedUser)
+      }
+    }catch(error:any){
+      toast.error(error.response.data.error)
+    }
+  }
+
   return (
     <div>
       <IconButton size="large" color="inherit" onClick={handleClick}>
-              <Badge badgeContent={17} color="error">
+              <Badge badgeContent={user?.inbox?.length} color="error">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -81,7 +93,7 @@ export default function Notification() {
                 <GroupsIcon />
             </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={notif.message} secondary={new Date(notif.date).toISOString().split('T')[0]} />
+            <ListItemText primary={notif.message} secondary={new Date(notif.date).toISOString().split('T')[0]}/>
             {notif.type == "group invite" && <div>
               {invitationStatus[notif.teamId] === 'accepted' ? (
                     <CheckCircleIcon color="success" />
@@ -102,6 +114,7 @@ export default function Notification() {
                     </>
                   )}
             </div>}
+            <DeleteIcon sx={{cursor:"pointer"}} onClick={()=>handleDelete(notif._id)}/>
           </ListItem>
         )):(
           <div>

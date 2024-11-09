@@ -127,14 +127,14 @@ function a11yProps(index: number) {
     // e.preventDefault()
     // console.log(courseInput)
       try {
-        // if(!courseInput.name){
-        //   toast.error("Course name cannot be empty")
-        //   return
-        // }
-        // if(!courseInput.description){
-        //   toast.error("Course description cannot be empty")
-        //   return
-        // }
+        if(!courseInput.name){
+          toast.error("Course name cannot be empty")
+          return
+        }
+        if(!courseInput.description){
+          toast.error("Course description cannot be empty")
+          return
+        }
         const {data} = await axios.post("/api/course/createcourse",courseInput)
         console.log(data)
         if (data.success) {

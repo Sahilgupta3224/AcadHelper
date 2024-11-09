@@ -90,7 +90,7 @@ const ChallengeDetails: React.FC = () => {
         }
       } catch (error) {
         console.log(error);
-        toast.error(` Error while fetching the group`);
+        toast.error(error.response.data.error);
       }
     };
     fetchGroups();
@@ -107,7 +107,7 @@ const ChallengeDetails: React.FC = () => {
           setChallenge(response.data.data);
         } catch (error) {
           console.error("Error fetching challenge details:", error);
-          toast.error("Error while fetching the challenges");
+          toast.error(error.response.data.message);
         }
       };
       fetchChallenge();
@@ -125,7 +125,7 @@ const ChallengeDetails: React.FC = () => {
           console.log(submissionsResponse);
         } catch (error) {
           console.error("Error fetching submissions:", error);
-          toast.error("Error while fetching the submission");
+          toast.error(error.message);
         }
       };
       fetchSubmissions();
@@ -161,34 +161,31 @@ const ChallengeDetails: React.FC = () => {
       setyo(!yo);
     } catch (e: any) {
       console.error("Error while removing:", e);
-      toast.error("Error while removing:");
+      toast.error(e.response.data.message);
     }
   };
 
   const handleEditsub = async (id: string) => {
+    if (!challengeDoc) toast.error("Select file first")
     const submitwala = {
       documentLink: challengeDoc,
     };
     try {
-      const response = await axios.patch(
-        `/api/submission/edit-submission?Id=${id}`,
-        submitwala
-      );
-      console.log(response.data);
-      setchallengeDoc("");
+      const response = await axios.patch(`/api/submission/edit-submission?Id=${id}`, submitwala);
+      console.log(response.data)
+      setchallengeDoc("")
       setIsDocVisible(false);
-      toast.success("Update successful");
       setyo(!yo);
-    } catch (e: any) {
-      console.error("Error while removing:", e);
-      toast.error("Error while removing:");
     }
-  };
+    catch (e: any) {
+      console.error("Error while editing:", e);
+    }
+  }
 
   const handlesub = async (type, groupId = "") => {
-    console.log(type, groupId);
+    console.log(type, groupId)
     if (type == "team" && groupId == "") {
-      toast.error("Select a group");
+      toast.error("Select a group")
       return;
     }
     const submitwala = {
@@ -206,11 +203,12 @@ const ChallengeDetails: React.FC = () => {
       setchallengeDoc("");
       setIsDocVisible(false);
       setyo(!yo);
-    } catch (e: any) {
-      console.error("Error while removing:", e);
-      toast.error("Error while removing");
+      setSubmitOpen(false)
     }
-  };
+    catch (e: any) {
+      toast.error(e.response.data.message)
+    }
+  }
 
   const handleUpload = (result: any) => {
     if (result && result.info) {
@@ -244,39 +242,28 @@ const ChallengeDetails: React.FC = () => {
           <div className="flex justify-between mb-6">
             <div className="flex flex-col">
               <h1 className="text-3xl font-bold">Title: {challenge.title}</h1>
-              <p className="text-gray-700 p-1">
-                Description: {challenge.description}
-              </p>
+              <p className="text-gray-700 p-1 max-w-500px break-words">Description: {challenge.description}</p>
             </div>
             <div className="flex flex-col items-end">
               <div className="mb-4">
                 <span className="font-semibold">Type:</span> {challenge.type}
               </div>
               <div className="mb-4">
-                <span className="font-semibold">Frequency:</span>{" "}
-                {challenge.frequency}
+                <span className="font-semibold">Frequency:</span> {challenge.frequency}
               </div>
               <div className="mb-4">
-                <span className="font-semibold">Points:</span>{" "}
-                {challenge.points}
+                <span className="font-semibold">Points:</span> {challenge.points}
               </div>
               <div className="mb-4">
-                <span className="font-semibold">Start Date:</span>{" "}
-                {new Date(challenge.startDate).toLocaleDateString()}
+                <span className="font-semibold">Start Date:</span> {new Date(challenge.startDate).toLocaleDateString()}
               </div>
               <div className="mb-4">
-                <span className="font-semibold">End Date:</span>{" "}
-                {new Date(challenge.endDate).toLocaleDateString()}
+                <span className="font-semibold">End Date:</span> {new Date(challenge.endDate).toLocaleDateString()}
               </div>
               {challenge.challengeDoc && (
                 <div className="mb-4">
                   <span className="font-semibold">Challenge Document:</span>{" "}
-                  <a
-                    href={challenge.challengeDoc}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500"
-                  >
+                  <a href={challenge.challengeDoc} target="_blank" rel="noopener noreferrer" className="text-blue-500">
                     View Document
                   </a>
                 </div>
@@ -284,24 +271,27 @@ const ChallengeDetails: React.FC = () => {
             </div>
           </div>
           <div className="flex">
-            <CldUploadWidget uploadPreset="r99tyjot" onSuccess={handleUpload}>
+            <CldUploadWidget uploadPreset="acad_helper_pdf" onSuccess={handleUpload}>
               {({ open }) => (
-                <Button
-                  className="mt-4"
-                  onClick={() => open()}
-                  variant="outlined"
-                  color="primary"
-                >
+                <Button className="mt-4" onClick={() => open()} variant="outlined" color="primary">
                   Select File
                 </Button>
               )}
             </CldUploadWidget>
             <button
-              onClick={() =>
-                submissions.length > 0
-                  ? handleEditsub(submissions[0]._id)
-                  : handleSubmitOpen()
-              }
+              onClick={() => {
+                if (submissions.length > 0) {
+                  handleEditsub(submissions[0]._id);
+                } else {
+                  if (!challengeDoc) {
+                    toast.error("Select file first");
+                  } else if (challenge.type == "individual") {
+                    handlesub("individual")
+                  } else {
+                    handleSubmitOpen();
+                  }
+                }
+              }}
               className="bg-blue-600 px-4 mt-4 ml-2 text-white rounded hover:bg-blue-700 transition"
             >
               {submissions.length > 0 ? "Edit Submission" : "Submit Challenge"}
@@ -310,12 +300,7 @@ const ChallengeDetails: React.FC = () => {
 
           {isDocVisible && challengeDoc && (
             <div>
-              <a
-                href={challengeDoc}
-                className="text-blue-500 "
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={challengeDoc} className="text-blue-500 " target="_blank" rel="noopener noreferrer">
                 View Uploaded Document
               </a>
             </div>
@@ -324,33 +309,16 @@ const ChallengeDetails: React.FC = () => {
             <h2 className="text-2xl font-bold mb-4">Submissions</h2>
             {submissions.length > 0 ? (
               submissions.map((submission) => (
-                <div
-                  key={submission._id}
-                  className="bg-white shadow-md rounded-lg p-4 mb-4"
-                >
+                <div key={submission._id} className="bg-white shadow-md rounded-lg p-4 mb-4">
                   <div className="flex justify-between items-center">
                     <div>
                       {/* <p><strong>Submitted By:</strong> {submission.user.name}</p> */}
-                      <p>
-                        <strong>Submitted At:</strong>{" "}
-                        {new Date(submission.submittedAt).toLocaleString()}
-                      </p>
+                      <p><strong>Submitted At:</strong> {new Date(submission.submittedAt).toLocaleString()}</p>
                     </div>
-                    <a
-                      href={submission.documentLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500"
-                    >
+                    <a href={submission.documentLink} target="_blank" rel="noopener noreferrer" className="text-blue-500">
                       View Submission
                     </a>
-                    <Button
-                      onClick={() => {
-                        deletesub(submission._id);
-                      }}
-                    >
-                      Delete submission
-                    </Button>
+                    <Button onClick={() => { deletesub(submission._id) }}>Delete submission</Button>
                   </div>
                 </div>
               ))
@@ -358,6 +326,8 @@ const ChallengeDetails: React.FC = () => {
               <p className="text-gray-600">No submissions yet.</p>
             )}
           </div>
+
+
         </div>
       </div>
       <Modal
@@ -368,19 +338,8 @@ const ChallengeDetails: React.FC = () => {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Do you want to submit as group or as an individual?
+            Select your group
           </Typography>
-
-          {/* <div className='w-full flex justify-between mt-4' > */}
-          <Button
-            type="button"
-            variant="outlined"
-            sx={{ marginY: "1rem" }}
-            onClick={() => handlesub("individual")}
-          >
-            Individual
-          </Button>
-          <Divider>OR</Divider>
           <div className="flex my-4">
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">
@@ -396,17 +355,11 @@ const ChallengeDetails: React.FC = () => {
                 {groups.length > 0 &&
                   groups.map((group) => (
                     <MenuItem value={group._id}>{group.teamname}</MenuItem>
-                  ))}
+                  ))
+              }
               </Select>
             </FormControl>
-            <Button
-              type="button"
-              variant="outlined"
-              sx={{ marginLeft: "1rem" }}
-              onClick={() => handlesub("team", selectedGroup)}
-            >
-              Group
-            </Button>
+            <Button type="button" variant="outlined" sx={{ marginLeft: "1rem" }} onClick={() => handlesub("team", selectedGroup)}>Submit</Button>
           </div>
         </Box>
       </Modal>
