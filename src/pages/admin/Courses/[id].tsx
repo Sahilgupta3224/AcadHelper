@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
-import { useState } from "react"
-import { Box, Button, TextField, Typography, Modal, IconButton, Badge, Pagination,Select, MenuItem, Chip } from "@mui/material";
+import { useState } from "react";
+import { Box, Button, TextField, Typography, Modal, Pagination,Select, MenuItem, Chip } from "@mui/material";
 import Layout from "@/components/layout";
 import "../../../app/globals.css";
 import { useRouter } from "next/router";
@@ -9,11 +9,8 @@ import axios from "axios";
 import { AdminAuth } from "@/components/AdminAuth";
 import Challenge from "@/Interfaces/challenge";
 import Assignment from "@/Interfaces/assignment";
-import { dummyAssignments, dummyChallenges } from "@/pages/SampleData/Sample";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Link from "next/link";
-import ButtonComp from "@/components/button";
 import { useStore } from "@/store";
 import { CldUploadWidget } from "next-cloudinary";
 import AssignmentModal from "@/components/AssignmentModal";
@@ -23,7 +20,6 @@ import Course from "@/Interfaces/course";
 import Auth from '@/components/Auth'
 import User from "@/Interfaces/user";
 import toast, { Toaster } from "react-hot-toast";
-import { TreeItem2Label } from "@mui/x-tree-view";
 
 const AdminPage: React.FC = () => {
   const router = useRouter();
@@ -53,7 +49,7 @@ const AdminPage: React.FC = () => {
   const [endDate, setEndDate] = useState("");
   const [challengeDoc, setChallengeDoc] = useState("");
   const [type, setType] = useState("individual");
-  const [frequency, setFrequency] = useState("daily");
+  const [frequency, setFrequency] = useState("daily"); 
   const [points, setPoints] = useState<number | undefined>();
   const [openUploadModal, setOpenUploadModal] = useState(false);
   const [openUploadAssignmentModal, setOpenUploadAssignmentModal] =
@@ -93,7 +89,8 @@ const AdminPage: React.FC = () => {
       const res = await axios.get(`/api/course/${courseId}`);
       setcourse(res.data.course)
     }
-    catch(e){
+    catch(e:any){
+      toast.error(e.response.data.error);
     }
   }
 
