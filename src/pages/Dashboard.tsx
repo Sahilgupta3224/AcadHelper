@@ -25,6 +25,8 @@ import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Assignment from '@/Interfaces/assignment';
+import Course from '@/utils/Interfaces/coursesInterface';
+import { LinearProgress } from '@mui/material';
 
 const style = {
   position: 'absolute',
@@ -39,6 +41,7 @@ const style = {
 interface Task {
   _id: mongoose.Schema.Types.ObjectId,
   title: string,
+  description: string;
   completed: boolean,
   color: string,
   course: string,
@@ -48,14 +51,17 @@ const Dashboard = () => {
   const router = useRouter()
   const { user, setUser } = useStore()
   const [courses, setCourses] = useState([])
-  const [pendingassignment, setpendingassignment] = useState<Assignment | null>(null);
+  const [pendingassignment, setpendingassignment] = useState<Assignment[] | null>(null);
   const [taskInput, setTaskInput] = useState({ title: "", color: "", course: "", dueDate: "", completed: false })
   const [editInput, setEditInput] = useState({ title: "", color: "", course: "", dueDate: "" })
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [open, setOpen] = React.useState(false);
   const [age, setAge] = React.useState('');
-  const [progress, setProgress] = useState<Float>(0)
-  const [selected, setSelected] = useState(null)
+  const [progress, setProgress] = useState<number>(0)
+  const [selected, setSelected] = useState<Task|null>(null)
+  const [dueTodayCount, setDueTodayCount] = useState(0);
+  const [loading,setLoading]=useState<boolean>(false);
+ 
   const handleOpen = (task: any) => {
     setSelected(task)
     setEditInput({
@@ -67,14 +73,13 @@ const Dashboard = () => {
     setOpen(true);
   }
   const handleClose = () => setOpen(false);
-  const [dueTodayCount, setDueTodayCount] = useState(0);
-
+ 
   // Function to calculate the number of tasks due today
   const calculateDueTodayCount = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const count = tasks.filter(task => {
+    const count = tasks.filter((task:Task) => {
       const dueDate = new Date(task.dueDate);
       dueDate.setHours(0, 0, 0, 0);
       return ((dueDate.getTime() === today.getTime()) && !task.completed);
@@ -93,7 +98,7 @@ const Dashboard = () => {
     const fetchTasks = async () => {
       try {
 
-        const { data } = await axios.get("/api/task", { params: { userId: user._id } })
+        const { data } = await axios.get("/api/task", { params: { userId: user?._id } })
         if (data.success) {
 
           setTasks(data.tasks)
@@ -102,44 +107,45 @@ const Dashboard = () => {
             let array = data.tasks.filter((task: Task) => task.completed == true)
             setProgress(Math.round(array.length * 100 * 100 / len) / 100)
           } else setProgress(0)
-          console.log(data)
         }
-      } catch (error) {
+      } catch (error:any) {
         toast.error(error.response.data.error)
-        // console.error("Error fetching task:", error);
       }
     }
+
     const fetchCourses = async () => {
       try {
-        const { data } = await axios.get(`/api/course?userId=${user._id}`)
+        const { data } = await axios.get(`/api/course?userId=${user?._id}`)
         if (data.success) {
           setCourses(data.courses)
-          console.log(data)
         }
-      } catch (error) {
+      } catch (error:any) {
         toast.error("Error fetching courses:", error.response.data.message);
       }
     }
+
+
     const fectchpendingassignments = async () => {
       try {
-        const res = await axios.get(`/api/assignment/getpendingassignments-of-user?userId=${user._id}`)
-        console.log(res.data.data)
+        const res = await axios.get(`/api/assignment/getpendingassignments-of-user?userId=${user?._id}`)
+
         setpendingassignment(res.data.data)
       }
-      catch (err) {
-        console.log(err)
+      catch (err:any) {
+        toast.error(err.response.data.message)
       }
     }
     fetchTasks()
     fetchCourses()
     fectchpendingassignments()
+    setLoading(true)
   }, [])
 
   const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
     setTaskInput(prev => ({ ...prev, [name]: value }));
   };
-  // console.log(taskInput)
+
   // EDIT TASK INPUT
   const handleChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
@@ -147,11 +153,9 @@ const Dashboard = () => {
   };
 
 
-
   const handleAddTask = async () => {
     try {
-
-      const { data } = await axios.post("/api/task", { task: taskInput, userId: user._id })
+      const { data } = await axios.post("/api/task", { task: taskInput, userId: user?._id })
 
       if (data.success) {
         const newTasks = [...tasks, data.newTask];
@@ -165,19 +169,20 @@ const Dashboard = () => {
         setTaskInput({ title: "", color: "", course: "", dueDate: "", completed: false });
 
       } else {
-        console.error(data.error || "Task addition failed");
+        toast.error(data.error || "Task addition failed")
       }
-    } catch (error) {
+    } catch (error:any) {
       toast.error(error.response.data.error)
-      // console.error("Error adding task:", error);
     }
   };
-  const handleCheckboxChange = async (taskId, completed) => {
+
+
+  const handleCheckboxChange = async (taskId: mongoose.Schema.Types.ObjectId, completed: boolean) => {
     try {
       const { data } = await axios.put("/api/task", { taskId, completed: !completed, type: "checkbox" });
       if (data.success) {
         // Update local task state
-        const updatedTasks = tasks.map(task =>
+        const updatedTasks = tasks.map((task:Task) =>
           task._id === taskId ? { ...task, completed: !task.completed } : task
         );
 
@@ -187,74 +192,69 @@ const Dashboard = () => {
         const completedTasksCount = updatedTasks.filter(task => task.completed).length;
         setProgress(Math.round((completedTasksCount / updatedTasks.length) * 100));
 
-        console.log(data);
-      } else {
-        console.error(data.error || "Failed to update task status");
-      }
-    } catch (error) {
-      console.error("Error updating task:", error);
+      } 
+    } catch (error:any) {
+      toast.error("Error updating task:", error.response.data.error)
     }
   };
-  const handleEditTask = async (id) => {
-    try {
 
+
+  const handleEditTask = async (id:mongoose.Schema.Types.ObjectId) => {
+    try {
       const { data } = await axios.put("/api/task", { taskId: id, task: editInput, type: "edit" })
 
       if (data.success) {
         setEditInput({ title: "", color: "", course: "", dueDate: "" });
-        // router.refresh(); // Optionally refresh or update tasks display
-        const updatedTasks = tasks.map(task => task._id == data.task._id ? data.task : task)
+        
+        const updatedTasks = tasks.map((task:Task) => task._id == data.task._id ? data.task : task)
+       
         setTasks(updatedTasks)
-        console.log(data)
-
+       
         handleClose()
-
-      } else {
-        console.error(data.error || "Task edit failed");
-      }
-    } catch (error) {
+      } 
+    } catch (error:any) {
       toast.error(error.response.data.error)
-      console.error("Error editing task:", error);
     }
   };
+
 
   const handleDeleteTask = async (id: mongoose.Schema.Types.ObjectId) => {
     try {
-
-      const { data } = await axios.delete("/api/task", { params: { taskId: id, userId: user._id } })
+      const { data } = await axios.delete("/api/task", { params: { taskId: id, userId: user?._id } })
       if (data.success) {
         setEditInput({ title: "", color: "", course: "", dueDate: "" });
 
-        const taskArray = tasks.filter(task => task._id !== id);
+        const taskArray = tasks.filter((task:Task) => task._id !== id);
         setTasks(taskArray);
 
         // Recalculate progress after deleting a task
-        const completedTasksCount = taskArray.filter(task => task.completed).length;
+        const completedTasksCount = taskArray.filter((task:Task) => task.completed).length;
         setProgress(Math.round((completedTasksCount / taskArray.length) * 100));
         handleClose()
 
-      } else {
-        console.error(data.error || "Task deletion failed");
-      }
-    } catch (error) {
-      console.error("Error deleting task:", error);
+      } 
+    } catch (error:any) {
+      toast.error("Error deleting task:", error.response.data.error);
     }
   };
-
+    if(loading===false)
+      {
+        return (
+          <LinearProgress color="primary" />
+        )
+      }
+    
   return (
     <>
+    
       <Layout>
         <div className='flex gap-2 justify-space-between items-center w-full max-h-screen h-screen bg-gradient-to-r from-blue-200 to-cyan-200'>
-          <div className='tasks w-1/2 h-[90%]'>
+          <div className='tasks w-1/2 h-[90%] mx-4'>
             <div className='m-2 bg-white w-full rounded-md p-4 flex justify-between text-slate-800 font-bold text-xl'>
-              
-              
               <div>
                 <div>Hi { user?.username}</div>
                 <div>{dueTodayCount} Tasks due today</div>
               </div>
-
-
               <Box sx={{ position: 'relative', display: 'inline-flex' }}>
                 <CircularProgress variant="determinate" value={progress} size="60px" />
                 <Box
@@ -277,10 +277,7 @@ const Dashboard = () => {
                 </Box>
               </Box>
             </div>
-
-
             <div className='flex flex-col w-full  gap-2 items-start'>
-
               <div className='m-2 w-full'>
                 <input
                   placeholder="Add Task"
@@ -290,8 +287,6 @@ const Dashboard = () => {
                   className=' p-2 rounded-md w-[100%] text-slate-600 outline-none'
                 ></input>
               </div>
-
-
               <div className='w-full flex justify-between items-center'>
                 <select
                   name="course"
@@ -299,11 +294,10 @@ const Dashboard = () => {
                   onChange={handleInputChange}
                   className='p-2 m-2 rounded-md'>
                   <option value="" disabled>Select Course</option>
-                  {courses?.map(course => (
-                    <option key={course._id} value={course.name}>{course.name}</option>
+                  {courses?.map((course:Course) => (
+                    <option key={course._id.toString()} value={course.name}>{course.name}</option>
                   ))}
                 </select>
-
                 <select
                   name="color"
                   value={taskInput.color}
@@ -317,7 +311,6 @@ const Dashboard = () => {
                   <option value="border-l-purple-400">🟣 Purple</option>
                   <option value="border-l-blue-400">🔵 Blue</option>
                 </select>
-
                 <input
                   type='date'
                   name="dueDate"
@@ -328,13 +321,11 @@ const Dashboard = () => {
                 <button className='bg-white p-2 rounded-full h-10 w-10 ml-2' onClick={handleAddTask}>+</button>
               </div>
             </div>
-
-
             <div className='tasks-container h-96 overflow-y-auto w-[100%]'>
               {tasks.map((task, index) => (
                 <div
-                  key={task._id}
-                  className={`border-l-8 ${task.color} p-2 m-4 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow duration-200 ease-in-out`}
+                  key={task._id.toString()}
+                  className={`border-l-8 ${task.color} p-2 my-4 ml-2 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow duration-200 ease-in-out`}
                 >
                   <div className="">
                     <div className="flex items-center justify-between gap-2">
@@ -352,10 +343,7 @@ const Dashboard = () => {
                         <MoreVertIcon />
                       </IconButton>
                     </div>
-
-
                     <div className="flex justify-between items-center space-x-4 mx-12">
-                      {/* <div className="text-sm font-medium text-blue-600">{task.course}</div> */}
                       {task.course && <Chip label={task.course} />}
                       {task.dueDate && (
                         <div className="text-sm text-gray-600">
@@ -394,7 +382,7 @@ const Dashboard = () => {
                       <MenuItem value="">
                         <em>None</em>
                       </MenuItem>
-                      {courses?.map(course => (
+                      {courses?.map((course:Course )=> (
                         <MenuItem value={course.name}>{course.name}</MenuItem>
                       ))}
                     </Select>
@@ -404,8 +392,6 @@ const Dashboard = () => {
                     <Select
                       labelId="demo-simple-select-standard-label"
                       id="demo-simple-select-standard"
-                      value={age}
-                      onChange={handleChange}
                       label="Color"
                       value={editInput.color}
                       onChange={(e) => setEditInput({ ...editInput, color: e.target.value })}
@@ -436,7 +422,7 @@ const Dashboard = () => {
                   sx={{ width: 400 }}
                 />
                 <div className='flex justify-between my-4'>
-                  <Button variant="outlined" startIcon={<DeleteIcon />} color="error" onClick={() => handleDeleteTask(selected._id)}>
+                  <Button variant="outlined" startIcon={<DeleteIcon />} color="error" onClick={() => handleDeleteTask(selected?._id)}>
                     Delete
                   </Button>
                   <Button variant="outlined" startIcon={<EditIcon />} onClick={() => handleEditTask(selected?._id)}>
@@ -446,17 +432,14 @@ const Dashboard = () => {
 
               </Box>
             </Modal>
-
           </div>
-
-
-          <div className="m-4 w-1/2 h-[90%] overflow-y-scroll bg-white p-4 rounded-md">
+          <div className="ml-2 mt-4 mr-4 m w-1/2 h-[90%] overflow-y-scroll bg-white p-4 rounded-md">
             <div className="text-slate-800 font-bold mb-4 text-2xl text-center">
               Pending Assignments
             </div>
             {pendingassignment ? (
               <div>
-                {pendingassignment.map((assignment) => (
+                {pendingassignment.map((assignment:Assignment) => (
                   <div key={assignment._id} className="p-3 mb-2 shadow-md rounded-lg border border-gray-300">
                     <Typography
                       onClick={() => router.push(`/Assignment/user/${assignment._id}`)}

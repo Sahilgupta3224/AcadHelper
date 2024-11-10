@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Box, Button, Modal, Typography, TextField, Container, FormControl, FormGroup, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
-import { useStore } from '@/store';
+import toast, { Toaster } from 'react-hot-toast';
 
 const modalStyle = {
   position: 'absolute',
@@ -20,7 +20,6 @@ function KickUserModal({ open, setOpen, courseId }) {
   const [username, setUsername] = useState('');
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState(null);
-//   const { user } = useStore();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -55,13 +54,13 @@ function KickUserModal({ open, setOpen, courseId }) {
       const response = await axios.delete('/api/course/kick-user', {
         params: obj,
       });
-      console.log(response);
-    } catch (error) {
-      console.log('Error while kicking the user', error);
+    } catch (error:any) {
+      toast.error(error.response.data.message);
     }
   };
 
   return (
+    <>
     <Modal open={open} onClose={handleClose}>
       <Box sx={modalStyle}>
         
@@ -158,6 +157,8 @@ function KickUserModal({ open, setOpen, courseId }) {
         </Box>
       </Box>
     </Modal>
+    <Toaster/>
+    </>
   );
 }
 

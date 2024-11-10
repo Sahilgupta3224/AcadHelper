@@ -11,17 +11,22 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { institutes } from '@/utils/Sample Data/Sample';
 import toast, { Toaster } from 'react-hot-toast';
 import Auth from '@/components/Auth'
+import User from '@/utils/Interfaces/userInterface';
 
+interface UserWithPoints extends User {
+  totalPoints: number;
+}
 const Leaderboard = () => {
     const [users,setUsers] = useState([])
     const [institute,setInstitute] = useState("")
+
     const fetchUsers = async()=>{
       try{
       const {data} = await axios.get('/api/user/getAllUsers')
       console.log(data)
       if(data?.success){
-          const usersWithPoints = data.users.map(user => {
-              const totalPoints = user.Totalpoints.reduce((sum, course) => sum + course.points, 0);
+          const usersWithPoints = data.users.map((user:User) => {
+              const totalPoints = user.Totalpoints.reduce((sum:number, course) => sum + course.points, 0);
               return {
                 ...user,
                 totalPoints
@@ -29,26 +34,28 @@ const Leaderboard = () => {
             });
         
             // Sort users by totalPoints in descending order 
-            usersWithPoints.sort((a, b) => b.totalPoints - a.totalPoints);
+            usersWithPoints.sort((a:UserWithPoints, b:UserWithPoints) => b.totalPoints - a.totalPoints);
           setUsers(usersWithPoints)
       }
       
       }catch(error){
-          console.log("Error fetching users",error)
           toast.error("Error fetching users")
           return
       }
   }
+
+
     useEffect(()=>{
         fetchUsers()
     },[])
+
 
     const handleFilter=async()=>{
         try{
             const {data} = await axios.get('/api/user/filter',{params:{filter:institute}})
             if(data?.success){
-                const usersWithPoints = data.users.map(user => {
-                    const totalPoints = user.Totalpoints.reduce((sum, course) => sum + course.points, 0);
+                const usersWithPoints = data.users.map((user:User) => {
+                    const totalPoints = user.Totalpoints.reduce((sum:number, course) => sum + course.points, 0);
                     return {
                       ...user,
                       totalPoints
@@ -56,14 +63,14 @@ const Leaderboard = () => {
                   });
               
                   // Sort users by totalPoints in descending order 
-                  usersWithPoints.sort((a, b) => b.totalPoints - a.totalPoints);
+                  usersWithPoints.sort((a:UserWithPoints, b:UserWithPoints) => b.totalPoints - a.totalPoints);
                 setUsers(usersWithPoints)
             }
-        }catch(e){
-            console.log(e)
+        }catch(e:any){
             toast.error(e.response.data.message)
         }
     }
+
     const clearFilter=()=>{
       setInstitute("")
       fetchUsers()

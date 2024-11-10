@@ -2,8 +2,6 @@
 import * as React from 'react';
 import { useState } from 'react';
 import Popover from '@mui/material/Popover';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import Badge from '@mui/material/Badge';
 import IconButton from '@mui/material/IconButton';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -12,11 +10,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import ImageIcon from '@mui/icons-material/Image';
-import WorkIcon from '@mui/icons-material/Work';
-import BeachAccessIcon from '@mui/icons-material/BeachAccess';
 import { useStore } from '@/store';
-import { useEffect } from 'react';
 import GroupsIcon from '@mui/icons-material/Groups';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
@@ -28,21 +22,19 @@ import DeleteIcon from '@mui/icons-material/Delete';
 export default function Notification() {
   const {user,setUser} = useStore()
   const [invitationStatus, setInvitationStatus] = useState<{ [key: string]: 'pending' | 'accepted' | 'rejected' }>({});
+  
   const handleInvite = async(approval:Boolean,mail:any)=>{
       try{
-        const {data} = await axios.post("/api/team/invitation",{approval,userId:user._id,teamId:mail.teamId,mail})
-        console.log(data) 
+        const {data} = await axios.post("/api/team/invitation",{approval,userId:user?._id,teamId:mail.teamId,mail})
         toast.success(data.message)
         setInvitationStatus((prevState) => ({
           ...prevState,
           [mail.teamId]: approval ? 'accepted' : 'rejected',
         }));
-    }catch(e){
+      }catch(e:any){
         toast.error(e.response.data.error)
-        console.log(e)
       }
   }
-  // console.log(user)
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
@@ -57,7 +49,7 @@ export default function Notification() {
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
-  const handleDelete = async(notificationId)=>{
+  const handleDelete = async(notificationId: any)=>{
     try{
       const {data} = await axios.delete("/api/notification",{params:{userId:user._id,notificationId}})
       if(data.success){

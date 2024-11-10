@@ -4,8 +4,9 @@ import axios from 'axios';
 import { CldUploadWidget } from 'next-cloudinary'
 import React, { useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close';
+import toast, { Toaster } from 'react-hot-toast';
 
-function ChallengeModal({challengeDoc,openUploadModal,setOpenUploadModal,handleUploadChallenge,yo,setyo,setChallenges,courseId}) {
+function ChallengeModal({challengeDoc,openUploadModal,setOpenUploadModal,handleUploadChallenge,yo,setyo,setChallenges,courseId}:any) {
     const [description, setDescription] = useState("");
     const [startDate, setStartDate] = useState("");
     const [frequency, setFrequency] = useState("daily");
@@ -14,7 +15,6 @@ function ChallengeModal({challengeDoc,openUploadModal,setOpenUploadModal,handleU
     const [type, setType] = useState("individual");
     
     const { user } = useStore()
-
 
     const handleSubmitChallenge = async () => {
         try {
@@ -34,19 +34,20 @@ function ChallengeModal({challengeDoc,openUploadModal,setOpenUploadModal,handleU
             type,
             frequency,
             points,
-            createdBy: user._id,
+            createdBy: user?._id,
             courseId,
           });
           setChallenges((prev) => [...prev, response.data.Challenge]);
           setOpenUploadModal(false);
           setyo(!yo)
-        } catch (error) {
-          console.error("Error uploading challenge:", error);
+        } catch (error:any) {
+          toast.error(error.response.data.message)
         }
       };
 
 
   return (
+    <>
     <Modal open={openUploadModal} onClose={() => setOpenUploadModal(false)}>
               <Box
                 sx={{
@@ -106,6 +107,8 @@ function ChallengeModal({challengeDoc,openUploadModal,setOpenUploadModal,handleU
                             </Button>
                           </Box>
                  </Modal>
+        <Toaster/>
+    </>
   )
 }
 

@@ -1,12 +1,10 @@
 import React from 'react'
-import {ChangeEvent, useState,KeyboardEvent, useEffect} from 'react';
+import { useState,useEffect} from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { Container, Typography, TextField, Button, List, ListItem, ListItemText, IconButton, Checkbox } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Button } from '@mui/material';
 import '../app/globals.css';
-import Modal from '@mui/material/Modal';
 
 const style = {
     position: 'absolute',
@@ -52,43 +50,24 @@ const Timer = () => {
     const [value, setValue] = useState(0);
     const [timer,setTimer] = useState({pomodoro:25,short:5,long:15})
     const [open, setOpen] = useState(false);
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
     const [time, setTime] = useState({pomodoro:timer.pomodoro*60,short:timer.short*60,long:timer.long*60}); // Time in seconds
+    
     const handleTimerChange = (e: { target: { name: any; value: any; }; }) => {
         const { name, value } = e.target;
         setTimer(prev => ({ ...prev, [name]: value }));
         setTime(prev=>({...prev,[name]:value*60}));
     };
+
     const [isActive, setIsActive] = useState({pomodoro:false,short:false,long:false}); // Timer status (active or not)
     const [paused,setPaused] = useState<boolean>(true) // Pause status
 
-    // Load timer settings from localStorage on initial render
-    useEffect(() => {
-        const savedTime = localStorage.getItem('time');
-        const savedIsActive = localStorage.getItem('isActive');
-        const savedPaused = localStorage.getItem('paused');
-
-        if (savedTime) {
-        setTime(JSON.parse(savedTime));
-        }
-        if (savedIsActive) {
-        setIsActive(JSON.parse(savedIsActive));
-        }
-        if (savedPaused) {
-        setPaused(JSON.parse(savedPaused));
-        }
-    }, []);
-
-    // Save timer settings to localStorage whenever they change
-    useEffect(() => {
-        localStorage.setItem('time', JSON.stringify(time));
-        localStorage.setItem('isActive', JSON.stringify(isActive));
-        localStorage.setItem('paused', JSON.stringify(paused));
-    }, [time, isActive, paused]);
-
-    // Convert minutes input to seconds and start the timer
+   // Convert minutes input to seconds and start the timer
     const startTimer = () => {
+        resetTimer()
         const tabName = value === 0 ? "pomodoro" : value === 1 ? "short" : "long";
         if (!isActive[tabName]) {
             let seconds = 0;
@@ -128,34 +107,91 @@ const Timer = () => {
         setTimer(prev=>({...prev,pomodoro:25}));
     };
 
-    // Update the timer countdown
     useEffect(() => {
         let timerInterval: NodeJS.Timeout;
+        const startTime = Date.now(); // Store start time when the timer starts
+        let savedTime = time;
     
-        // Only start the timer if it matches the current tab
-        const currentTimer =
-            value === 0 ? time.pomodoro : value === 1 ? time.short : time.long;
-
-        const tabName = value === 0 ? "pomodoro" : value === 1 ? "short" : "long";
+        // Track elapsed time
+        const updateTime = () => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            setTime((prevTime) => {
+                const newTime = { ...prevTime };
+                const remainingTime = Math.max(savedTime.pomodoro - elapsed, 0);
+                newTime.pomodoro = remainingTime;
+                if (remainingTime <= 0) {
+                    setIsActive({ pomodoro: false, short: false, long: false });
+                    setPaused(true);
+                }
+                return newTime;
+            });
+        };
     
-        if (isActive[tabName] && !paused && currentTimer > 0) {
-            timerInterval = setInterval(() => {
-                setTime(prevTime => {
-                    const newTime = { ...prevTime };
-                    if (value === 0) newTime.pomodoro -= 1;
-                    else if (value === 1) newTime.short -= 1;
-                    else if (value === 2) newTime.long -= 1;
-                    return newTime;
-                });
-            }, 1000);
-        } else if (currentTimer === 0) {
-            setIsActive({pomodoro:false,short:false,long:false});
-            setPaused(true);
+        const updateShort = () => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            setTime((prevTime) => {
+                const newTime = { ...prevTime };
+                const remainingTime = Math.max(savedTime.short - elapsed, 0);
+                newTime.short = remainingTime;
+                if (remainingTime <= 0) {
+                    setIsActive({ pomodoro: false, short: false, long: false });
+                    setPaused(true);
+                }
+                return newTime;
+            });
+        };
+    
+        const updateLong = () => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            setTime((prevTime) => {
+                const newTime = { ...prevTime };
+                const remainingTime = Math.max(savedTime.long - elapsed, 0);
+                newTime.long = remainingTime;
+                if (remainingTime <= 0) {
+                    setIsActive({ pomodoro: false, short: false, long: false });
+                    setPaused(true);
+                }
+                return newTime;
+            });
+        };
+    
+        // Handle when tab visibility changes (i.e., user switches tabs or navigates away)
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                savedTime = time; // Save the current time when tab is hidden
+                clearInterval(timerInterval); // Stop the timer
+            } else {
+                // If the page is back in focus, calculate the elapsed time and continue the timer
+                savedTime = time; 
+                if (isActive.pomodoro && !paused) {
+                    timerInterval = setInterval(updateTime, 1000); // Start the timer again
+                } else if (isActive.short && !paused) {
+                    timerInterval = setInterval(updateShort, 1000);
+                } else if (isActive.long && !paused) {
+                    timerInterval = setInterval(updateLong, 1000);
+                }
+            }
+        };
+    
+        // Start the timer if the corresponding timer is active and not paused
+        if (isActive.pomodoro && !paused) {
+            timerInterval = setInterval(updateTime, 1000);
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+        }
+        if (isActive.short && !paused) {
+            timerInterval = setInterval(updateShort, 1000);
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+        }
+        if (isActive.long && !paused) {
+            timerInterval = setInterval(updateLong, 1000);
+            document.addEventListener('visibilitychange', handleVisibilityChange);
         }
     
-        // Clear timer interval when unmounting or changing tabs
-        return () => clearInterval(timerInterval);
-    }, [isActive, time, paused, value]);
+        return () => {
+            clearInterval(timerInterval);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [isActive, paused, time, value]);
     
 
     // Format time as MM:SS
@@ -164,6 +200,8 @@ const Timer = () => {
         const secs = seconds % 60;
         return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
+
+
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
       };
@@ -183,7 +221,6 @@ const Timer = () => {
           <CustomTabPanel value={value} index={0}>
               <div className='flex justify-center'>
                   <div className='h-96 w-96 m-2 rounded-full bg-sky-100 p-10 flex justify-center items-center text-6xl font-bold text-slate-800'>
-                  {/* {timer.pomodoro}:00 */}
                   {formatTime(time.pomodoro)}
                   </div>
               </div>

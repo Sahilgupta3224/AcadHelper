@@ -17,10 +17,7 @@ import {useRouter} from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from "@/store";
 import toast, { Toaster } from 'react-hot-toast';
-import { Types } from "mongoose";
 import Team from '@/utils/Interfaces/teamInterface';
-
-
 import Auth from '@/components/Auth'
 
 const style = {
@@ -52,7 +49,7 @@ const Groups = () => {
     useEffect(()=>{
         const fetchGroups = async()=>{
          try{
-          if(!user._id){
+          if(!user?._id){
             toast.error("User not logged in")
             return
           }
@@ -93,13 +90,10 @@ const Groups = () => {
     
           if (data.success) {
             setGroups(data.teams)
-            console.log(data)
             setGroupInput({leader:user?._id,maxteamsize:5,teamname:"",description:"",Members:[]});
-            router.refresh(); // Optionally refresh or update groups display
+            router.refresh(); // Refresh or update groups display
     
-          } else {
-            console.error(data.error || "Group addition failed");
-          }
+          } 
         } catch (error:any) {
           toast.error(error.response.data.error)
         }
