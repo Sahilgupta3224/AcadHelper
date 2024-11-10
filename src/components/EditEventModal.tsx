@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Box, TextField, Button, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
-import axios from 'axios';
+import { Modal, Box, TextField, Button } from '@mui/material';
 import { Event } from '@/Interfaces/event';
 
 const AssignmentModal = ({ open, handleClose,oldevent }:{open:boolean,handleClose:any,oldevent:Event}) => {
@@ -10,8 +9,6 @@ const AssignmentModal = ({ open, handleClose,oldevent }:{open:boolean,handleClos
     const { name, value } = e.target;
     setEvent({ ...event, [name]: value });
   };
-
-
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -61,8 +58,6 @@ const AssignmentModal = ({ open, handleClose,oldevent }:{open:boolean,handleClos
           onChange={handleChange}
         />
        
-
-
         <Button
           variant="contained"
           color="primary"

@@ -1,38 +1,20 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
-import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
-import { TreeItem, treeItemClasses } from "@mui/x-tree-view/TreeItem";
-import CloseIcon from "@mui/icons-material/Close";
 import Layout from "@/components/layout";
 import '../../app/globals.css';
 
 import {
   sampleAssignments,
   sampleChapters,
-  UserLoggedIn,
 } from "@/utils/Sample Data/Sample";
 import Auth from '@/components/Auth'
 import Link from "next/link";
 import {
-  FilledTextFieldProps,
-  FormControl,
-  IconButton,
-  InputLabel,
-  MenuItem,
   Modal,
-  OutlinedTextFieldProps,
-  Select,
-  StandardTextFieldProps,
   TextField,
-  TextFieldVariants,
   Typography,
 } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import EditAssignmentModal from "@/components/EditAssignment";
-import SidebarDrawer from "@/components/SidebarDrawer";
 import { Dayjs } from "dayjs";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -47,6 +29,7 @@ import axios from "axios";
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import toast, { Toaster } from "react-hot-toast";
+import Course from "@/utils/Interfaces/coursesInterface";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -98,6 +81,7 @@ function a11yProps(index: number) {
     setCourseInput(prev => ({ ...prev, [name]: value }));
   };
 
+  // Join course
   const handleJoinCourse = async(e: React.MouseEvent<HTMLButtonElement>) =>{
     e.preventDefault()
       try {
@@ -116,11 +100,14 @@ function a11yProps(index: number) {
           toast.error(data.error || "Course addition failed");
         }
       } catch (error:any) {
+      } catch (error:any) {
         toast.error(error.response.data.error)
         toast.error("Error adding course", error);
       }
   }
   
+
+  // Adding course
   const handleAddCourse = async(e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
       try {
@@ -136,15 +123,19 @@ function a11yProps(index: number) {
   
         if (data.success) {
           setCourseInput({name:"",description:"",userId:user?._id});
+          setCourseInput({name:"",description:"",userId:user?._id});
           handleClose()
   
         } else {
           toast.error(data.error || "Course addition failed");
         }
       } catch (error:any) {
+      } catch (error:any) {
         toast.error(error.response.data.error)
       }
     };
+
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -155,6 +146,8 @@ function a11yProps(index: number) {
   const handleOpenJoin = () => setOpenJoin(true);
   const handleCloseJoin = () => setOpenJoin(false);
 
+
+  // Fetching enrolled and admin courses
   useEffect(()=>{
     const fetchEnrolledCourse = async()=>{
       try{
@@ -166,6 +159,8 @@ function a11yProps(index: number) {
         toast.error(e.response.data.error)
       }
     }
+
+
     const fetchAdminCourse = async()=>{
       try{
         const {data} = await axios.post("/api/course/getCourses",{type:"admin",userId:user?._id})
@@ -228,8 +223,8 @@ function a11yProps(index: number) {
       </Box>
       <CustomTabPanel value={value} index={0}>
         <div className="grid grid-cols-3 gap-4">
-        { enrolledCourses.length>0 ? enrolledCourses.map(course=>(
-          <Link key={course._id} href = {`/user/Courses/${course._id}`}>
+        { enrolledCourses.length>0 ? enrolledCourses.map((course:Course)=>(
+          <Link key={course._id.toString()} href = {`/user/Courses/${course._id}`}>
               <Card sx={{ maxWidth: 345 }}>
               <CardMedia
                 sx={{ height: 140 }}
@@ -254,7 +249,7 @@ function a11yProps(index: number) {
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <div className="grid grid-cols-3 gap-4">
-      { adminCourses.length>0 ? adminCourses.map((course,idx)=>(
+      { adminCourses.length>0 ? adminCourses.map((course:Course,idx)=>(
           <Link key={`${course._id}`+idx*2} href = {`/admin/Courses/${course._id}`}>
               <Card sx={{ maxWidth: 345 }}>
               <CardMedia

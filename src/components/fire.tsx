@@ -1,18 +1,13 @@
 "use client"
 import * as React from 'react';
 import Popover from '@mui/material/Popover';
-import Badge from '@mui/material/Badge';
 import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import { useStore } from '@/store';
 import { useEffect, useState } from 'react';
-import GroupsIcon from '@mui/icons-material/Groups';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
@@ -22,6 +17,7 @@ import Box from '@mui/material/Box';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import Chip from '@mui/material/Chip';
 import Link from 'next/link';
+import { LinearProgress } from '@mui/material';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -57,6 +53,9 @@ export default function Fire() {
   const {user} = useStore()
   const [daily,setDaily] = useState([])
   const [weekly,setWeekly] = useState([])
+  const [loading,setLoading]=useState<boolean>(false);
+ 
+  
   useEffect(()=>{
     const fetchDaily = async()=>{
       try{
@@ -65,7 +64,6 @@ export default function Fire() {
           setDaily(data.data)
         }
     }catch(e:any){
-        // console.log(e)
         toast.error("Error while fetching challenge")
       }
     }
@@ -76,14 +74,13 @@ export default function Fire() {
           setWeekly(data.data)
         }
     }catch(e:any){
-        // console.log(e)
         toast.error("Error while fetching the challenge")
       }
     }
     fetchDaily()
     fetchWeekly()
+    setLoading(true)
   },[])
-  // console.log(daily,weekly)
   
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
@@ -105,12 +102,16 @@ export default function Fire() {
     setValue(newValue);
   };
 
+  if(loading===false)
+    {
+      return (
+        <LinearProgress color="primary" />
+      )
+    }
   return (
     <div>
       <IconButton size="large" color="inherit" onClick={handleClick}>
-              {/* <Badge badgeContent={17} color="error"> */}
                 <LocalFireDepartmentIcon />
-              {/* </Badge> */}
             </IconButton>
       <Popover
         id={id}

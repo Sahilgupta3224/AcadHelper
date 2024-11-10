@@ -17,11 +17,8 @@ import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import RedeemIcon from "@mui/icons-material/Redeem";
-import SettingsIcon from "@mui/icons-material/Settings";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { useRouter } from "next/navigation";
-import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { clearUser } from "@/store";
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 
@@ -29,7 +26,6 @@ const drawerWidth = 240;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  // const [selectedCourse, setSelectedCourse] = React.useState("");
 
   const handleLogout = ()=>{
     clearUser()
@@ -51,7 +47,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const secondaryItems = [
     { text: "Rewards", icon: <RedeemIcon /> },
-    // { text: "Settings", icon: <SettingsIcon /> },
   ];
 
   return (

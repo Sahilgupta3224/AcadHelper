@@ -42,6 +42,7 @@ interface InputProps {
 const Input: React.FC<InputProps> = ({ type, id, name, label, placeholder, autofocus, value, onChange }) => {
   const { user } = useStore();
   const router = useRouter();
+
   useEffect(() => {
     if (user) {
       router.replace('/Dashboard');
@@ -69,10 +70,13 @@ const LoginForm: React.FC = () => {
   const {user,setUser} = useStore()
   const router = useRouter();
 
+  // Email validation
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
+
+  // Handle login function
   const handleLogin = async () => {
     try {
       if (!validateEmail(email)) {
@@ -99,8 +103,6 @@ const LoginForm: React.FC = () => {
       toast.error(error.response.data.error)
     }
   };
-
-  
 
   return (
     <div className="bg-gray-200 flex justify-center items-center h-screen w-screen">

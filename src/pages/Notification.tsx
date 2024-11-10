@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { Box, Typography, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Badge, Divider } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import Layout from "@/components/layout";
 import Auth from '@/components/Auth'
 

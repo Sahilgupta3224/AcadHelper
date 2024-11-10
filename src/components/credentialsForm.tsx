@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 interface CredentialsFormProps {
   csrfToken?: string;
@@ -23,15 +24,17 @@ export function CredentialsForm(props: CredentialsFormProps) {
     });
 
     if (signInResponse && !signInResponse.error) {
+      
       //Redirect to homepage (/timeline)
       router.push("/timeline");
     } else {
-      console.log("Error: ", signInResponse);
+      toast.error(signInResponse);
       setError("Your Email or Password is wrong!");
     }
   };
 
   return (
+    <>
     <form
       className="w-full mt-8 text-xl text-black font-semibold flex flex-col"
       onSubmit={handleSubmit}
@@ -64,5 +67,7 @@ export function CredentialsForm(props: CredentialsFormProps) {
         Log in
       </button>
     </form>
+    <Toaster/>
+    </>
   );
 }

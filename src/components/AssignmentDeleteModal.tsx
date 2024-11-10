@@ -1,7 +1,13 @@
 import { Box, Button, Modal, Typography } from '@mui/material'
 import React from 'react'
 
-function AssignmentDeleteModal({handleCloseAssignmentModal,openAssignment,DeleteAssignment}) {
+interface AssignmentDeleteModalProps {
+    handleCloseAssignmentModal: () => void;
+    openAssignment: boolean;
+    DeleteAssignment: () => void;
+  }
+
+function AssignmentDeleteModal({handleCloseAssignmentModal,openAssignment,DeleteAssignment}: AssignmentDeleteModalProps) {
   return (
     <Modal
         open={openAssignment}
