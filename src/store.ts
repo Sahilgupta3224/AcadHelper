@@ -19,6 +19,7 @@ interface User {
   createdAt: string;
   updatedAt: string;
   __v: number;
+  inbox: [Object]
 }
 
 interface Store {

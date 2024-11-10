@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 export interface User {
   _id: string;
   username: string;
@@ -18,6 +20,7 @@ export interface User {
   updatedAt: string;
   inbox: [Object]
   __v: number;
+  Totalpoints:{courseId:mongoose.Schema.Types.ObjectId,points:Number}
 }
 
 

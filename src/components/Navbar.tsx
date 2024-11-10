@@ -14,10 +14,8 @@ import Menu from '@mui/material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import Popover from '@mui/material/Popover';
 import Fire from './fire';
 import { useRouter } from 'next/router';
-import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import LoginModal from '@/components/AuthModal';
 import Notification from './Notification';
 import { useStore } from '@/store';
@@ -99,10 +97,8 @@ export default function Navbar() {
     return 0;
   };
   const totalPoints = calculateTotalPoints(user);
-  console.log(totalPoints);
 
   const handleOpen = () => {
-    console.log("Open Login modal")
     setOpenLogin(true)
   }
 
@@ -150,7 +146,6 @@ export default function Navbar() {
         <IconButton size="large" color="inherit">
           <Badge badgeContent={4} color="error">
             <Fire />
-            {/* <LocalFireDepartmentIcon /> */}
           </Badge>
         </IconButton>
         <p>Messages</p>
@@ -200,11 +195,8 @@ export default function Navbar() {
                 fontSize: '1.2rem',
                 fontWeight: 'bold',
                 color: 'black',
-                // marginRight: 1,
                 padding: '8px 12px',
-                // backgroundColor:
                 borderRadius: '8px',
-                // boxShadow: 1,
                 display: 'flex',
                 alignItems: 'center',
               }}

@@ -11,7 +11,6 @@ import { useRouter } from 'next/navigation';
 import {useStore} from '@/store'
 import { signIn } from "next-auth/react";
 
-
 interface LoginModalProps {
   open: boolean;
   handleClose: () => void;
@@ -27,8 +26,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
   const [authType, setAuthType] = useState("login"); 
   const [Error,setError]=useState("")
   const router = useRouter(); 
-  
-  // const { data: session } = useSession()
+
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -73,23 +71,20 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
         });
 
         if (res?.error) {
-          console.log(res);
           setError("error");
         }
   
-
         setUser(userData); // Set user in Zustand store
-        console.log("User check",user)
         toast.success("Logged in successfully!");
         router.push('/Leaderboard');
         handleClose();
+
         // Clear fields
         setEmail('');
         setPassword('');
         setTheUsername('');
         setError("");
       } catch (error: any) {
-        console.error("Error while logging in:", error);
         const errorMessage = error.response?.data?.message || "Error while logging in. Please try again.";
         toast.error(errorMessage);
       }
@@ -121,7 +116,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
         setPassword('');
         setConfirmPassword('');
       } catch (error: any) {
-        console.error("Error while signing up:", error);
         const errorMessage = error.response?.data?.message || "Error while signing up. Please try again.";
         toast.error(errorMessage);
       }
@@ -133,7 +127,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, handleClose }) => {
       // Perform Google sign-in logic here
       signIn("google")
     } catch (error: any) {
-      console.error("Error during Google sign-in:", error);
       const errorMessage = error.response?.data?.message || "An error occurred during Google sign-in.";
       toast.error(errorMessage);
       handleClose(); // Close the modal

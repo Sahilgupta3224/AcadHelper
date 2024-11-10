@@ -5,8 +5,15 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import CloseIcon from '@mui/icons-material/Close';
 import { useStore } from '@/store';
+import mongoose from 'mongoose';
 
-const AssignmentModal = ({ open, handleClose, courseId }) => {
+interface AssignmentModalProps {
+  open: boolean;
+  handleClose: () => void;
+  courseId: mongoose.Schema.Types.ObjectId;
+}
+
+const AssignmentModal: React.FC<AssignmentModalProps>  = ({ open, handleClose, courseId }) => {
   const [assignment, setAssignment] = useState({
     title: '',
     description: '',
@@ -18,7 +25,7 @@ const AssignmentModal = ({ open, handleClose, courseId }) => {
 
   const { user } = useStore();
 
-  const handleChange = (e) => {
+  const handleChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
     setAssignment({ ...assignment, [name]: value });
   };
@@ -32,31 +39,30 @@ const AssignmentModal = ({ open, handleClose, courseId }) => {
 
       const req = {
         ...assignment,
-        userId: user._id,
+        userId: user?._id,
         courseId,
       };
-      console.log(req);
+  
       const response = await axios.post('/api/assignment/upload-assignment', req);
-      console.log(response);
-    } catch (error) {
-      console.error("Error while creating the assignment:", error);
+
+    } catch (error:any) {
+      toast.error("Error while creating the assignment:", error.response.data.message);
     }
   };
 
-  const handleUpload = (result) => {
+  const handleUpload = (result:any) => {
     if (result && result.info) {
       setAssignment((prev) => ({
         ...prev,
         AssignmentDoc: result.info.url
       }));
-      console.log("Upload result info:", result.info,assignment);
     } else {
-      console.error("Upload failed or result is invalid.");
+      toast.error("Upload failed or result is invalid.");
     }
   };
 
   useEffect(() => {
-    console.log("Assignment state updated:", assignment);
+
   }, [assignment]);
 
   return (

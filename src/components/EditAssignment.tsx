@@ -5,25 +5,6 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 
-// // Define the props interface
-// interface EditAssignmentModalProps {
-//   open: boolean;
-//   handleClose: () => void;
-//   assignmentData: {
-//     dueDate?: Dayjs;
-//     fileName?: string;
-//     points?: number;
-//     status?: string;
-//   };
-//   onSave: (updatedData: {
-//     dueDate: Dayjs | null;
-//     fileName: string;
-//     points: number;
-//     file: File | null;
-//     status: string;
-//   }) => void;
-// }
-
 export default function EditAssignmentModal({
   open,
   handleClose,
