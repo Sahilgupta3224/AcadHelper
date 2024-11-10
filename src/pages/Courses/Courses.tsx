@@ -3,11 +3,6 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Layout from "@/components/layout";
 import '../../app/globals.css';
-
-import {
-  sampleAssignments,
-  sampleChapters,
-} from "@/utils/Sample Data/Sample";
 import Auth from '@/components/Auth'
 import Link from "next/link";
 import {
@@ -15,7 +10,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Dayjs } from "dayjs";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
