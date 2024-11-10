@@ -6,6 +6,7 @@ import Assignment from '@/models/assignmentModel';
 import { connect } from '@/dbConfig/dbConfig';
 connect();
 
+//remove a user from a course
 export const DELETE = async (request: Request) => {
   try {
     const { searchParams } = new URL(request.url);
@@ -52,7 +53,6 @@ export const DELETE = async (request: Request) => {
 
     return new NextResponse(JSON.stringify({ message: "User removed from course successfully.", updatedCourse }), { status: 200 });
   } catch (error: any) {
-    console.log("Error while kicking out the user:", error);
     return new NextResponse(JSON.stringify({ message: "Error while kicking out the user", error: error.message }), { status: 500 });
   }
 };

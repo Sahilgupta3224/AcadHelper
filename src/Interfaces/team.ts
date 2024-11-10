@@ -18,3 +18,5 @@ interface Team {
     challengescompleted?: string;
     pendingInvites?: any[];
 }
+
+export default Team

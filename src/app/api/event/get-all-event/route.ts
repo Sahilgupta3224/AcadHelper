@@ -3,6 +3,7 @@ import Event from "@/models/eventModal";
 import User from "@/models/userModel";
 import { NextResponse } from "next/server";
 
+//get all events of a user
 export async function GET(request:Request)
 {
     try {
@@ -20,12 +21,10 @@ export async function GET(request:Request)
         }
 
         const events = await Event.find({ '_id': { $in: user.events } });
-        // console.log(events)
 
         return NextResponse.json({message:"successfully fetched events",events})
 
     } catch (error) {
-        console.log("error while fetching the events");
         return NextResponse.json({message:"Error while fetching the events",error},{status:500});
 
     }

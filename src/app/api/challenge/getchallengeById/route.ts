@@ -3,8 +3,7 @@ import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import {connect} from '@/dbConfig/dbConfig'
 
-
-
+// get challenges by challengeId
 export async function GET(request: NextRequest) {
     try {
         const url = new URL(request.url);

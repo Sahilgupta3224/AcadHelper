@@ -4,6 +4,7 @@ import Course from "@/models/courseModel";
 import User from "@/models/userModel";
 import { NextResponse } from "next/server";
 
+// update challenge
 export async function PATCH(request: Request) {
     try {
         await connect();

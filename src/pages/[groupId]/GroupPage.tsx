@@ -13,6 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useStore } from '@/store';
 import { Types } from 'mongoose';
 import Auth from '@/components/Auth'
+import toast from 'react-hot-toast';
 interface Task {
   _id: Types.ObjectId
   text: string;
@@ -62,26 +63,24 @@ function GroupPage() {
     const fetchTeam = async()=>{
       try{
         const res = await axios.get(`/api/team/${params?.groupId}`,{params:{type:"Team"}})
-        console.log(res?.data?.team)
-        setTasks(res.data.team.tasks || []);
-      }catch(e){
-        console.log(e)
+        setTasks(res.data.team.tasks);
+      }catch(e:any){
+        toast.error(e.response.data.error)
       }
     }
     fetchTeam()
   },[])
-  console.log(newTask)
 
   // Function to add a new task
   const addTask = async() => {
       try{
-      const {data} = await axios.post("/api/team/tasks",{task:{text:newTask,completed:false},userId:user._id,teamId:params?.groupId})
+      const {data} = await axios.post("/api/team/tasks",{task:{text:newTask,completed:false},userId:user?._id,teamId:params?.groupId})
       if(data.success){
       setTasks([...tasks, { text: newTask, completed: false, _id: data.task._id }]);
       setNewTask("");
       }
-      }catch(error){
-        console.log(error)
+      }catch(e:any){
+        toast.error(e.response.data.error)
       }
     
   };
@@ -94,8 +93,8 @@ function GroupPage() {
     setTasks(updatedTasks);
     try{
       const {data} = await axios.put("/api/team/tasks",{taskId:currTask._id,teamId:params?.groupId,completed:!currTask.completed})
-    }catch(e){
-      console.log(e)
+    }catch(e:any){
+      toast.error(e.response.data.error)
     }
     
   };
@@ -109,8 +108,8 @@ function GroupPage() {
           return updatedTasks;
         });
       }
-    }catch(e){
-      console.log("Error deleting task",e)
+    }catch(e:any){
+      toast.error(e.response.data.error)
     }
     
   };

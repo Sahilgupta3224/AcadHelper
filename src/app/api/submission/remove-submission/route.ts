@@ -46,7 +46,6 @@ export const PATCH = async (request:Request)=>{
 
         return new NextResponse(JSON.stringify({message:"Successfully successfully removed",submission:findSubmission}),{status:200})
     } catch (error:any) {
-        console.log("Error while removing submission")
         return new NextResponse(JSON.stringify({message: "Error while removing submission",error:error.message}),{status:500})
     }
 }

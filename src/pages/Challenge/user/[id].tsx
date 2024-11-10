@@ -5,11 +5,11 @@ import Challenge from "@/Interfaces/challenge";
 import Submission from "@/Interfaces/submission";
 import '../../../app/globals.css';
 import toast, { Toaster } from 'react-hot-toast';
-// import { Modal, Button, Form } from 'react-bootstrap';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Modal, Typography, Box, FormControl, Select, InputLabel, Divider, LinearProgress } from '@mui/material';
 import { useStore } from "@/store";
 import { CldUploadWidget } from 'next-cloudinary';
 import Layout from "@/components/layout";
+import Team from "@/Interfaces/team";
 interface EditChallenge {
   title: string;
   description: string;
@@ -37,7 +37,6 @@ const style = {
 const ChallengeDetails: React.FC = () => {
   const router = useRouter();
   const { query } = router
-  console.log(query)
   const { user, setUser } = useStore()
   const { id } = router.query;
   const [challengeDoc, setchallengeDoc] = useState("")
@@ -48,15 +47,14 @@ const ChallengeDetails: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isDocVisible, setIsDocVisible] = useState<boolean>(false);
   const [editedchallenge, seteditedchallenge] = useState<EditChallenge | null>(null);
-  const [submitOpen,setSubmitOpen] = useState(false)
-  const [groups,setGroups] = useState([])
-  const [selectedGroup,setSelectedGroup] = useState("")
+  const [submitOpen, setSubmitOpen] = useState(false)
+  const [groups, setGroups] = useState<Team[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState("")
 
   //Submit modal 
   const handleSubmitOpen = () => setSubmitOpen(true);
   const handleSubmitClose = () => setSubmitOpen(false);
 
-  console.log(challenge)
   const challengeId = typeof id === 'string' ? id : '';
 
   //Fetching all teams of the user
@@ -64,19 +62,17 @@ const ChallengeDetails: React.FC = () => {
     const fetchGroups = async () => {
       try {
         const { data } = await axios.get("/api/team/", {
-          params: { userId: user._id },
+          params: { userId: user?._id },
         });
         if (data.success) {
           setGroups(data.teams);
         }
-      } catch (error) {
-        console.log(error);
+      } catch (error: any) {
         toast.error(error.response.data.error);
       }
     };
     fetchGroups();
   }, []);
-  console.log(groups);
 
   useEffect(() => {
     if (challengeId) {
@@ -84,8 +80,7 @@ const ChallengeDetails: React.FC = () => {
         try {
           const response = await axios.get(`/api/challenge/getchallengeById?Id=${challengeId}`);
           setChallenge(response.data.data);
-        } catch (error) {
-          console.error("Error fetching challenge details:", error);
+        } catch (error: any) {
           toast.error(error.response.data.message);
         }
       };
@@ -98,18 +93,16 @@ const ChallengeDetails: React.FC = () => {
       const fetchSubmissions = async () => {
         try {
           const submissionsResponse = await axios.get(
-            `/api/submission/getsubmissionbychallengeanduser?challengeId=${challengeId}&userId=${user._id}`
+            `/api/submission/getsubmissionbychallengeanduser?challengeId=${challengeId}&userId=${user?._id}`
           );
           setSubmissions(submissionsResponse.data.data);
-          console.log(submissionsResponse);
-        } catch (error) {
-          console.error("Error fetching submissions:", error);
+        } catch (error: any) {
           toast.error(error.message);
         }
       };
       fetchSubmissions();
     }
-}, [challengeId, yo]);
+  }, [challengeId, yo]);
 
 
 
@@ -120,7 +113,6 @@ const ChallengeDetails: React.FC = () => {
 
   const handleShow = () => {
     setShow(true);
-    console.log(challenge)
     seteditedchallenge({
       title: challenge?.title || "",
       description: challenge?.description || "",
@@ -135,11 +127,9 @@ const ChallengeDetails: React.FC = () => {
   const deletesub = async (id: string) => {
     try {
       const response = await axios.patch(`/api/submission/remove-submission?Id=${id}`);
-      console.log(response.data)
       setyo(!yo);
     }
     catch (e: any) {
-      console.error("Error while removing:", e);
       toast.error(e.response.data.message);
     }
   }
@@ -147,38 +137,35 @@ const ChallengeDetails: React.FC = () => {
   const handleEditsub = async (id: string) => {
     if (!challengeDoc) toast.error("Select file first")
     const submitwala = {
-        documentLink: challengeDoc
+      documentLink: challengeDoc
     }
     try {
       const response = await axios.patch(`/api/submission/edit-submission?Id=${id}`, submitwala);
-      console.log(response.data)
       setchallengeDoc("")
       setIsDocVisible(false);
       setyo(!yo);
     }
     catch (e: any) {
-      console.error("Error while editing:", e);
+      console.error("Error while editing:", e.response.data.error);
     }
   }
 
-  const handlesub = async (type, groupId = "") => {
-    console.log(type, groupId)
+  const handlesub = async (type: any, groupId = "") => {
     if (type == "team" && groupId == "") {
       toast.error("Select a group")
       return;
     }
     const submitwala = {
-      user: user._id,
+      user: user?._id,
       challenge: challengeId,
       documentLink: challengeDoc,
       type,
-      Course:challenge?.courseId,
+      Course: challenge?.courseId,
       groupId
-  }
-  try {
-     
+    }
+    try {
+
       const response = await axios.post('/api/submission', submitwala);
-      console.log(response.data)
       setchallengeDoc("")
       setIsDocVisible(false);
       setyo(!yo);
@@ -189,26 +176,25 @@ const ChallengeDetails: React.FC = () => {
     }
   }
 
-const handleUpload = (result: any) => {
-  if (result && result.info) {
+  const handleUpload = (result: any) => {
+    if (result && result.info) {
       setchallengeDoc(result.info.url)
       setIsDocVisible(true);
-      console.log("Upload result info:", result.info);
-  } else {
+    } else {
       console.error("Upload failed or result is invalid.");
-  }
-};
+    }
+  };
 
   if (!challenge) return <Layout><LinearProgress /></Layout>;
 
   return (
     <Layout>
-    <div className="bg-gray-100 min-h-screen py-10 px-5">
-    <button
+      <div className="bg-gray-100 min-h-screen py-10 px-5">
+        <button
           onClick={() => router.push(`/user/Courses/${challenge.courseId}`)}
           className="mx-4 text-blue-400 rounded hover:bg-blue-100 transition"
         >
-           <ArrowBackIosNewIcon/>
+          <ArrowBackIosNewIcon />
         </button>
         <div className="m-4">
           <div className="flex justify-between mb-6">
@@ -284,7 +270,6 @@ const handleUpload = (result: any) => {
                 <div key={submission._id} className="bg-white shadow-md rounded-lg p-4 mb-4">
                   <div className="flex justify-between items-center">
                     <div>
-                      {/* <p><strong>Submitted By:</strong> {submission.user.name}</p> */}
                       <p><strong>Submitted At:</strong> {new Date(submission.submittedAt).toLocaleString()}</p>
                     </div>
                     <a href={submission.documentLink} target="_blank" rel="noopener noreferrer" className="text-blue-500">
@@ -314,27 +299,27 @@ const handleUpload = (result: any) => {
           </Typography>
           <div className="flex my-4">
             <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Select group</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={selectedGroup}
-              label="Age"
-              onChange={(e)=>setSelectedGroup(e.target.value)}
-            >
-              {
-                groups.length>0 && groups.map(group=>
-                    <MenuItem value={group._id}>{group.teamname}</MenuItem>
-                  ))
-              }
+              <InputLabel id="demo-simple-select-label">Select group</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={selectedGroup}
+                label="Age"
+                onChange={(e) => setSelectedGroup(e.target.value)}
+              >
+                {
+                  groups.length > 0 && groups.map(group =>
+                    <MenuItem key={group?._id.toString()} value={group?._id.toString()}>{group?.teamname}</MenuItem>
+                  )
+                }
               </Select>
             </FormControl>
             <Button type="button" variant="outlined" sx={{ marginLeft: "1rem" }} onClick={() => handlesub("team", selectedGroup)}>Submit</Button>
           </div>
-          
+
         </Box>
       </Modal>
-      <Toaster/>
+      <Toaster />
     </Layout>
   );
 };

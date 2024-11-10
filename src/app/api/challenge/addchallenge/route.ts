@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
                 message: "Invalid Course Id",
             }, { status: 400 });
         }
-        const course = await Course.findById(courseId)
+        const course = await Course.findById(courseId)                                   // Validate if the course with the given courseId exists
         if(!course){
             return NextResponse.json({
                 success: false,
@@ -29,14 +29,13 @@ export async function POST(request: NextRequest) {
         }
         const newChallenge = new Challenge(newChallengeData)
         const savedChallenge = await newChallenge.save();
-        const updatedcourse = await Course.findByIdAndUpdate(courseId,{$push:{challenges:savedChallenge._id}},{new:true});
+        const updatedcourse = await Course.findByIdAndUpdate(courseId,{$push:{challenges:savedChallenge._id}},{new:true});              //update the course
         return NextResponse.json({
             success: true,
             message: "Challenge created successfully",
             data: savedChallenge,
         });
     } catch (error: any) {
-        console.error("Error creating challenge:", error);
         return {
             success: false,
             message: "Failed to create challenge",

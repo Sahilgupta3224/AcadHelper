@@ -15,8 +15,6 @@ import {
 } from '@mui/material';
 import Auth from '@/components/Auth'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-// import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-// import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import Layout from "@/components/layout";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -29,14 +27,15 @@ import axios from "axios";
 import "../styles/globals.css";
 import User from "@/Interfaces/user";
 import toast from "react-hot-toast";
+import Task from "@/utils/Interfaces/taskInterface";
 import { useStore } from "@/store";
 
 function Profile() {
   const [loading,setLoading]=useState<boolean>(false)
-  const [fetchedUser, setFetchedUser] = React.useState(null);
+  const [fetchedUser, setFetchedUser] = useState<User | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
-  const [tasksRequired, setTasksRequired] = useState([]);
+  const [tasksRequired, setTasksRequired] = useState<Task[]>([]);
   const [challenges,setChallenges]=useState([])
   const [totalChallenges,setTotalChallenges]=useState([])
   const [points,setPoints]=useState<number>(0)
@@ -45,7 +44,7 @@ function Profile() {
   const badgesToShow = 3;
   const badges = Badges;
   const router = useRouter();
-  const id=user._id
+  const id=user?._id
 
   const calTotalPoints=()=>{
     let points:number=0;
@@ -55,9 +54,9 @@ function Profile() {
       return;
     }
 
-    const totalPointsArray=fetchedUser.Totalpoints 
+    const totalPointsArray=fetchedUser?.Totalpoints 
 
-    totalPointsArray.map((item)=>{
+    totalPointsArray.map((item:any)=>{
       points+=item.points 
     })
 
@@ -105,7 +104,7 @@ function Profile() {
     fetchTasks();
     calTotalPoints();
     setLoading(true)
-}, [user._id]);
+}, [user?._id]);
 
 
  

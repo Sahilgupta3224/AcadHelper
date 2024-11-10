@@ -28,7 +28,6 @@ const AssignmentDetails: React.FC = () => {
     const router = useRouter();
     const { query } = router
     const { user, setUser } = useStore()
-    // console.log(query)
     const { id } = router.query;
     const [assignmentDoc, setAssignmentDoc] = useState("")
     const [assignment, setassignment] = useState<Assignment | null>(null);
@@ -38,7 +37,6 @@ const AssignmentDetails: React.FC = () => {
     const [show, setShow] = useState(false)
     const [errorMessage, setErrorMessage] = useState("");
     const [editedassignment, seteditedassignment] = useState<EditAssignment | null>(null);
-    // console.log(id)
     const assignmentId = typeof id === 'string' ? id : '';
     useEffect(() => {
         if (assignmentId) {
@@ -48,7 +46,6 @@ const AssignmentDetails: React.FC = () => {
                     setassignment(response.data.data);
                     toast.success("Fetched assignments")
                 } catch (error) {
-                    console.error("Error fetching challenge details:", error);
                     toast.error("Error fetching the assignments")
                 }
             };
@@ -60,12 +57,10 @@ const AssignmentDetails: React.FC = () => {
         if (assignmentId) {
             const fetchSubmissions = async () => {
                 try {
-                    const submissionsResponse = await axios.get(`/api/submission/getsubmissionbyassignmentanduser?assignmentId=${assignmentId}&userId=${user._id}`);
+                    const submissionsResponse = await axios.get(`/api/submission/getsubmissionbyassignmentanduser?assignmentId=${assignmentId}&userId=${user?._id}`);
                     setSubmissions(submissionsResponse.data.data);
-                    console.log(submissionsResponse)
                     toast.success("Successfully fetched Submissions")
                 } catch (error) {
-                    console.error("Error fetching submissions:", error);
                     toast.error("Error fetching submission")
                 }
             };
@@ -76,13 +71,11 @@ const AssignmentDetails: React.FC = () => {
     const deletesub = async (id: string) => {
         try {
             const response = await axios.patch(`/api/submission/remove-submission?Id=${id}`);
-            console.log(response.data)
             setyo(!yo);
             toast.success("Deleted Submission")
         }
-        catch (e: any) {
-            console.error("Error while removing:", e);
-            toast.error("Error removing the submission")
+        catch (error: any) {
+            toast.error(error.response.data.error)
         }
     }
 
@@ -94,35 +87,31 @@ const AssignmentDetails: React.FC = () => {
         if(!assignmentDoc)toast.error('Select file first')
         try {
             const response = await axios.patch(`/api/submission/edit-submission?Id=${id}`, submitwala);
-            console.log(response.data)
             setAssignmentDoc("")
             setIsDocVisible(false);
             setyo(!yo);
             toast.success("Edited submission")
         }
-        catch (e: any) {
-            toast.error("Error while editing submission")
-            console.error("Error while editing:", e);
+        catch (error: any) {
+            toast.error(error.response.data.error)
         }
     }
-    // console.log(assignment)
     const handlesub = async () => {
         const submitwala = {
-            user: user._id,
+            user: user?._id,
             assignment: assignmentId,
             documentLink: assignmentDoc,
             Course:assignment?.Course
         }
         try {
             const response = await axios.post('/api/submission', submitwala);
-            console.log(response.data)
             setAssignmentDoc("")    
             setIsDocVisible(false);
             setyo(!yo);
             toast.success("Made submission successfully")
         }
-        catch (e: any) {
-            console.error("Error while submitting:", e);
+        catch (error: any) {
+            toast.error(error.response.data.error);
         }
     }
 
@@ -130,16 +119,13 @@ const AssignmentDetails: React.FC = () => {
         if (result && result.info) {
             setAssignmentDoc(result.info.url)
             setIsDocVisible(true);
-            console.log("Upload result info:", result.info);
             toast.success("Upload successful")
         } else {
-            console.error("Upload failed or result is invalid.");
             toast.error("Upload failed or result is invalid.");
         }
     };
 
     if (!assignment) return <Layout><LinearProgress /></Layout>
-    console.log(submissions[0])
     return (
         <Layout>
         <div className="bg-gray-100 min-h-screen py-10 px-5">
@@ -206,7 +192,6 @@ const AssignmentDetails: React.FC = () => {
                             <div key={submission._id} className="bg-white shadow-md rounded-lg p-4 mb-4">
                                 <div className="flex justify-between items-center">
                                     <div>
-                                        {/* <p><strong>Submitted By:</strong> {submission.user.name}</p> */}
                                         <p><strong>Submitted At:</strong> {new Date(submission.submittedAt).toLocaleString()}</p>
                                     </div>
                                     <a href={submission.documentLink} target="_blank" rel="noopener noreferrer" className="text-blue-500">

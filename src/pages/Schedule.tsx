@@ -56,7 +56,7 @@ const Calendar: React.FC = () => {
     try {
       const response = await axios.get("/api/event/get-all-event", {
         params: {
-          userId: user._id,
+          userId: user?._id,
         },
       });
       const events: Event[] = response.data.events;
@@ -74,8 +74,8 @@ const Calendar: React.FC = () => {
       }));
 
       setCurrentEvents(fullCalendarEvents);
-    } catch (error) {
-      toast.error(error.message);
+    } catch (error:any) {
+      toast.error(error?.message);
     }
   };
 
@@ -85,16 +85,16 @@ const Calendar: React.FC = () => {
   
       await axios.patch("/api/event/update-event", {
         title: newEventTitle,
-        userId: user._id,
+        userId: user?._id,
         DueDate: new Date(newEventTime).toISOString(),
         eventId: selectedEvent.id,
       });
       selectedEvent.setProp("title", newEventTitle);
-      selectedEvent.setDates(new Date(newEventTime).toISOString()); // Update time on the calendar
+      selectedEvent.setDates(new Date(newEventTime).toISOString(),null); // Update time on the calendar
       fetchAllEvents();
       handleCloseDialog();
       setchange(!change)
-    } catch (error) {
+    } catch (error:any) {
       toast.error(error.message);
     }
   };
@@ -112,7 +112,7 @@ const Calendar: React.FC = () => {
       
       const response = await axios.patch("/api/event/update-event", {
         title: event.title,
-        userId: user._id,
+        userId: user?._id,
         DueDate: DueDate,
         eventId: event.id,
       });
@@ -120,7 +120,7 @@ const Calendar: React.FC = () => {
       setchange(!change)
       // // Optionally refetch all events or update the state manually
       fetchAllEvents();
-    } catch (error) {
+    } catch (error:any) {
       toast.error(error.message);
     }
   };
@@ -153,14 +153,14 @@ const Calendar: React.FC = () => {
       await axios.delete("/api/event/delete-event", {
         params: {
           eventId: selectedEvent.id,
-          userId: user._id,
+          userId: user?._id,
         },
       });
       selectedEvent.remove(); // Remove event from the calendar directly
       fetchAllEvents(); // Refresh events list
       handleCloseDialog();
       setchange(!change)
-    } catch (error) {
+    } catch (error:any) {
       toast.error(error.message);
     }
   };
@@ -175,7 +175,7 @@ const Calendar: React.FC = () => {
   
         const newEvent = {
           title: newEventTitle,
-          userId:user._id,
+          userId:user?._id,
           DueDate: (new Date(selectedDate.end)).toISOString()
         };
   
@@ -202,7 +202,7 @@ const Calendar: React.FC = () => {
         handleCloseDialog();
         setchange(!change)
       }
-    } catch (error) {
+    } catch (error:any) {
       toast.error(error);
       return;
     }

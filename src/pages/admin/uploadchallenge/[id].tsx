@@ -33,15 +33,13 @@ const UploadChallenge: React.FC = () => {
         type,
         frequency,
         points,
-        createdBy: user._id,
+        createdBy: user?._id,
         courseId: id,
       });
-      console.log(response.data);
       toast.success("Challenge uploaded successfully!");
       router.push(`/Challenge/${response.data.Challenge._id}`);
     } catch (error: any) {
-      toast.error("Error uploading challenge. Please try again.");
-      console.error("Upload error:", error);
+      toast.error(error.response.data.error);
     }
   };
 

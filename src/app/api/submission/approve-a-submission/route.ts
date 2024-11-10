@@ -30,7 +30,7 @@ export const PATCH = async (request:Request)=>{
         }
         findSubmission.isVerified=true
         let points = 0;
-        let courseId;
+        let courseId:any;
         if (findSubmission.Challenge) {
             const challenge = await Challenge.findById(findSubmission.Challenge);
             points = challenge.points;
@@ -42,6 +42,8 @@ export const PATCH = async (request:Request)=>{
             courseId = assignment.Course;
             findSubmission.marksObtained = points;
         }
+
+        //handling with case where team submission has taaken place
         if (findSubmission.type === "team") {
             const team = await Team.findById(findSubmission.groupId);
             if (team) {
@@ -51,7 +53,6 @@ export const PATCH = async (request:Request)=>{
                 for (const memberId of members) {
                     const user = await User.findById(memberId);
                     if (user) {
-                        console.log(user._id)
                         const courseIndex = user.Totalpoints.findIndex(
                             (entry: any) => entry.courseId?.toString() === courseId.toString()
                         );
@@ -82,7 +83,6 @@ export const PATCH = async (request:Request)=>{
         return new NextResponse(JSON.stringify({message:"Successfully submission approved",submission:findSubmission}),{status:200})
 
     } catch (error:any) {
-        console.log(error)
         return new NextResponse(JSON.stringify({message:"Error while approving to a assignment submission",error:error}),{status:500})
     }
 }

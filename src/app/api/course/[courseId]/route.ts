@@ -31,7 +31,9 @@ export async function DELETE(request:NextRequest){
         if(!updatedUser)return NextResponse.json({error:"User not found"},{status:400})
         
         const updatedCourse = await Course.findByIdAndUpdate(courseId,{$pull:{StudentsEnrolled:userId}},{new:true})
+
         if(!updatedCourse)return NextResponse.json({error:"Course not found"},{status:400})
+
         const assignments = await Assignment.find({ Course: courseId });
         const assignmentIds = assignments.map(assignment => assignment._id);
         const updatedUserWithAssignments = await User.findByIdAndUpdate(
@@ -39,6 +41,7 @@ export async function DELETE(request:NextRequest){
             { $pull: { pendingAssignments: { assignmentId: { $in: assignmentIds } } } },
             { new: true }
         );
+        
         if (!updatedUserWithAssignments) return NextResponse.json({ error: "User not found" }, { status: 400 });
         return NextResponse.json({updatedUserWithAssignments,success:true})
 

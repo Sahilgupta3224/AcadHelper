@@ -3,6 +3,7 @@ import Course from '@/models/courseModel';
 import User from '@/models/userModel';
 import { connect } from '@/dbConfig/dbConfig';
 
+// get enrolled in a course
 export async function GET(request: Request) {
   try {
    
@@ -22,7 +23,7 @@ export async function GET(request: Request) {
     
     const userIds = course.StudentsEnrolled;
 
-    const users = await Promise.all(userIds.map(id => User.findById(id)));
+    const users = await Promise.all(userIds.map((id:any) => User.findById(id)));
 
     const enrolledUsers = users.filter(user => user !== null);
 
@@ -32,7 +33,6 @@ export async function GET(request: Request) {
     }, { status: 200 });
 
   } catch (error:any) {
-    console.log("Error while fetching all the users enrolled:", error);
     return NextResponse.json({
       message: "Error while fetching the users enrolled in the course",
       error: error.message

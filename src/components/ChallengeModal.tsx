@@ -4,6 +4,7 @@ import axios from 'axios';
 import { CldUploadWidget } from 'next-cloudinary'
 import React, { useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close';
+import toast from 'react-hot-toast';
 
 function ChallengeModal({challengeDoc,openUploadModal,setOpenUploadModal,handleUploadChallenge,yo,setyo,setChallenges,courseId}) {
     const [description, setDescription] = useState("");
@@ -41,7 +42,7 @@ function ChallengeModal({challengeDoc,openUploadModal,setOpenUploadModal,handleU
           setOpenUploadModal(false);
           setyo(!yo)
         } catch (error) {
-          console.error("Error uploading challenge:", error);
+          toast.error(error.response.data.message)
         }
       };
 

@@ -8,7 +8,6 @@ import {connect} from "@/dbConfig/dbConfig";
 connect()
 
 export async function GET(request: NextRequest) {
-    // console.log(request.json())
     try {
         const url = new URL(request.url);
         const CourseId = url.searchParams.get('CourseId');
@@ -18,7 +17,6 @@ export async function GET(request: NextRequest) {
                 message: "Invalid CourseId",
             }, { status: 404 });
         }
-        console.log(CourseId)
         const course = await Course.findById(CourseId)
         if(!course){
             return NextResponse.json({
@@ -26,14 +24,12 @@ export async function GET(request: NextRequest) {
                 message: "Course not found",
             }, { status: 404 });
         }
-        console.log("course",course)
-        const assignments = await Assignment.find({_id: { $in: course.assignments } });
+        const assignments = await Assignment.find({_id: { $in: course.assignments } });      //finding assignments which belongs to this course
         return NextResponse.json({
             success: true,
             data: assignments,
         });
     } catch (error: any) {
-        console.error("Error fetching assignments:", error);
         return NextResponse.json({
             success: false,
             message: "Failed to fetch assignments.",

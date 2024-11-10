@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {connect} from '@/dbConfig/dbConfig'
 
 connect()
+// get challnege by frequency
 export async function POST(request: NextRequest) {
     try {
         const { frequency, userId } = await request.json();
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
             }, { status: 400 });
         }
 
-        const user = await User.findById(userId).populate('Courses');
+        const user = await User.findById(userId).populate('Courses');                               // Find the user by 'userId' and populate their 'Courses' field with course details     
 
         if (!user) {
             return NextResponse.json({
@@ -25,8 +26,8 @@ export async function POST(request: NextRequest) {
                 message: "User not found."
             }, { status: 404 });
         }
-        console.log(user)
-        const courseIds = user.Courses.map((course:any) => course.courseId);
+
+        const courseIds = user.Courses.map((course:any) => course.courseId);                       // Extract the 'courseId' from each course in the user's 'Courses' field
 
         const challenges = await Challenge.find({
             courseId: { $in: courseIds },
@@ -37,7 +38,6 @@ export async function POST(request: NextRequest) {
             data: challenges,
         });
     } catch (error: any) {
-        console.error("Error fetching challenges:", error);
         return NextResponse.json({
             success: false,
             message: "Failed to fetch challenges.",

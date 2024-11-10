@@ -29,7 +29,7 @@ export const PATCH = async (request: Request) => {
         }
         findSubmission.isVerified = false
         let points = 0;
-        let courseId;
+        let courseId:any;
         if (findSubmission.Challenge) {
             const challenge = await Challenge.findById(findSubmission.Challenge);
             points = challenge.points;
@@ -65,63 +65,18 @@ export const PATCH = async (request: Request) => {
             }
         } else {
             const user = await User.findById(findSubmission.User);
-            console.log(courseId)
-            console.log(user)
             const courseIndex = user.Totalpoints.findIndex(
                 (entry: any) => entry.courseId.equals(courseId)
             );
-            console.log(courseIndex)
             if (courseIndex >= 0) {
                 user.Totalpoints[courseIndex].points -= points;
             }
             await user.save();
         }
-        // const userId = findSubmission.User
-        // const assignmentId=findSubmission.Assignment
-        // const challengeId=findSubmission.Challenge
-        // const user = await User.findById(userId)
-        // console.log(assignmentId)
-        // console.log(challengeId)
-        // if(challengeId){
-        //     console.log("challenge")
-        //     const challenge = await Challenge.findById(challengeId)
-        //     const points = challenge.points
-        //     const CourseId = challenge.courseId
-        //     findSubmission.marksObtained-=points
-        //     const courseIndex = user.Totalpoints.findIndex(
-        //         (entry:any) => entry.courseId.toString() === CourseId.toString()
-        //     );
-
-        //     if (courseIndex >= 0) {
-        //         user.Totalpoints[courseIndex].points -= points;
-        //         if(user.Totalpoints[courseIndex].points<=0){
-        //             user.Totalpoints.pull({CourseId});
-        //         }
-        //     } 
-        // }
-        // if(assignmentId){
-        //     console.log("assignment")
-        //     const assignment =await Assignment.findById(assignmentId)
-        //     const points = assignment.totalPoints
-        //     const CourseId = assignment.Course
-        //     findSubmission.marksObtained = points
-        //     const courseIndex = user.Totalpoints.findIndex(
-        //         (entry:any) => entry.courseId.toString() === CourseId.toString()
-        //     );
-
-        //     if (courseIndex >= 0) {
-        //         user.Totalpoints[courseIndex].points -= points;
-        //         if(user.Totalpoints[courseIndex].points<=0){
-        //             user.Totalpoints.pull({CourseId});
-        //         }
-        //     }
-        // }
-        // await user.save()
         await findSubmission.save()
 
         return new NextResponse(JSON.stringify({ message: "Successfully submission disapproved", submission: findSubmission }), { status: 200 })
     } catch (error: any) {
-        console.log(error)
         return new NextResponse(JSON.stringify({ message: "Error while disapproving to a assignment submission", error: error.message }), { status: 500 })
     }
 }

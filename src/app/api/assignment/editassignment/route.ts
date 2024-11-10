@@ -9,7 +9,7 @@ connect()
 export async function PATCH(request: NextRequest) {
     try {
         const url = new URL(request.url);
-        const id = url.searchParams.get('Id');
+        const id = url.searchParams.get('Id');                 //extracting id
         const assignment = await Assignment.findById(id);
         if(!assignment){
             return NextResponse.json({
@@ -47,7 +47,6 @@ export async function PATCH(request: NextRequest) {
             data: newAssignment,
         });
     } catch (error: any) {
-        console.error("Error editing assignment:", error);
         return {
             success: false,
             message: "Failed to edit assignment",

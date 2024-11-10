@@ -56,6 +56,7 @@ interface User {
         type: Date,
     }
   }];
+  isEmailVerified:boolean
   pendingAssignments?: UserPendingAssignment[] | [];
   completedAssignments?: UserCompletedAssignment[] | [];
   teams?: UserTeam[]|[];

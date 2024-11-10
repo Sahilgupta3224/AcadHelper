@@ -9,6 +9,7 @@ import Team from '@/models/teamModel'
 
 connect()
 
+//approving all submissions of an assignment
 export const PATCH = async (request:Request)=>{
     try {
         const url = new URL(request.url);
@@ -79,7 +80,6 @@ export const PATCH = async (request:Request)=>{
         return new NextResponse(JSON.stringify({message:"Successfully submissions approved",assignment:assignment}),{status:200})
 
     } catch (error:any) {
-        console.log(error)
         return new NextResponse(JSON.stringify({message:"Error while approving to submissions",error:error.message}),{status:500})
     }
 }

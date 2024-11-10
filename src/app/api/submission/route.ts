@@ -1,26 +1,26 @@
 import Challenge from "@/models/challengeModel";
-import User from "@/models/userModel";
+import User from "@/models/userModel"; // Assuming UserDocument is a type representing a User
 import Submission from "@/models/submissionModel";
 import Assignment from "@/models/assignmentModel";
 import { NextRequest, NextResponse } from "next/server";
-import {connect} from '@/dbConfig/dbConfig'
+import { connect } from '@/dbConfig/dbConfig';
 import Team from "@/models/teamModel";
 import CourseModel from "@/models/courseModel";
+import { Types } from "mongoose"; // For ObjectId type
 
-connect()
+connect();
 
-// All the badges specific to submission along with their contraints
+// Type for badge criteria condition function
+type BadgeCondition = (user: UserDocument, courseId: string) => boolean;
 
+// Badge criteria structure
 const badgeCriteria = [
     {
         title: "Consistent_Solver_30",
-        condition: (user, courseId) => {
-
-            
-            
+        condition: (user: UserDocument, courseId: string) => {
             const challengesSolved = user.challengessolved
                 .filter((challenge) => challenge.courseId.toString() === courseId)
-                .sort((a, b) => new Date(a.solvedAt) - new Date(b.solvedAt));
+                .sort((a, b) => new Date(a.solvedAt).getTime() - new Date(b.solvedAt).getTime());
 
             let maxStreak = 0;
             let currentStreak = 1;
@@ -28,7 +28,7 @@ const badgeCriteria = [
             for (let i = 1; i < challengesSolved.length; i++) {
                 const currDay = new Date(challengesSolved[i].solvedAt);
                 const prevDay = new Date(challengesSolved[i - 1].solvedAt);
-                const diffInDays = (currDay - prevDay) / (1000 * 3600 * 24);
+                const diffInDays = (currDay.getTime() - prevDay.getTime()) / (1000 * 3600 * 24);
 
                 if (diffInDays === 1) {
                     currentStreak += 1;
@@ -38,19 +38,16 @@ const badgeCriteria = [
                 maxStreak = Math.max(maxStreak, currentStreak);
             }
 
-            return maxStreak>=30;
+            return maxStreak >= 30;
         },
-        courseSpecific: true, 
+        courseSpecific: true,
     },
     {
         title: "Consistent_Solver_90",
-        condition: (user, courseId) => {
-
-            
-            
+        condition: (user: UserDocument, courseId: string) => {
             const challengesSolved = user.challengessolved
                 .filter((challenge) => challenge.courseId.toString() === courseId)
-                .sort((a, b) => new Date(a.solvedAt) - new Date(b.solvedAt));
+                .sort((a, b) => new Date(a.solvedAt).getTime() - new Date(b.solvedAt).getTime());
 
             let maxStreak = 0;
             let currentStreak = 1;
@@ -58,7 +55,7 @@ const badgeCriteria = [
             for (let i = 1; i < challengesSolved.length; i++) {
                 const currDay = new Date(challengesSolved[i].solvedAt);
                 const prevDay = new Date(challengesSolved[i - 1].solvedAt);
-                const diffInDays = (currDay - prevDay) / (1000 * 3600 * 24);
+                const diffInDays = (currDay.getTime() - prevDay.getTime()) / (1000 * 3600 * 24);
 
                 if (diffInDays === 1) {
                     currentStreak += 1;
@@ -70,29 +67,27 @@ const badgeCriteria = [
 
             return maxStreak >= 90;
         },
-        courseSpecific: true, 
+        courseSpecific: true,
     }
 ];
 
-
-// Check badge eligibility based on defined criteria
-async function checkAndAwardBadges(userId, courseId) {
+// Function to check badge eligibility
+async function checkAndAwardBadges(userId: string, courseId: string) {
     const user = await User.findById(userId);
+
+    if (!user) throw new Error("User not found");
 
     for (const badge of badgeCriteria) {
         if (badge.courseSpecific && badge.condition(user, courseId)) {
-            
-
-            //check whether user already has the badge or not
             const hasBadge = user.badges.some(
-                (userBadge:any) => (userBadge.title === badge.title && userBadge.course === courseId)
+                (userBadge: { title: string; course: Types.ObjectId }) =>
+                    userBadge.title === badge.title && userBadge.course.toString() === courseId
             );
 
-            // badges pics will be kept with badges names
             if (!hasBadge) {
                 const badgeToAdd = {
                     title: badge.title,
-                    course: courseId,
+                    course: new Types.ObjectId(courseId),
                     image: `${badge.title}.png`
                 };
 
@@ -107,7 +102,6 @@ async function checkAndAwardBadges(userId, courseId) {
                     }
                 });
 
-                console.log(`${badge.title} badge awarded and notification sent.`);
             }
         }
     }
@@ -125,7 +119,14 @@ export async function POST(request: NextRequest) {
             }, { status: 400 });
         }
 
-        console.log("Course", Course);
+        const course =  await CourseModel.findById(Course)
+        const isAdmin = course.Admins.includes(user);
+        if (isAdmin) {
+            return NextResponse.json({
+                success: false,
+                message: "Admin can't make submissions",
+            }, { status: 403 });
+        }
         const courseId = Course;
         let newSubmission
         // Create and save the new submission
@@ -206,7 +207,6 @@ export async function POST(request: NextRequest) {
         }, { status: 201 });
 
     } catch (error: any) {
-        console.error("Error while adding submission:", error);
 
         return NextResponse.json({
             success: false,
@@ -233,7 +233,6 @@ export async function GET(request: NextRequest) {
             }, { status: 400 });
         }
         const submission = await Submission.findById(Id);
-        console.log(Id)
         if(!submission){
             return NextResponse.json({
                 success: false,
@@ -245,7 +244,6 @@ export async function GET(request: NextRequest) {
             data: submission,
         });
     } catch (error: any) {
-        console.error("Error fetching submission:", error);
         return NextResponse.json({
             success: false,
             message: "Failed to fetch submission.",

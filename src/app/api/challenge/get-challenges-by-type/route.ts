@@ -7,7 +7,7 @@ import User from '@/models/userModel';
 
 const ObjectId = mongoose.Types.ObjectId;
 
-// API to get all challenges by type
+// API to get all challenges by type(daily,weekly)
 export const GET = async (request: Request) => {
     const { typeOfChallenge } = await request.json();
 
@@ -19,7 +19,6 @@ export const GET = async (request: Request) => {
         }
         return new NextResponse(JSON.stringify({ message: "Challenges fetched successfully", challenges }), { status: 200 });
     } catch (error: any) {
-        console.error("Error while fetching challenges:", error);
         return new NextResponse(JSON.stringify({ message: "Error while fetching challenges" }), { status: 500 });
     }
 };

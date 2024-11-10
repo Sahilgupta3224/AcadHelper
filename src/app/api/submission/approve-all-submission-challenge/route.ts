@@ -9,7 +9,7 @@ import { NextResponse } from 'next/server';
 
 connect();
 
-// Approve all submissions for a specific challenge
+// Approve all submissions for a challenge
 export const PATCH = async (request: Request) => {
     try {
         const url = new URL(request.url);
@@ -80,7 +80,6 @@ export const PATCH = async (request: Request) => {
 
         return new NextResponse(JSON.stringify({ message: "All submissions approved successfully" }), { status: 200 });
     } catch (error: any) {
-        console.log(error);
         return new NextResponse(JSON.stringify({ message: "Error while approving all submissions", error: error.message }), { status: 500 });
     }
 };

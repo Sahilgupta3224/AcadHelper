@@ -223,7 +223,7 @@ export default function Navbar() {
               onClick={handleClick}
               color="inherit"
             >
-              <AccountCircle onClick={() => { router.push(`/Profile/${user._id}`); }} />
+              <AccountCircle onClick={() => { router.push(`/Profile/${user?._id}`); }} />
             </IconButton>
             {/* <Button variant="outlined" color="inherit" sx={{ ml: 2 }} onClick={() => { router.push(`/Login`); }}>Login</Button> */}
           </Box>

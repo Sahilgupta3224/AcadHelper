@@ -9,14 +9,12 @@ import { Group } from 'lucide-react'
 import Team from '@/models/teamModel'
 connect()
 
-// Approve a submission
+// Giving bonus points to a submission
 export const PATCH = async (request:Request)=>{
     try {
         const url = new URL(request.url);
         const submissionId = url.searchParams.get('Id');
         const {bonus} = await request.json()
-        console.log(bonus);
-        console.log(submissionId)
         if(!submissionId)
         {
             return new NextResponse(JSON.stringify({message:"Enter all the credentials"}),{status:404})
@@ -36,12 +34,9 @@ export const PATCH = async (request:Request)=>{
             const challenge = await Challenge.findById(findSubmission.Challenge);
             courseId = challenge?.courseId;
         } else if (findSubmission.Assignment) {
-            console.log("yoo")
             const assignment = await Assignment.findById(findSubmission.Assignment);
-            console.log(assignment._id)
             courseId = assignment?.Course;
         }
-        console.log(courseId)
         if (!courseId) {
             return new NextResponse(JSON.stringify({ message: "Course is required but was not found" }), { status: 400 });
         }
@@ -84,7 +79,6 @@ export const PATCH = async (request:Request)=>{
         return new NextResponse(JSON.stringify({message:"Successfully bonus points given",submission:findSubmission}),{status:200})
 
     } catch (error:any) {
-        console.log(error)
         return new NextResponse(JSON.stringify({message:"Error while giving bonus points",error:error}),{status:500})
     }
 }

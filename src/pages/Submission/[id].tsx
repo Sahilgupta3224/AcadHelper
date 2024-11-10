@@ -4,6 +4,7 @@ import axios from "axios";
 import Submission from "@/Interfaces/submission";
 import User from "@/Interfaces/user";
 import Auth from '@/components/Auth'
+import toast from "react-hot-toast";
 
 const SubmissionDetails: React.FC = () => {
     const router = useRouter();
@@ -17,11 +18,10 @@ const SubmissionDetails: React.FC = () => {
             if (response.data.success) {
                 return response.data.data;
             } else {
-                console.error("User not found:", response.data.message);
                 return null;
             }
-        } catch (error) {
-            console.error("Error fetching user name:", error);
+        } catch (error:any) {
+            toast.error(error.response.data.error)
             return null;
         }
     }
@@ -30,7 +30,6 @@ const SubmissionDetails: React.FC = () => {
             const fetchSubmission = async () => {
                 try {
                     const response = await axios.get(`/api/submission?Id=${id}`);
-                    console.log(response.data.data)
                     const fetchedSubmission = response.data.data;
                     setSubmission(fetchedSubmission);
                     if (fetchedSubmission.User) {
@@ -39,15 +38,15 @@ const SubmissionDetails: React.FC = () => {
                             if (response.data.success) {
                                 setuser(response.data.data);
                             } else {
-                                console.error("User not found:", response.data);
+                                toast.error(response.data);
                             }
                         }
-                        catch (err) {
-                            console.error("Error fetching user name:", err);
+                        catch (err:any) {
+                            toast.error(err.response.data.error)
                         }
                     }
-                } catch (error) {
-                    console.error("Error fetching submission details:", error);
+                } catch (error:any) {
+                    toast.error(error.response.data.error)
                 }
             };
             fetchSubmission();
@@ -61,8 +60,6 @@ const SubmissionDetails: React.FC = () => {
             <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl w-full">
                 <h1 className="text-3xl font-bold mb-4">Submission Details</h1>
                 <p><strong>Submitted By:</strong> {user?.username}</p>
-                {/* <p><strong>Assignment:</strong> {submission.Assignment}</p>
-                <p><strong>Challenge:</strong> {submission.Challenge}</p> */}
                 <p><strong>Submitted At:</strong> {new Date(submission.submittedAt).toLocaleString()}</p>
                 <p><strong>Verified:</strong> {submission.isVerified ? "Yes" : "No"}</p>
                 <p><strong>Marks Obtained:</strong> {submission.marksObtained ?? "N/A"}</p>

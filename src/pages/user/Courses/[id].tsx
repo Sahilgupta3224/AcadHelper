@@ -23,20 +23,16 @@ import { CldUploadWidget } from 'next-cloudinary';
 import { Box, Button, TextField, Typography, Modal, IconButton, Select, MenuItem, Chip } from "@mui/material";
 import Leaderboard from "@/components/Leaderboard";
 
-function sortUsersByCoursePoints(users, targetCourseId) {
-  return users.sort((a, b) => {
-    // Find points for the target course in each user
-    const aPoints = a.Totalpoints.find(course => course.courseId === targetCourseId)?.points || 0;
-    const bPoints = b.Totalpoints.find(course => course.courseId === targetCourseId)?.points || 0;
-
-    // Sort in descending order
+function sortUsersByCoursePoints(users:any, targetCourseId:any) {
+  return users.sort((a:any, b:any) => {
+    const aPoints = a.Totalpoints.find((course:any) => course.courseId === targetCourseId)?.points || 0;
+    const bPoints = b.Totalpoints.find((course:any) => course.courseId === targetCourseId)?.points || 0;
     return bPoints - aPoints;
   });
 }
 const AdminPage: React.FC = () => {
   const router = useRouter();
   const { query } = router
-  console.log(query)
   const { id } = router.query;
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [assignments, setassignments] = useState<Assignment[]>([]);
@@ -82,8 +78,8 @@ const AdminPage: React.FC = () => {
         const sortedUsers = sortUsersByCoursePoints(response.data.users, courseId);
         setEnrolledUsers(sortedUsers)
     
-      } catch (error) {
-        console.log("Error while fetching all the enrolled users of the course",error);
+      } catch (error:any) {
+        toast.error(error.response.data.error);
         return;
     }
     }
@@ -94,18 +90,16 @@ const AdminPage: React.FC = () => {
   const handleUpload = (result: any) => {
     if (result && result.info) {
       setAssignmentDoc(result.info.url);
-      console.log("Upload result info:", result.info);
     } else {
-      console.error("Upload failed or result is invalid.");
+      toast.error("Upload failed or result is invalid.");
     }
   };
 
   const handleUploadChallenge =(result:any)=>{
     if (result && result.info) {
       setChallengeDoc(result.info.url);
-      console.log("Upload result info:", result.info);
     } else {
-      console.error("Upload failed or result is invalid.");
+      toast.error("Upload failed or result is invalid.");
     }
   }
 
@@ -127,14 +121,14 @@ const AdminPage: React.FC = () => {
         type,
         frequency,
         points,
-        createdBy: user._id,
+        createdBy: user?._id,
         courseId,
       });
       setChallenges((prev) => [...prev, response.data.Challenge]);
       setOpenUploadModal(false);
       setyo(!yo)
-    } catch (error) {
-      console.error("Error uploading challenge:", error);
+    } catch (error:any) {
+      toast.error(error.response.data.error);
     }
   };
 
@@ -150,21 +144,17 @@ const AdminPage: React.FC = () => {
         uploadedAt: Date.now(),
         status: "Open"
       });
-      console.log("Assignment uploaded successfully:", response.data);
       setOpenUploadAssignmentModal(false);
       setyo(!yo)
-    } catch (error) {
-      console.error("Error uploading assignment:", error);
+    } catch (error:any) {
+      toast.error(error.response.data.error);
     }
   };
 
   const fetchChallenges = async () => {
     try {
-      console.log(courseId)
       const response = await axios.get(`/api/challenge/getchallengebycourse?CourseId=${courseId}`);
-      console.log(response.data.data)
       setChallenges(response.data.data);
-      console.log(challenges)
     } catch (error:any) {
       toast.error(error.response.data.error)
     }
@@ -173,9 +163,7 @@ const AdminPage: React.FC = () => {
   const fetchAssignments = async () => {
     try {
       const response = await axios.get(`/api/assignment/getassignmentsbycourse?CourseId=${id}`);
-      console.log(response.data.data)
       setassignments(response.data.data);
-      console.log(assignments)
     } catch (error:any) {
       toast.error(error.response.data.error)
     }
@@ -185,10 +173,9 @@ const AdminPage: React.FC = () => {
       try {
         const response = await axios.delete(`/api/challenge/deletechallenge?Id=${challengeIdToDelete}`);
         setChallenges((prev) => prev.filter(challenge => challenge._id !== challengeIdToDelete));
-        console.log(response.data)
         handleCloseModal();
-      } catch (error) {
-        console.error("Error deleting challenges:", error);
+      } catch (error:any) {
+        toast.error(error.response.data.error);
       }
     }
   };
@@ -197,21 +184,19 @@ const AdminPage: React.FC = () => {
       try {
         const response = await axios.delete(`/api/assignment/delete-assignment?Id=${AssignmentIdToDelete}`);
         setassignments((prev) => prev.filter(assignment => assignment._id !== AssignmentIdToDelete));
-        console.log(response.data)
         handleCloseAssignmentModal();
-      } catch (error) {
-        console.error("Error deleting challenges:", error);
+      } catch (error:any) {
+        toast.error(error.response.data.error);
       }
     }
   };
   const GetsubmissionBycourse = async () => {
     if (courseId) {
       try {
-        const response = await axios.get(`/api/submission/getsubmissionbycourseanduser?CourseId=${courseId}&userId=${user._id}`);
+        const response = await axios.get(`/api/submission/getsubmissionbycourseanduser?CourseId=${courseId}&userId=${user?._id}`);
         setSubmissions(response.data.data)
-        console.log(response.data.data)
-      } catch (error) {
-        console.error("Error deleting challenges:", error);
+      } catch (error:any) {
+        toast.error(error.response.data.error);
       }
     }
   };
@@ -248,7 +233,6 @@ const AdminPage: React.FC = () => {
   return (
     <Layout>
       <Box>
-        {/* <Typography variant="h4" gutterBottom>User Dashboard</Typography> */}
         <Tabs
           value={value}
           onChange={handleChange}
@@ -275,7 +259,7 @@ const AdminPage: React.FC = () => {
                            </div>
                           </h1>
                          <p><strong>Assigned on:</strong> {new Date(assignment.uploadedAt).toISOString().split("T")[0]}</p>
-                         <p><strong>Due date:</strong> {new Date(assignment.DueDate).toISOString().split("T")[0]}</p>
+                         <p><strong>Due date:</strong> {assignment.DueDate? new Date(assignment.DueDate).toISOString().split("T")[0] :"N/A" }</p>
                      </div>
                 ))
               ) : (
@@ -322,9 +306,6 @@ const AdminPage: React.FC = () => {
         {value === 3 && (
           <>
             <Box >
-              {/* <Button variant="contained" color="primary" sx={{ width: '200px' }}>
-                My Submissions
-              </Button> */}
               <div className="mt-10">
                     <h2 className="text-2xl font-bold m-4">Submissions</h2>
                     {submissions.length > 0 ? (
@@ -332,7 +313,6 @@ const AdminPage: React.FC = () => {
                             <div key={submission._id} className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer">
                                 <div className="flex justify-between items-center">
                                     <div>
-                                        {/* <p><strong>Submitted By:</strong> {submission.user.name}</p> */}
                                         <p><strong>Submitted At:</strong> {new Date(submission.submittedAt).toLocaleString()}</p>
                                     </div>
                                     <a href={submission.documentLink} target="_blank" rel="noopener noreferrer" className="text-blue-500">

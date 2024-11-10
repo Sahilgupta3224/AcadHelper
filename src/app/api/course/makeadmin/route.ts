@@ -6,6 +6,8 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 connect()
+
+//make user admin of a course
 export async function POST(request: NextRequest) {
     try {
         const {userId,adminId,courseId} = await request.json();
@@ -35,7 +37,6 @@ export async function POST(request: NextRequest) {
         }
         return NextResponse.json({ message: "admin made successfully"}, { status: 200 });
     } catch (error: any) {
-        console.error("Error", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

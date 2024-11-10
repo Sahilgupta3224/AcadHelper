@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     try {
         const url = new URL(request.url);
         const Id = url.searchParams.get('Id');
-        const assignment= await Assignment.findById(Id);
+        const assignment= await Assignment.findById(Id);                   //extracting assignment by id
         if(!assignment){
             return NextResponse.json({
                 success: false,
@@ -22,7 +22,6 @@ export async function GET(request: NextRequest) {
             data: assignment,
         });
     } catch (error: any) {
-        console.error("Error fetching assignment:", error);
         return NextResponse.json({
             success: false,
             message: "Failed to fetch assignment.",

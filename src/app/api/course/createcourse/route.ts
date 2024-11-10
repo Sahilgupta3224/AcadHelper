@@ -11,11 +11,6 @@ export async function POST(request: NextRequest) {
         const { name, description, userId } = reqBody;
         let CourseCode = generateRandomCode()
         let course = Course.findOne({CourseCode:CourseCode})
-        // while(course){
-        //     CourseCode = generateRandomCode()
-        //     course = Course.findOne({CourseCode:CourseCode})
-        // }
-        console.log(reqBody);
         const newCourse = new Course({
             name,
             description,
@@ -27,7 +22,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ message: "Course created successfully", course: newCourse,success:true }, { status: 201 });
 
     } catch (error: any) {
-        console.error("Error creating course:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

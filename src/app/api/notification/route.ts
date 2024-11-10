@@ -1,6 +1,7 @@
 import User from "@/models/userModel"
 import { NextRequest, NextResponse } from "next/server"
 
+//deletng a notification
 export async function DELETE(request:NextRequest){
     try{
         const {searchParams} = new URL(request.url)

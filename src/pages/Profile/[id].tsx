@@ -13,9 +13,8 @@ import {
   CardContent,
   Card,
 } from "@mui/material";
+import Challenge from "@/Interfaces/challenge";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-// import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-// import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import Layout from "@/components/layout";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -29,6 +28,7 @@ import "../../styles/globals.css";
 import User from "@/Interfaces/user";
 import toast from "react-hot-toast";
 import Auth from "@/components/Auth";
+import Task from "@/utils/Interfaces/taskInterface";
 
 function Profile() {
   
@@ -36,8 +36,8 @@ function Profile() {
   const [fetchedUser, setFetchedUser] = React.useState<User | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
-  const [tasksRequired, setTasksRequired] = useState([]);
-  const [challenges,setChallenges]=useState([])
+  const [tasksRequired, setTasksRequired] = useState<Task[]>([]);
+  const [challenges,setChallenges]=useState<Challenge[]>([])
   const [submissions,setSubmissions]=useState([])
   const [totalChallenges,setTotalChallenges]=useState([])
   const [points,setPoints]=useState<number>(0)
@@ -45,7 +45,6 @@ function Profile() {
   const badgesToShow = 3;
   const badges = Badges;
   const router = useRouter();
-  // console.log(router);
   const id = router.query.id;
 
   const calTotalPoints=()=>{
@@ -59,13 +58,12 @@ function Profile() {
     const totalPointsArray=fetchedUser.Totalpoints 
 
     totalPointsArray.map((item)=>{
-      points=points+item.points 
+      points = points + (item.points.default || 0);
     })
 
     setPoints(points);
   }
 
-  //function to calculate totalPoints earned in all challenges
   const calPointsOfChallenges=async()=>{
     try {
       
@@ -74,26 +72,22 @@ function Profile() {
       
       
     } catch (error) {
-      console.log("Error while calculating the points");
       toast.error("Error while calculating the points")
     }
   }
 
   const fetchUserDetails = async () => {
     try {
-      console.log(id);
       const response = await axios.get(`/api/user?Id=${id}`);
-      console.log("Fetched user ",response.data.data)
       setFetchedUser(response.data.data);
 
       if (fetchedUser) {
         setEmail(fetchedUser.email);
         setUsername(fetchedUser.username);
-        setChallenges(fetchedUser?.challengessolved)
+        setChallenges(response.data.data.challengessolved)
       }
-    } catch (error) {
-      console.log("Error while fetching user details", error);
-      toast.error("Error while fetching user details")
+    } catch (error:any) {
+      toast.error(error.response.data.error)
       return;
     }
   };
@@ -106,13 +100,9 @@ function Profile() {
           userId: id,
         },
       });
-
-      console.log("Tasks", response.data.tasks);
-
       setTasksRequired(response.data.tasks);
-    } catch (error) {
-      console.log("error while fetching the tasks", error);
-      toast.error("error while fetching the tasks")
+    } catch (error:any) {
+      toast.error(error.response.data.error)
     }
   };
 
@@ -226,12 +216,12 @@ function Profile() {
                     textAlign: "left",
                   }}
                 >
-                  {tasksRequired.length > 0 && tasksRequired.filter(task => !task?.completed).map((task) => {
+                  {tasksRequired.length > 0 && tasksRequired.map((task) => {
                   const color = task.color; 
 
                   return (
                     <Paper
-                      key={task._id}
+                      key={task._id.toString()}
                       sx={{
                         p: 2,
                         mb: 1,
@@ -258,7 +248,7 @@ function Profile() {
                         <Typography variant="subtitle1">{task.title}</Typography>
                         <Typography variant="body2">{task.course}</Typography>
                         <Typography variant="caption">
-                          Deadline: {new Date(task.dueDate).toLocaleString()}
+                          Deadline: {task.dueDate? new Date(task.dueDate).toLocaleString() : "N/A"}
                         </Typography>
                       </div>
                     </Paper>

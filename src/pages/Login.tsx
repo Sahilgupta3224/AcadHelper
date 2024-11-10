@@ -89,16 +89,14 @@ const LoginForm: React.FC = () => {
       });
 
       if (response.status === 200) {
-        console.log("Login successful:", response.data);
         localStorage.setItem("user",JSON.stringify(response.data.user))
         setUser(response.data.user)
         router.push('/Dashboard');
       } else {
-        console.error("Login failed");
+        toast.error("Login failed");
       }
-    } catch (error) {
+    } catch (error:any) {
       toast.error(error.response.data.error)
-      // console.error("Error during login:", error);
     }
   };
 

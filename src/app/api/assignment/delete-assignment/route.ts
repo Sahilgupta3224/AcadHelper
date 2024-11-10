@@ -14,12 +14,9 @@ export async function DELETE(request: NextRequest) {
         const id = url.searchParams.get('Id');
         const userId = url.searchParams.get("userId");
 
-  
         if (!id || !userId) {
             return NextResponse.json({ message: "Assignment ID and User ID are required" }, { status: 400 });
         }
-
-        console.log("Assignment ID:", id, "User ID:", userId);
 
         // Check if the user is an admin before proceeding
         const checkUser = await User.findById(userId);
@@ -57,7 +54,6 @@ export async function DELETE(request: NextRequest) {
             { "events.assignmentId": deletedAssignment._id },
             { $pull: { events: { assignmentId: deletedAssignment._id } } }
         );
-        // console.log("Updated users count:", affectedUsers);
 
         return NextResponse.json({
             success: true,

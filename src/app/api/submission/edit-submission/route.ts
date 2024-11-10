@@ -4,6 +4,7 @@ interface Params {
     id: string;
 }
 
+//editing a submission
 export async function PATCH(request: NextRequest) {
     try {
         const url = new URL(request.url);
@@ -29,7 +30,6 @@ export async function PATCH(request: NextRequest) {
             data: newAssignment,
         });
     } catch (error: any) {
-        console.error("Error editing assignment:", error);
         return {
             success: false,
             message: "Failed to edit assignment",

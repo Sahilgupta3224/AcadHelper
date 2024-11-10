@@ -12,30 +12,14 @@ export async function POST(request: Request) {
         console.log(reqbody);
         const {title, description, DueDate, uploadedAt, AssignmentDoc, CourseId, status, totalPoints } = reqbody;
 
-        // Validate required fields
         if (!title || !AssignmentDoc || !description || !uploadedAt || !DueDate || !totalPoints || !CourseId) {
             return NextResponse.json({ message: "Required fields are empty" }, { status: 400 });
         }
-<<<<<<< Updated upstream
- 
-=======
 
-        const user = await User.findById(userId);
-        if (!user) {
-            return NextResponse.json({ message: "User not found" }, { status: 400 });
-        }
-
->>>>>>> Stashed changes
-        const course = await Course.findById(CourseId);
+        const course = await Course.findById(CourseId);                                      //checking if this course exists
         if (!course) {
             return NextResponse.json({ message: "Course not found" }, { status: 400 });
         }
-
-        if (!course.Admins.includes(userId)) {
-            return NextResponse.json({ message: "User is not authorized to upload the assignment" }, { status: 400 });
-        }
- 
-        
 
         const newAssignment = new Assignment({
             title,
@@ -53,7 +37,7 @@ export async function POST(request: Request) {
         course.assignments.push(newAssignment._id);
         await course.save();
 
-        const eventPromises = course.StudentsEnrolled.map(async (studentId) => {
+        const eventPromises = course.StudentsEnrolled.map(async (studentId:any) => {        //saving this assignment to events
             const newEvent = new Event({
                 title,
                 User: studentId,
@@ -62,8 +46,6 @@ export async function POST(request: Request) {
             });
 
             await newEvent.save();
-
-        
             await User.findByIdAndUpdate(studentId, { $push: { events: newEvent._id } });
         });
 

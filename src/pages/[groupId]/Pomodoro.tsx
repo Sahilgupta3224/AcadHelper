@@ -76,7 +76,6 @@ export const Pomodoro = () => {
         // resetTimer()
         const tabName = value === 0 ? "pomodoro" : value === 1 ? "short" : "long";
         resetTimer()
-        console.log(isActive)
         if (!isActive[tabName] ) {
             let seconds = 0;
             let name = ""
@@ -175,7 +174,6 @@ export const Pomodoro = () => {
           <CustomTabPanel value={value} index={0}>
               <div className='flex justify-center'>
                   <div className='h-36 w-36 m-2 rounded-full bg-sky-100 p-10 flex justify-center items-center text-4xl font-bold text-slate-800'>
-                  {/* {timer.pomodoro}:00 */}
                   {formatTime(time.pomodoro)}
                   </div>
               </div>

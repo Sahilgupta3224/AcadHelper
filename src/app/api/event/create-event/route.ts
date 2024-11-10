@@ -3,6 +3,7 @@ import Event from "@/models/eventModal";
 import User from "@/models/userModel";
 import { NextResponse } from "next/server";
 
+// creating event
 export async function POST(request: Request) {
     try {
         await connect();
@@ -19,23 +20,14 @@ export async function POST(request: Request) {
         });
         await event.save();
 
-        // console.log("Formed event",event);
-
         // Find the user and update their events list
         const user = await User.findByIdAndUpdate(userId,{$push:{events:event._id}},{new:true});
 
         if (!user) {
             return NextResponse.json({ message: "User not found" }, { status: 400 });
         }
-
-        
-
-
-    
         return NextResponse.json({ message: "Successfully created event", event,user}, { status: 200 });
-
     } catch (error:any) {
-        console.error("Error while creating the event", error);
         return NextResponse.json({ message: "Error while creating the event", error: error.message }, { status: 500 });
     }
 }

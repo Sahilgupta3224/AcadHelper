@@ -10,7 +10,6 @@ export async function POST(request: NextRequest){
 
         const reqBody = await request.json()
         const {email, password} = reqBody;
-        console.log(reqBody);
         if(!email||!password){
             return NextResponse.json({error: "Fill all fields!"}, {status: 400})
         }
@@ -18,18 +17,17 @@ export async function POST(request: NextRequest){
         if(!user){
             return NextResponse.json({error: "User does not exist"}, {status: 400})
         }
-        const validPassword = await bcryptjs.compare(password, user.password)
+        const validPassword = await bcryptjs.compare(password, user.password)                   // Compare the provided password with the stored hashed password
         if(!validPassword){
             return NextResponse.json({error: "Invalid password"}, {status: 400})
         }
-        console.log(user);
-        const tokenData = {
+        const tokenData = {                                                                     // Create the payload for the JWT token
             id: user._id,
             username: user.username,
             email: user.email
         }
         const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET!, {expiresIn: "1d"})
-        const response = NextResponse.json({
+        const response = NextResponse.json({                                                    // Create the response and set the token in a cookie
             message: "Login successful",
             user,
             success: true,

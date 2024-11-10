@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import "../app/globals.css";
 import { useRouter } from 'next/navigation';
@@ -64,24 +64,25 @@ const SignupForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const [username, setusername] = useState('');
   const [institute, setInstitute] = React.useState('');
-
+  const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
   const {user,setUser} = useStore()
 
-  const validateEmail = (email) => {
+  const validateEmail = (email:any) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const validatePassword = (password) => {
+  const validatePassword = (password:any) => {
     return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password); 
   };
-  const validateUsername = (username) => {
+  const validateUsername = (username:any) => {
     return /^[a-zA-Z0-9_]{3,15}$/.test(username); 
   };
 
   const handleSignup = async () => {
     try {
+      setErrorMessage('');
       if (!validateEmail(email)) {
         toast.error("Please enter a valid email address.");
         return;
@@ -109,15 +110,33 @@ const SignupForm: React.FC = () => {
       if (response.status === 200) {
         console.log("Signup successful:", response.data);
         setUser(response.data.savedUser)
-        router.push('/Dashboard');
+        setErrorMessage("We have sent you a mail on your Email. Kindly verify yourself and reload website again.");
+        // toast.success("verify your email , we have sent you a link to you email")
+        // router.push('/Dashboard');
       } else {
-        console.error("signup failed");
+        toast.error("signup failed");
       }
-    } catch (error) {
+    } catch (error:any) {
       toast.error(error.response.data.error)
-      // console.error("Error during signup:", error);
     }
   };
+
+  const fetchuser=async()=>{
+    try{
+      const response = await axios.get(`/api/user?Id=${user?._id}`);
+      if(response.data.data.isEmailVerified){
+        router.push('/Dashboard')
+      }
+    }
+    catch(e){
+
+    }
+  }
+
+  useEffect(()=>{
+    console.log(user)
+    fetchuser()
+  },[])
   
 
   return (
@@ -168,6 +187,7 @@ const SignupForm: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
           <Button value="Submit" onClick={handleSignup} />
+          {errorMessage && <div className="text-red-500 text-center mt-4">{errorMessage}</div>}
         </form>
         <div className='text-center mt-4'>Already have an account?<Link href="/Login" className='text-blue-500'> Login</Link></div>
       </div>

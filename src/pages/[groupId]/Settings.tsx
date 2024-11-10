@@ -65,13 +65,11 @@ export const Settings = () => {
       const fetchTeam = async()=>{
         try{
           const res = await axios.get(`/api/team/${params?.groupId}`,{params:{type:"Team"}})
-          console.log(res?.data?.team)
           setTeam(res?.data?.team)
           setGroupInput({maxteamsize:res?.data?.team.maxteamsize,teamname:res?.data?.team.teamname,description:res?.data?.team.description})
 
-        }catch(e){
-          console.log(e)
-          toast.error(`${e}`)
+        }catch(e:any){
+          toast.error(e.response.data.error)
         }
       }
       fetchTeam()
@@ -87,9 +85,8 @@ export const Settings = () => {
                 setMembers(data.members)
                 toast.success("Loaded members")
            }
-         }catch(error){
-          //  console.error("Error fetching group members:", error);
-           toast.error(`Error fetching group members: ${error}`)
+         }catch(e:any){
+          toast.error(e.response.data.error)
          }
         }
         fetchGroupMembers()
@@ -98,33 +95,31 @@ export const Settings = () => {
     //Leave a group
     const handleLeave = async()=>{
        try{
-        const res = await axios.delete(`/api/team/${params?.groupId}`,{params:{userId:user._id,groupId:params?.groupId}})
+        const res = await axios.delete(`/api/team/${params?.groupId}`,{params:{userId:user?._id,groupId:params?.groupId}})
         if(res.data.success){
             router.push('/Groups')
             toast.success("Group left successfully")
         }
-       }catch(e){
-            console.log("Error leaving group",e)
-            toast.error("Error leaving group");
+       }catch(e:any){
+            toast.error(e.response.data.error);
        }
     }
 
     //Delete a group(by group admin)
     const handleDelete = async()=>{
         try{
-            if(user._id!=team?.leader.toString()){
+            if(user?._id!=team?.leader.toString()){
                 toast.error("You are not authorised to delete this group")
                 return
             }
-            const res = await axios.delete("/api/team",{params:{teamId:team._id}})
+            const res = await axios.delete("/api/team",{params:{teamId:team?._id}})
             if(res.data.success){
                 toast.success("Group deleted successfully")
                 router.push('/Groups')
             }
 
-        }catch(e){
-            console.log("Error deleting group",e)
-            toast.error("Error deleting group")
+        }catch(e:any){
+            toast.error(e.response.data.error)
         }
     }
 
@@ -159,7 +154,6 @@ export const Settings = () => {
             }
            }catch(e:any){
             toast.error(e.response.data.error)
-            console.log(e)
            }
     }
     
@@ -210,7 +204,7 @@ export const Settings = () => {
       </nav>
      
     </Box>
-    {team?.leader.toString()==user._id ?(
+    {team?.leader.toString()==user?._id ?(
     <div className='flex flex-col w-40 '>
     <Button variant="outlined" onClick={handleOpen}>Add member</Button>
     <Button variant="outlined" onClick={handleOpenEdit} sx={{marginY:"10px"}}>Edit Group</Button>

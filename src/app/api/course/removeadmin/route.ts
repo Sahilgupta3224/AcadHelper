@@ -6,6 +6,8 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 connect()
+
+//remove admin role of a user
 export async function POST(request: NextRequest) {
     try {
         const {userId,adminId,courseId} = await request.json();
@@ -22,7 +24,6 @@ export async function POST(request: NextRequest) {
         }
         return NextResponse.json({ message: "admin removed successfully"}, { status: 200 });
     } catch (error: any) {
-        console.error("Error", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

@@ -9,7 +9,7 @@ import { Group } from 'lucide-react'
 import Team from '@/models/teamModel'
 connect()
 
-// Approve a submission
+// deducting points from a submission
 export const PATCH = async (request:Request)=>{
     try {
         const url = new URL(request.url);
@@ -29,7 +29,7 @@ export const PATCH = async (request:Request)=>{
             return new NextResponse(JSON.stringify({message:"Already approved"}))
         }
         let points = 0;
-        let courseId;
+        let courseId:any;
         if (findSubmission.Challenge) {
             const challenge = await Challenge.findById(findSubmission.Challenge);
             courseId = challenge.courseId;
@@ -72,7 +72,6 @@ export const PATCH = async (request:Request)=>{
         return new NextResponse(JSON.stringify({message:"Successfully bonus points given",submission:findSubmission}),{status:200})
 
     } catch (error:any) {
-        console.log(error)
         return new NextResponse(JSON.stringify({message:"Error while giving bonus points",error:error}),{status:500})
     }
 }

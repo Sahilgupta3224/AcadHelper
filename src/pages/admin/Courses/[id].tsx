@@ -1,18 +1,6 @@
 "use client";
 import * as React from "react";
-import { useState } from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Modal,
-  IconButton,
-  Badge,
-  Pagination,
-  Select,
-  MenuItem,
-} from "@mui/material";
+import { useState } from "react"
 import { Box, Button, TextField, Typography, Modal, IconButton, Badge, Pagination,Select, MenuItem, Chip } from "@mui/material";
 import Layout from "@/components/layout";
 import "../../../app/globals.css";
@@ -40,7 +28,6 @@ import { TreeItem2Label } from "@mui/x-tree-view";
 const AdminPage: React.FC = () => {
   const router = useRouter();
   const { query } = router
-  console.log(query)
   const { id } = router.query;
   const [enrolledUsers,setEnrolledUsers]=React.useState<User[]>([])
   const [openSearch,setOpenSearch]=React.useState<boolean>(false);
@@ -95,10 +82,8 @@ const AdminPage: React.FC = () => {
   const handleUpload = (result: any) => {
     if (result && result.info) {
       setAssignmentDoc(result.info.url);
-      console.log("Upload result info:", result.info);
       toast.success("Uploaded result");
     } else {
-      console.error("Upload failed or result is invalid.");
       toast.error("Upload failed or result is invalid.");
     }
   };
@@ -107,33 +92,28 @@ const AdminPage: React.FC = () => {
     try{
       const res = await axios.get(`/api/course/${courseId}`);
       setcourse(res.data.course)
-      console.log(res.data.course)
     }
     catch(e){
-      console.error(e);
     }
   }
 
   const handleUploadChallenge = (result: any) => {
     if (result && result.info) {
       setChallengeDoc(result.info.url);
-      console.log("Upload result info:", result.info);
       toast.success("Uploaded result info:");
     } else {
-      console.error("Upload failed or result is invalid.");
       toast.error("Upload failed or result is invalid.");
     }
   };
 
 const handleSubmitChallenge = async () => {
-  console.log(title,description,startDate,challengeDoc,type,frequency,points)
   if(!title || !description || !startDate || !challengeDoc || !type || !frequency || !points){
     toast.error("Required fields cannot be empty")
   }
   if(title.length>100){
     toast.error("Title cannot be greater than 100 characters")
   }
-  if(assignmentPoints>500){
+  if(assignmentPoints !== undefined && assignmentPoints > 500){
     toast.error("Points cannot be greater than 500")
   }
   try {
@@ -153,7 +133,7 @@ const handleSubmitChallenge = async () => {
       type,
       frequency,
       points,
-      createdBy: user._id,
+      createdBy: user?._id,
       courseId,
     });
     setChallenges((prev) => [...prev, response.data.Challenge]);
@@ -168,7 +148,7 @@ const handleSubmitChallenge = async () => {
     setOpenUploadModal(false);
     setyo(!yo)
     toast.success("Challenge uploaded successfully")
-  } catch (error) {
+  } catch (error:any) {
     toast.error(error.response.data.message)
   }
 };
@@ -177,12 +157,12 @@ const handleSubmitAssignment = async () => {
   if(title.length>100){
     toast.error("Title cannot be greater than 100 characters")
   }
-  if(assignmentPoints>500){
+  if(assignmentPoints !== undefined && assignmentPoints > 500){
     toast.error("Points cannot be greater than 500")
   }
   try {
     const response = await axios.post("/api/assignment/upload-assignment", {
-      userId: user._id,
+      userId: user?._id,
       title: assignmentTitle,
       description: assignmentDescription,
       DueDate: assignmentDueDate,
@@ -208,10 +188,8 @@ const handleSubmitAssignment = async () => {
 const fetchChallenges = async () => {
   try {
     const response = await axios.get(`/api/challenge/getchallengebycourse?CourseId=${courseId}`);
-    console.log(response.data.data)
     setChallenges(response.data.data);
-    console.log(challenges)
-  } catch (error) {
+  } catch (error:any) {
     toast.error(error.response.data.error);
   }
 };
@@ -221,13 +199,10 @@ const fetchChallenges = async () => {
       const response = await axios.get(
         `/api/assignment/getassignmentsbycourse?CourseId=${courseId}`
       );
-      console.log(response.data.data);
       setassignments(response.data.data);
-      console.log(assignments);
       toast.success("Assignments fetched");
-    } catch (error) {
-      console.error("Error fetching challenges:", error);
-      toast.error("Error fetching challenges:");
+    } catch (error:any) {
+      toast.error(error.response.data.error);
     }
   };
 
@@ -241,12 +216,8 @@ const fetchChallenges = async () => {
 
       setEnrolledUsers(response.data.users);
       toast.success("Fetched enrolled users");
-    } catch (error) {
-      console.log(
-        "Error while fetching all the enrolled users of the course",
-        error
-      );
-      toast.error("Error while fetching all the enrolled users of the course");
+    } catch (error:any) {
+      toast.error(error.response.data.error);
       return;
     }
   };
@@ -260,12 +231,10 @@ const fetchChallenges = async () => {
         setChallenges((prev) =>
           prev.filter((challenge) => challenge._id !== challengeIdToDelete)
         );
-        console.log(response.data);
         handleCloseModal();
         toast.success("Deleted challenges");
-      } catch (error) {
-        console.error("Error deleting challenges:", error);
-        toast.error("Error deleting challenges:");
+      } catch (error:any) {
+        toast.error(error.response.data.error);
       }
     }
   };
@@ -278,12 +247,10 @@ const fetchChallenges = async () => {
         setassignments((prev) =>
           prev.filter((assignment) => assignment._id !== AssignmentIdToDelete)
         );
-        console.log(response.data);
         handleCloseAssignmentModal();
         toast.success("Deleted Assignment");
-      } catch (error) {
-        console.error("Error deleting assignment:", error);
-        toast.error("Error deleting Assignment:");
+      } catch (error:any) {
+        toast.error(error.response.data.error);
       }
     }
   };
@@ -294,16 +261,13 @@ const fetchChallenges = async () => {
         userId: userData?._id,
         courseId,
       };
-      console.log(obj);
       const response = await axios.delete("/api/course/kick-user", {
         params: obj,
       });
-      console.log(response);
       fetchEnrolledUsers();
       toast.success("Kicked out the user");
-    } catch (error) {
-      console.log("Error while kicking out the user", error);
-      toast.error("Error while Kicking out the user");
+    } catch (error:any) {
+      toast.error(error.response.data.error);
     }
   };
 
@@ -415,8 +379,9 @@ const fetchChallenges = async () => {
                             <Chip label={assignment.totalPoints} />
                             </div>
                            </h1>
-                          <p><strong>Assigned on:</strong> {new Date(assignment.uploadedAt).toISOString().split("T")[0]}</p>
-                          <p><strong>Due date:</strong> {new Date(assignment.DueDate).toISOString().split("T")[0]}</p>
+                          <p><strong>Assigned on:</strong> {assignment.uploadedAt ? new Date(assignment.uploadedAt).toISOString().split("T")[0] : "N/A"}</p>
+                          <p><strong>Due date:</strong> {assignment.DueDate ? new Date(assignment.DueDate).toISOString().split("T")[0] : "N/A"}
+                          </p>
                       </div>
 
                     ))

@@ -4,6 +4,7 @@ import { connect } from '@/dbConfig/dbConfig';
 
 connect();
 
+//get all submissions of an assignment for a user
 export async function GET(request: NextRequest) {
     try {
         const url = new URL(request.url);
@@ -21,7 +22,6 @@ export async function GET(request: NextRequest) {
             data: submissions,
         });
     } catch (error: any) {
-        console.error("Error fetching submissions:", error);
         return NextResponse.json({
             success: false,
             message: "Failed to fetch submissions",

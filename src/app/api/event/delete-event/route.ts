@@ -3,7 +3,7 @@ import Event from "@/models/eventModal";
 import User from "@/models/userModel";
 import { NextResponse } from "next/server";
 
-
+// deleting an event
 export async function DELETE(request: Request) {
     try {
         const url = new URL(request.url);
@@ -13,7 +13,6 @@ export async function DELETE(request: Request) {
        
         await connect();
         // Remove the event reference from the user's events array
-        // console.log(deletedEvent.User)
         const updatedUser = await User.findByIdAndUpdate(
             userId,
             { $pull: { events:eventId }},
@@ -26,18 +25,12 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ message: "Error while deleting the event" }, { status: 400 });
         }
 
-        
-        console.log("Updated user ",updatedUser)
-       
-        
-
         if (!updatedUser) {
             return NextResponse.json({ message: "User not found or unable to update user events" }, { status: 400 });
         }
 
         return NextResponse.json({ message: "Successfully deleted event and updated user", deletedEvent, success: true }, { status: 200 });
-    } catch (error) {
-        console.error("Error while deleting the event:", error);
+    } catch (error:any) {
         return NextResponse.json({ message: "Error while deleting the event", error:error.message }, { status: 500 });
     }
 }

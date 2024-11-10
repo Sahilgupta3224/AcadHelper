@@ -38,6 +38,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
+import Course from "@/Interfaces/course";
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { useStore } from "@/store";
@@ -78,8 +79,8 @@ function a11yProps(index: number) {
 
   function Courses() {
   const {user,setUser} = useStore()
-  const [enrolledCourses,setEnrolledCourses] = React.useState([])
-  const [adminCourses,setAdminCourses] = React.useState([])
+  const [enrolledCourses,setEnrolledCourses] = React.useState<Course[]>([])
+  const [adminCourses,setAdminCourses] = React.useState<Course[]>([])
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [selectedChapter, setSelectedChapter] = React.useState(null);
   const [selectedAssignment, setSelectedAssignment] = React.useState(null);
@@ -90,7 +91,7 @@ function a11yProps(index: number) {
   const [open, setOpen] = React.useState(false);
   const [openJoin,setOpenJoin]=React.useState(false);
   const [value, setValue] = React.useState(0);
-  const [courseInput,setCourseInput] = React.useState({name:"",description:"",userId:user._id})
+  const [courseInput,setCourseInput] = React.useState({name:"",description:"",userId:user?._id})
   const [code,setCode] = React.useState("")
   const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
@@ -99,33 +100,29 @@ function a11yProps(index: number) {
 
   const handleJoinCourse = async(e: React.MouseEvent<HTMLButtonElement>) =>{
     e.preventDefault()
-    console.log(code)
       try {
         if(!code){
           toast.error("Course code cannot be empty")
           return
         }
     
-        const {data} = await axios.post("/api/course",{code,userId:user._id})
+        const {data} = await axios.post("/api/course",{code,userId:user?._id})
   
         if (data.success) {
-          console.log(data)
-          setCourseInput({name:"",description:"",userId:user._id});
+          setCourseInput({name:"",description:"",userId:user?._id});
           handleCloseJoin()
   
         } else {
-
-          console.error(data.error || "Course addition failed");
+          toast.error(data.error || "Course addition failed");
         }
-      } catch (error) {
+      } catch (error:any) {
         toast.error(error.response.data.error)
-        console.error("Error adding course", error);
+        toast.error("Error adding course", error);
       }
   }
   
   const handleAddCourse = async(e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    console.log(courseInput)
       try {
         if(!courseInput.name){
           toast.error("Course name cannot be empty")
@@ -138,17 +135,14 @@ function a11yProps(index: number) {
         const {data} = await axios.post("/api/course/createcourse",courseInput)
   
         if (data.success) {
-          console.log(data)
-          setCourseInput({name:"",description:"",userId:user._id});
+          setCourseInput({name:"",description:"",userId:user?._id});
           handleClose()
   
         } else {
-
-          console.error(data.error || "Course addition failed");
+          toast.error(data.error || "Course addition failed");
         }
-      } catch (error) {
+      } catch (error:any) {
         toast.error(error.response.data.error)
-        console.error("Error adding course", error);
       }
     };
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -164,29 +158,28 @@ function a11yProps(index: number) {
   useEffect(()=>{
     const fetchEnrolledCourse = async()=>{
       try{
-        const {data} = await axios.post("/api/course/getCourses",{type:"enrolled",userId:user._id})
+        const {data} = await axios.post("/api/course/getCourses",{type:"enrolled",userId:user?._id})
         if(data.success){
           setEnrolledCourses(data.courses)
         }
-    }catch(e){
-        console.log(e)
+    }catch(e:any){
+        toast.error(e.response.data.error)
       }
     }
     const fetchAdminCourse = async()=>{
       try{
-        const {data} = await axios.post("/api/course/getCourses",{type:"admin",userId:user._id})
+        const {data} = await axios.post("/api/course/getCourses",{type:"admin",userId:user?._id})
         if(data.success){
           setAdminCourses(data.courses)
         }
-    }catch(e){
-        console.log(e)
+    }catch(e:any){
+      toast.error(e.response.data.error)
       }
     }
     fetchEnrolledCourse()
     fetchAdminCourse()
   },[])
 
-  console.log(enrolledCourses,adminCourses)
 
   // Toggle drawer function
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent) => {
@@ -207,8 +200,6 @@ function a11yProps(index: number) {
     }
   };
 
-  // Sample data
-  // const user = UserLoggedIn;
   const chapters = sampleChapters;
   const assignments = sampleAssignments;
   const style = {
@@ -238,7 +229,7 @@ function a11yProps(index: number) {
       <CustomTabPanel value={value} index={0}>
         <div className="grid grid-cols-3 gap-4">
         { enrolledCourses.length>0 ? enrolledCourses.map(course=>(
-          <Link key={course.id} href = {`/user/Courses/${course._id}`}>
+          <Link key={course._id} href = {`/user/Courses/${course._id}`}>
               <Card sx={{ maxWidth: 345 }}>
               <CardMedia
                 sx={{ height: 140 }}

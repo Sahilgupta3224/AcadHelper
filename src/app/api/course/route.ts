@@ -12,18 +12,18 @@ export async function GET(request: NextRequest) {
     try {
         const url = new URL(request.url);
         const userId = url.searchParams.get('userId');
+
         if(!userId){
             return NextResponse.json({ error: 'Please Login first' }, { status: 400 })
         }
         const user = await User.findOne({ _id: userId })
+
         if (!user) {
             return NextResponse.json({ error: 'User does not exist' }, { status: 400 })
         }
 
         const courseList = user.Courses.map((course: { courseId: mongoose.Schema.Types.ObjectId, enrolledAt: Date }) => { return course.courseId })
-
         const courses = await Course.find({ _id: { $in: courseList } }).select('_id name')
-
         return NextResponse.json({ courses, success: true })
 
     } catch (error: any) {
@@ -45,8 +45,12 @@ export async function POST(request: NextRequest) {
         if (!userExist) {
             return NextResponse.json({ error: "User does not exist" }, { status: 400 })
         }
+        //checking if user has already joined the course
 
         if (userExist.Courses.includes(courseExist._id)) return NextResponse.json({ error: "You have already joined this course" }, { status: 400 })
+
+        //checking if user is admin
+        
         if(userExist.CoursesAsAdmin.includes(courseExist._id)) {
             return NextResponse.json({ error: "You are an admin of this course and cannot join as a student." }, { status: 400 });
         }
@@ -91,9 +95,6 @@ export async function DELETE(request: NextRequest) {
         return NextResponse.json({ message: "Course and related data deleted successfully" }, { status: 200 });
     }
     catch (error: any) {
-        console.error("Error creating course:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
-
-//make announcements,get all students of a course

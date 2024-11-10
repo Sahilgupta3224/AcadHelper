@@ -12,96 +12,73 @@ import {
 import { Button, ButtonGroup } from '@mui/material';
 
 // Function to get the week number from a date
-const getWeekNumber = (date) => {
+const getWeekNumber = (date: Date) => {
   const startDate = new Date(date.getFullYear(), 0, 1);
-  const days = Math.floor((date - startDate) / (24 * 60 * 60 * 1000));
+  const days = Math.floor((date.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000));
   return Math.ceil((date.getDay() + 1 + days) / 7);
 };
 
-// Function to process tasks for completed tasks by week
-const processCompletedTaskData = (tasks = []) => {
-  if (!Array.isArray(tasks)) {
-    console.error('Expected tasks to be an array, but got:', tasks);
-    return [];
-  }
+// Generalized function to process completed task data by timeframe (week, month, day)
+const processCompletedTaskData = (tasks: any[] = [], timeframe: 'week' | 'month' | 'day') => {
+  const completedTaskCount: { [key: string]: number } = {};
 
-  const completedTaskCount = {};
   tasks.forEach((task) => {
     if (task.completed) {
       const createdDate = new Date(task.createdAt);
-      const weekNumber = getWeekNumber(createdDate);
-      const year = createdDate.getFullYear();
-      const weekKey = `${year}-W${weekNumber}`;
-      completedTaskCount[weekKey] = (completedTaskCount[weekKey] || 0) + 1;
+      let key: string;
+
+      switch (timeframe) {
+        case 'week':
+          const weekNumber = getWeekNumber(createdDate);
+          const year = createdDate.getFullYear();
+          key = `${year}-W${weekNumber}`;
+          break;
+        case 'month':
+          key = `${createdDate.getFullYear()}-${createdDate.getMonth() + 1}`; // "YYYY-MM"
+          break;
+        case 'day':
+          key = createdDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
+          break;
+        default:
+          key = '';
+      }
+
+      completedTaskCount[key] = (completedTaskCount[key] || 0) + 1;
     }
   });
-  return Object.entries(completedTaskCount).map(([weekKey, count]) => ({ weekKey, count }));
-};
 
-// Function to process tasks for completed tasks by month
-const processCompletedTaskDataByMonth = (tasks = []) => {
-  if (!Array.isArray(tasks)) {
-    console.error('Expected tasks to be an array, but got:', tasks);
-    return [];
-  }
-
-  const completedTaskCount = {};
-  tasks.forEach((task) => {
-    if (task.completed) {
-      const createdDate = new Date(task.createdAt);
-      const monthKey = `${createdDate.getFullYear()}-${createdDate.getMonth() + 1}`; // "YYYY-MM"
-      completedTaskCount[monthKey] = (completedTaskCount[monthKey] || 0) + 1;
-    }
-  });
-  return Object.entries(completedTaskCount).map(([monthKey, count]) => ({ weekKey: monthKey, count }));
-};
-
-// Function to process tasks for completed tasks by day
-const processCompletedTaskDataByDay = (tasks = []) => {
-  if (!Array.isArray(tasks)) {
-    console.error('Expected tasks to be an array, but got:', tasks);
-    return [];
-  }
-
-  const completedTaskCount = {};
-  tasks.forEach((task) => {
-    if (task.completed) {
-      const createdDate = new Date(task.createdAt);
-      const dayKey = createdDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
-      completedTaskCount[dayKey] = (completedTaskCount[dayKey] || 0) + 1;
-    }
-  });
-  return Object.entries(completedTaskCount).map(([dayKey, count]) => ({ weekKey: dayKey, count }));
+  return Object.entries(completedTaskCount).map(([key, count]) => ({ weekKey: key, count }));
 };
 
 const CompletedTasksChart = ({ tasks = [] }) => {
-  const [timeframe, setTimeframe] = useState('week');
+  const [timeframe, setTimeframe] = useState<'week' | 'month' | 'day'>('week');
 
-  let processedData;
-  switch (timeframe) {
-    case 'month':
-      processedData = processCompletedTaskDataByMonth(tasks);
-      break;
-    case 'day':
-      processedData = processCompletedTaskDataByDay(tasks);
-      break;
-    default:
-      processedData = processCompletedTaskData(tasks);
-  }
+  // Process data based on the selected timeframe
+  const processedData = processCompletedTaskData(tasks, timeframe);
 
-  const maxCount = Math.max(...processedData.map((data) => data.count), 0);
+  // Find the max count for the YAxis
+  const maxCount = processedData.length ? Math.max(...processedData.map((data) => data.count)) : 0;
   const axisPadding = 2;
 
   return (
     <div>
       <ButtonGroup variant="contained" aria-label="outlined primary button group">
-        <Button onClick={() => setTimeframe('week')} color={timeframe === 'week' ? 'primary' : 'default'}>
+        <Button
+          onClick={() => setTimeframe('week')}
+          color={timeframe === 'week' ? 'primary' : 'default'}
+        >
           Per Week
         </Button>
-        <Button onClick={() => setTimeframe('month')} color={timeframe === 'month' ? 'primary' : 'default'}>
+        <Button
+          onClick={() => setTimeframe('month')}
+          color={timeframe === 'month' ? 'primary' : 'default'}
+        >
           Per Month
         </Button>
-        <Button onClick={() => setTimeframe('day')} color={timeframe === 'day' ? 'primary' : 'default'}>
+        <Button
+          onClick={() => setTimeframe('day')}
+          color={timeframe === 'day' ? 'primary' : 'default'}
+        >
           Per Day
         </Button>
       </ButtonGroup>

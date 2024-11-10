@@ -5,7 +5,6 @@ import Challenge from "@/Interfaces/challenge";
 import Submission from "@/Interfaces/submission";
 import '../../app/globals.css';
 import toast, { Toaster } from 'react-hot-toast';
-// import { Modal, Button, Form } from 'react-bootstrap';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, TableBody, TableHead, TableCell, TableRow, LinearProgress } from '@mui/material';
 import Layout from "@/components/layout";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -30,7 +29,6 @@ interface EditChallenge {
 const ChallengeDetails: React.FC = () => {
   const router = useRouter();
   const { query } = router
-  // console.log(query)
   const { id } = router.query;
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -38,7 +36,6 @@ const ChallengeDetails: React.FC = () => {
   const [show, setShow] = useState(false)
   const [errorMessage, setErrorMessage] = useState("");
   const [editedchallenge, seteditedchallenge] = useState<EditChallenge | null>(null);
-  // console.log(id)
   const challengeId = typeof id === 'string' ? id : '';
 
   
@@ -49,9 +46,8 @@ const ChallengeDetails: React.FC = () => {
           const response = await axios.get(`/api/challenge/getchallengeById?Id=${challengeId}`);
           setChallenge(response.data.data);
           toast.success("Fetched Challenges")
-        } catch (error) {
-          console.error("Error fetching challenge details:", error);
-          toast.error("Error fetching challenge details:")
+        } catch (error:any) {
+          toast.error(error.response.data.error)
         }
       };
       fetchChallenge();
@@ -65,9 +61,8 @@ const ChallengeDetails: React.FC = () => {
           const submissionsResponse = await axios.get(`/api/submission/getsubmissionbychallenge?challengeId=${challengeId}`);
           setSubmissions(submissionsResponse.data.data);
           toast.success("Fetched submissions")
-        } catch (error) {
-          console.error("Error fetching submissions:", error);
-          toast.error("Error while fetching submission")
+        } catch (error:any) {
+          toast.error(error.response.data.error)
         }
       };
       fetchSubmissions();
@@ -81,7 +76,6 @@ const ChallengeDetails: React.FC = () => {
 
   const handleShow = () => {
     setShow(true);
-    console.log(challenge)
     seteditedchallenge({
       title: challenge?.title || "",
       description: challenge?.description || "",
@@ -108,7 +102,6 @@ const ChallengeDetails: React.FC = () => {
           return;
         }
         const res = await axios.post(`/api/challenge/editchallenge?Id=${challenge?._id}`, editedchallenge);
-        console.log(res.data);
         seteditedchallenge({
           title: "",
           description: "",
@@ -122,9 +115,8 @@ const ChallengeDetails: React.FC = () => {
         setyo(prev => !prev)
         handleClose()
         toast.success("Edited successfully")
-      } catch (err) {
-        console.log(err);
-        toast.error("Error while editing")
+      } catch (error:any) {
+        toast.error(error.response.data.error)
       }
     }
     submitbutton()
@@ -133,7 +125,6 @@ const ChallengeDetails: React.FC = () => {
   const approve = async (id: string) => {
     try {
       const response = await axios.patch(`/api/submission/approve-a-submission?Id=${id}`);
-      console.log(response.data)
       setyo(!yo);
       toast.success("Approved")
     }
@@ -143,30 +134,21 @@ const ChallengeDetails: React.FC = () => {
       } else {
         toast.error("An unexpected error occurred. Please try again.");
       }
-      console.error("Error while approving:", e);
     }
   }
   const deletesub = async (id: string) => {
     try {
-      const response = await axios.patch(`/api/submission/remove-submission?Id=${id}`);
-      console.log(response.data)
+      const response = await axios.patch(`/api/submission/remove-submission?Id=${id}`)
       setyo(!yo);
       toast.success("Deleted submission")
     }
-    catch (e: any) {
-      // if (e.response && e.response.status === 400) {
-      //   toast.error(e.response.data.message);
-      // } else {
-      //   toast.error("An unexpected error occurred. Please try again.");
-      // }
-      console.error("Error while removing:", e);
-      toast.error("Error while deleting the submission")
+    catch (error: any) {
+      toast.error(error.response.data.error)
     }
   }
   const disapprove = async (id: string) => {
     try {
       const response = await axios.patch(`/api/submission/disapprove-submission?Id=${id}`);
-      console.log(response.data)
       setyo(!yo);
       toast.success("Disapproved successfully")
     }
@@ -176,15 +158,12 @@ const ChallengeDetails: React.FC = () => {
       } else {
         toast.error("An unexpected error occurred. Please try again.");
       }
-      console.error("Error while approving:", e);
     }
   }
 
   const approveall = async () => {
     try {
-      console.log(challengeId)
       const response = await axios.patch(`/api/submission/approve-all-submission-challenge?Id=${challengeId}`);
-      console.log(response.data)
       setyo(!yo);
       toast.success("Approved to all")
     }
@@ -194,7 +173,6 @@ const ChallengeDetails: React.FC = () => {
       } else {
         toast.error("An unexpected error occurred. Please try again.");
       }
-      console.error("Error while approving:", e);
     }
   }
 
