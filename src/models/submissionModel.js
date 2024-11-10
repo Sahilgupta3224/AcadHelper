@@ -16,7 +16,8 @@ const submissionSchema = new mongoose.Schema({
     },
     Course:{
         type:mongoose.Schema.Types.ObjectId,
-        required:true
+        required:true,
+        ref:"Course"
     },
     submittedAt:{
         type:Date,

@@ -12,6 +12,10 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin, { EventDropArg } from "@fullcalendar/interaction";
 import Auth from '@/components/Auth'
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import {
   Dialog,
   DialogTitle,
@@ -26,7 +30,6 @@ import {
   Box,
   Paper,
 } from "@mui/material";
-import Layout from "@/components/layout";
 import axios from "axios";
 import { useStore } from "@/store";
 import toast, { Toaster } from 'react-hot-toast';

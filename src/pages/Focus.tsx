@@ -1,6 +1,9 @@
 "use client"
 import Timer from '@/components/Timer'
-import Layout from '@/components/layout'
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import Auth from '@/components/Auth'
 import React from 'react'
 

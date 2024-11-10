@@ -171,8 +171,6 @@ const AssignmentDetails: React.FC = () => {
     }
   };
 
-  if (!assignment) return <div>Loading...</div>;
-
   return (
     <div className="flex flex-col items-center bg-gray-100 min-h-screen py-10 px-5">
       <div>

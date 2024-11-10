@@ -1,8 +1,11 @@
 "use client";
 import * as React from "react";
 import { useState } from "react"
-import { Box, Button, TextField, Typography, Modal, IconButton, Badge, Pagination,Select, MenuItem, Chip } from "@mui/material";
-import Layout from "@/components/layout";
+import { Box, Button, TextField, Typography, Modal, Pagination,Select, MenuItem, Chip } from "@mui/material";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import "../../../app/globals.css";
 import { useRouter } from "next/router";
 import axios from "axios";
@@ -93,7 +96,8 @@ const AdminPage: React.FC = () => {
       const res = await axios.get(`/api/course/${courseId}`);
       setcourse(res.data.course)
     }
-    catch(e){
+    catch(e:any){
+      toast.error(e.response.data.error);
     }
   }
 

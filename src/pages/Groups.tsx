@@ -1,5 +1,8 @@
 "use client"
-import Layout from '@/components/layout'
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import {useEffect, useState} from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -105,17 +108,26 @@ const Groups = () => {
         <div className='grid grid-cols-3'>
           {groups.length>0 ? groups.map(group=>(
             <>
-              <Link href={`/${group._id}/GroupPage`}> <Card sx={{ maxWidth: 345,margin:"2rem" }}>
+              <Link href={`/${group._id}/GroupPage`}> <Card sx={{ maxWidth: 345,margin:"2rem",height:"240px" }}>
               <CardMedia
                   sx={{ height: 140 }}
                   image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqGK3diR3Zi-mnOXEaj-3ewmFyRYVxGzVzZw&s"
                   title="green iguana"
               />
               <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
+                  <Typography gutterBottom variant="h5" component="div" sx={{  
+                    overflow: 'hidden', 
+                    textOverflow: 'ellipsis', 
+                    whiteSpace: 'nowrap' 
+                  }}>
                   {group.teamname}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  <Typography variant="body2" sx={{ 
+                    color: 'text.secondary', 
+                    overflow: 'hidden', 
+                    textOverflow: 'ellipsis', 
+                    whiteSpace: 'nowrap' 
+                  }}>
                   {group.description}
                   </Typography>
               </CardContent>

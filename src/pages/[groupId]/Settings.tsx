@@ -1,5 +1,8 @@
 "use client"
-import Layout from '@/components/layout'
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import {useState,useEffect} from 'react'
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';

@@ -8,7 +8,10 @@ import toast, { Toaster } from 'react-hot-toast';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Modal, Typography, Box, FormControl, Select, InputLabel, Divider, LinearProgress } from '@mui/material';
 import { useStore } from "@/store";
 import { CldUploadWidget } from 'next-cloudinary';
-import Layout from "@/components/layout";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import Team from "@/Interfaces/team";
 interface EditChallenge {
   title: string;

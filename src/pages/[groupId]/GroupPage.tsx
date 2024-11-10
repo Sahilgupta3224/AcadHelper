@@ -4,7 +4,10 @@ import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import Layout from '@/components/layout';
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import Settings from './Settings'; // Adjusted for default import
 import { useParams } from 'next/navigation'
 import axios from 'axios';

@@ -10,7 +10,10 @@ import { CldUploadWidget } from 'next-cloudinary';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Skeleton, LinearProgress } from '@mui/material';
 import { useStore } from "@/store";
 import Auth from '@/components/Auth'
-import Layout from "@/components/layout";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 

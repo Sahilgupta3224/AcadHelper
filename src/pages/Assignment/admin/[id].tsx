@@ -23,7 +23,10 @@ import {
   TableBody,
   LinearProgress
 } from "@mui/material";
-import Layout from "@/components/layout";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';

@@ -1,13 +1,11 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Layout from "@/components/layout";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import '../../app/globals.css';
-
-import {
-  sampleAssignments,
-  sampleChapters,
-} from "@/utils/Sample Data/Sample";
 import Auth from '@/components/Auth'
 import Link from "next/link";
 import {
@@ -15,7 +13,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Dayjs } from "dayjs";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
@@ -29,7 +26,6 @@ import axios from "axios";
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import toast, { Toaster } from "react-hot-toast";
-import Course from "@/utils/Interfaces/coursesInterface";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -68,7 +64,7 @@ function a11yProps(index: number) {
   const [selectedChapter, setSelectedChapter] = React.useState(null);
   const [selectedAssignment, setSelectedAssignment] = React.useState(null);
   const [assignmentType, setAssignmentType] = React.useState("normal");
-  const [dueDate, setDueDate] = React.useState<Dayjs | null>(null);
+  const [dueDate, setDueDate] = React.useState<Date | null>(null);
   const [fileName, setFileName] = React.useState("");
   const [file, setFile] = React.useState<File|null>(null);
   const [open, setOpen] = React.useState(false);
@@ -100,9 +96,7 @@ function a11yProps(index: number) {
           toast.error(data.error || "Course addition failed");
         }
       } catch (error:any) {
-      } catch (error:any) {
         toast.error(error.response.data.error)
-        toast.error("Error adding course", error);
       }
   }
   
@@ -129,7 +123,6 @@ function a11yProps(index: number) {
         } else {
           toast.error(data.error || "Course addition failed");
         }
-      } catch (error:any) {
       } catch (error:any) {
         toast.error(error.response.data.error)
       }

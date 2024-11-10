@@ -45,9 +45,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { text: "Schedule", icon: <ScheduleIcon /> },
   ];
 
-  const secondaryItems = [
-    { text: "Rewards", icon: <RedeemIcon /> },
-  ];
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -75,14 +72,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </List>
           <Divider />
           <List>
-            {secondaryItems.map((item) => (
+            {/* {secondaryItems.map((item) => (
               <ListItem key={item.text} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>{item.icon}</ListItemIcon>
                   <ListItemText primary={item.text} />
                 </ListItemButton>
               </ListItem>
-            ))}
+            ))} */}
            <ListItem key="Logout" disablePadding>
                 <ListItemButton onClick={handleLogout}>
                   <ListItemIcon><ExitToAppIcon /></ListItemIcon>

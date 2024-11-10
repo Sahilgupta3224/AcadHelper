@@ -1,5 +1,8 @@
 "use client"
-import Layout from '@/components/layout'
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import React, { useEffect, useState } from 'react'
 import '../app/globals.css';
 import Checkbox from '@mui/material/Checkbox';
@@ -26,7 +29,6 @@ import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Assignment from '@/Interfaces/assignment';
 import Course from '@/utils/Interfaces/coursesInterface';
-import { LinearProgress } from '@mui/material';
 
 const style = {
   position: 'absolute',
@@ -237,12 +239,6 @@ const Dashboard = () => {
       toast.error("Error deleting task:", error.response.data.error);
     }
   };
-    if(loading===false)
-      {
-        return (
-          <LinearProgress color="primary" />
-        )
-      }
     
   return (
     <>
