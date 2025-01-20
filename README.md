@@ -22,14 +22,15 @@ AcadHelper was developed as part of the Codesangam Hackathon, under the event na
 - **Course Management**: Add, update, and track courses.
 - **Assignment Tracking**: Manage assignments with details like due dates, submission status, and points.
 - **Submission Handling**: Submit assignments and challenges with status tracking.
-- **Event planning**:A built-in event scheduling feature to help users plan and organize academic events effectively, ensuring no important dates are missed.
-- **Notification System**: Receive inbox messages for updates related to assignments and courses.
+- **Event planning**: A built-in event scheduling feature to help users plan and organize academic events effectively, ensuring no important dates are missed.
+- **Notification System**: Receive inbox messages for group invitations.
 - **Email Verification**: Ensures that users verify their email addresses for account validation and security.
 - **Admin Panel**: Dedicated interface for managing courses, users, and study materials.
-- **Cloud Management** :Integration with Cloudinary for media storage and management.
-- **Group Collaboration** :Includes shared task management (to-do list visible to all members), and the ability to add members through invite requests.
-- **Leaderboard** : Compare your position among other learners  
-- **Virtual Room** : Allows the user to use Pomodaro Timer for himself without any distractions.
+- **Cloud Management** : Integration with Cloudinary for media storage and management.
+- **Group Collaboration** : Includes shared task management, addition of members through invite requests, and submission to challenges as a team 
+- **Gamification**: Earn points through daily and weekly challenges, and early submissions to assignments
+- **Leaderboard** : Compare your position among other learners in a course, as well as globally
+- **Virtual Room** : Allows the user to use Pomodoro Timer for himself without any distractions.
 
 ## Tech Stack
 
