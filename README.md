@@ -27,7 +27,7 @@ AcadHelper was developed as part of the Codesangam Hackathon, under the event na
 - **Email Verification**: Ensures that users verify their email addresses for account validation and security.
 - **Admin Panel**: Dedicated interface for managing courses, users, and study materials.
 - **Cloud Management** :Integration with Cloudinary for media storage and management.
-- **Group Collaboration** :Includes a Pomodoro timer for group study, shared task management (to-do list visible to all members), and the ability for users to send requests to add members to the group.
+- **Group Collaboration** :Includes shared task management (to-do list visible to all members), and the ability to add members through invite requests.
 - **Leaderboard** : Compare your position among other learners  
 - **Virtual Room** : Allows the user to use Pomodaro Timer for himself without any distractions.
 
