@@ -26,7 +26,7 @@ export const PATCH = async (request:Request)=>{
             return new NextResponse(JSON.stringify({message:"Submission doesn't exist"}))
         }
         if(findSubmission.isVerified===true){
-            return new NextResponse(JSON.stringify({message:"Already approved"}))
+            return new NextResponse(JSON.stringify({message:"Already approved"}),{status:400})
         }
         findSubmission.isVerified=true
         let points = 0;

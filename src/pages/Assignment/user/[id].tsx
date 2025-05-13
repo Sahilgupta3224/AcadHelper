@@ -47,7 +47,6 @@ const AssignmentDetails: React.FC = () => {
                 try {
                     const response = await axios.get(`/api/assignment/getassignmentById?Id=${assignmentId}`);
                     setassignment(response.data.data);
-                    toast.success("Fetched assignments")
                 } catch (error) {
                     toast.error("Error fetching the assignments")
                 }
@@ -62,7 +61,6 @@ const AssignmentDetails: React.FC = () => {
                 try {
                     const submissionsResponse = await axios.get(`/api/submission/getsubmissionbyassignmentanduser?assignmentId=${assignmentId}&userId=${user?._id}`);
                     setSubmissions(submissionsResponse.data.data);
-                    toast.success("Successfully fetched Submissions")
                 } catch (error) {
                     toast.error("Error fetching submission")
                 }

@@ -44,7 +44,7 @@ const Input: React.FC<InputProps> = ({ type, id, name, label, placeholder, autof
   const router = useRouter();
 
   useEffect(() => {
-    if (user) {
+    if (user?.isEmailVerified) {
       router.replace('/Dashboard');
     }
   }, [user, router]);

@@ -202,6 +202,10 @@ const Dashboard = () => {
 
 
   const handleEditTask = async (id:mongoose.Schema.Types.ObjectId) => {
+    if(editInput.title==''){
+      toast.error("title should not be empty")
+      return;
+    }
     try {
       const { data } = await axios.put("/api/task", { taskId: id, task: editInput, type: "edit" })
 
@@ -433,9 +437,9 @@ const Dashboard = () => {
             <div className="text-slate-800 font-bold mb-4 text-2xl text-center">
               Pending Assignments
             </div>
-            {pendingassignment ? (
+            {pendingassignment?.length>0 ? (
               <div>
-                {pendingassignment.map((assignment:Assignment) => (
+                {pendingassignment?.map((assignment:Assignment) => (
                   <div key={assignment._id} className="p-3 mb-2 shadow-md rounded-lg border border-gray-300">
                     <Typography
                       onClick={() => router.push(`/Assignment/user/${assignment._id}`)}
@@ -460,7 +464,7 @@ const Dashboard = () => {
                 ))}
               </div>
             ) : (
-              <Typography variant="body2" color="textSecondary">
+              <Typography variant="body2" color="textSecondary" sx={{display:"flex" , justifyContent:'center'}}>
                 No pending assignments
               </Typography>
             )}

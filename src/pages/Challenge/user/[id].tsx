@@ -253,7 +253,7 @@ const ChallengeDetails: React.FC = () => {
                   }
                 }
               }}
-              className="bg-blue-600 px-4 mt-4 ml-2 text-white rounded hover:bg-blue-700 transition"
+              className="bg-blue-600 px-4 ml-2 text-white rounded hover:bg-blue-700 transition"
             >
               {submissions.length > 0 ? "Edit Submission" : "Submit Challenge"}
             </button>

@@ -204,7 +204,6 @@ const fetchChallenges = async () => {
         `/api/assignment/getassignmentsbycourse?CourseId=${courseId}`
       );
       setassignments(response.data.data);
-      toast.success("Assignments fetched");
     } catch (error:any) {
       toast.error(error.response.data.error);
     }
@@ -219,7 +218,6 @@ const fetchChallenges = async () => {
       });
 
       setEnrolledUsers(response.data.users);
-      toast.success("Fetched enrolled users");
     } catch (error:any) {
       toast.error(error.response.data.error);
       return;

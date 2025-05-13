@@ -124,6 +124,7 @@ const SignupForm: React.FC = () => {
   const fetchuser=async()=>{
     try{
       const response = await axios.get(`/api/user?Id=${user?._id}`);
+      console.log(response)
       if(response.data.data.isEmailVerified){
         router.push('/Dashboard')
       }
@@ -132,7 +133,6 @@ const SignupForm: React.FC = () => {
 
     }
   }
-
   useEffect(()=>{
     console.log(user)
     fetchuser()

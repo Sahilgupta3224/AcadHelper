@@ -86,7 +86,6 @@ export const Settings = () => {
            const {data} = await axios.get(`/api/team/${params?.groupId}`,{params:{type:"Members"}})
            if(data.success){
                 setMembers(data.members)
-                toast.success("Loaded members")
            }
          }catch(e:any){
           toast.error(e.response.data.error)
