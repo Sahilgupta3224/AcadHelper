@@ -54,10 +54,11 @@ export async function POST(request: NextRequest) {
             data: newChallenge,
         });
     } catch (error: any) {
-        return {
+        return NextResponse.json({
             success: false,
             message: "Failed to edit challenge",
             error: error.message,
-        };
+        },
+      { status: 500 });
     }
 }
