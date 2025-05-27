@@ -19,9 +19,9 @@ const CompletedTasksChart = ({tasks}) => {
   const [timeframe, setTimeframe] = useState('week');
 
   // Function to get the week number from a date
-const getWeekNumber = (date) => {
+const getWeekNumber = (date: Date) => {
   const startDate = new Date(date.getFullYear(), 0, 1);
-  const days = Math.floor((date - startDate) / (24 * 60 * 60 * 1000));
+  const days = Math.floor((date.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000));
   return Math.ceil((date.getDay() + 1 + days) / 7);
 };
 
@@ -85,13 +85,13 @@ const processCompletedTaskDataByDay = (tasks) => {
   return (
     <div>
       <ButtonGroup variant="contained" aria-label="outlined primary button group">
-        <Button onClick={() => setTimeframe('week')} color={timeframe === 'week' ? 'primary' : 'default'}>
+        <Button onClick={() => setTimeframe('week')} color={timeframe === 'week' ? 'primary' : 'inherit'}>
           Per Week
         </Button>
-        <Button onClick={() => setTimeframe('month')} color={timeframe === 'month' ? 'primary' : 'default'}>
+        <Button onClick={() => setTimeframe('month')} color={timeframe === 'month' ? 'primary' : 'inherit'}>
           Per Month
         </Button>
-        <Button onClick={() => setTimeframe('day')} color={timeframe === 'day' ? 'primary' : 'default'}>
+        <Button onClick={() => setTimeframe('day')} color={timeframe === 'day' ? 'primary' : 'inherit'}>
           Per Day
         </Button>
       </ButtonGroup>

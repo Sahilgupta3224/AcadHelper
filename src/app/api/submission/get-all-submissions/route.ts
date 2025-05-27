@@ -17,7 +17,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: "No submissions found for the user" }, { status: 400 });
     }
 
-    const submissions = [];
+    const submissions: any[] = [];
 
     for (const submissionId of user.submissions) {
       // Use `findById()` with `populate()` to populate fields in the `Submission` model.

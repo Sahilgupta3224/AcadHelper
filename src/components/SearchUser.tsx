@@ -18,8 +18,8 @@ const modalStyle = {
 
 function SearchUserModal({ open, setOpen, courseId }) {
   const [username, setUsername] = useState('');
-  const [userData, setUserData] = useState(null);
-  const [error, setError] = useState(null);
+  const [userData, setUserData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useStore();
 
   const handleOpen = () => setOpen(true);
@@ -46,6 +46,7 @@ function SearchUserModal({ open, setOpen, courseId }) {
   };
 
   const handleMakeAdmin = async () => {
+    if (!userData || !user) return;
     try {
       const obj = {
         userId: userData?._id,

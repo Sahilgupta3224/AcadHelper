@@ -8,13 +8,13 @@ export const AdminAuth = (Component: React.FC) => {
     const router = useRouter();
     useEffect(() => {
         const courseId = router.query.id as string;
-        const hasAccess = user && courseId && user.CoursesAsAdmin.some((adminCourseId) => adminCourseId.toString() === courseId);
+        const hasAccess = user && courseId && (user.CoursesAsAdmin ?? []).some((adminCourseId) => adminCourseId.toString() === courseId);
         if (!hasAccess && courseId) {
             router.replace("/unauthorized");
           }
     }, [user, router.query.id]);
 
-    return user && user.CoursesAsAdmin.includes(router.query.id as string) ? (
+    return user && (user.CoursesAsAdmin ?? []).includes(router.query.id as string) ? (
       <Component {...props} />
     ) : null;
   };

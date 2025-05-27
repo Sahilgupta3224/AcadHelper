@@ -10,6 +10,12 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Button, ButtonGroup } from '@mui/material';
+import Task from '@/utils/Interfaces/taskInterface';
+
+// Props interface for CompletedTasksChart
+interface CompletedTasksChartProps {
+  tasks: Task[]; // Array of tasks to process
+}
 
 // Function to get the week number from a date
 const getWeekNumber = (date: Date) => {
@@ -50,7 +56,7 @@ const processCompletedTaskData = (tasks: any[] = [], timeframe: 'week' | 'month'
   return Object.entries(completedTaskCount).map(([key, count]) => ({ weekKey: key, count }));
 };
 
-const CompletedTasksChart = ({ tasks = [] }) => {
+const CompletedTasksChart: React.FC<CompletedTasksChartProps> = ({ tasks }: CompletedTasksChartProps) => {
   const [timeframe, setTimeframe] = useState<'week' | 'month' | 'day'>('week');
 
   // Process data based on the selected timeframe
@@ -65,19 +71,19 @@ const CompletedTasksChart = ({ tasks = [] }) => {
       <ButtonGroup variant="contained" aria-label="outlined primary button group">
         <Button
           onClick={() => setTimeframe('week')}
-          color={timeframe === 'week' ? 'primary' : 'default'}
+          color={timeframe === 'week' ? 'primary' : 'inherit'}
         >
           Per Week
         </Button>
         <Button
           onClick={() => setTimeframe('month')}
-          color={timeframe === 'month' ? 'primary' : 'default'}
+          color={timeframe === 'month' ? 'primary' : 'inherit'}
         >
           Per Month
         </Button>
         <Button
           onClick={() => setTimeframe('day')}
-          color={timeframe === 'day' ? 'primary' : 'default'}
+          color={timeframe === 'day' ? 'primary' : 'inherit'}
         >
           Per Day
         </Button>

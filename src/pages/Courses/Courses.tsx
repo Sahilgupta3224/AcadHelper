@@ -188,8 +188,6 @@ function a11yProps(index: number) {
     }
   };
 
-  const chapters = sampleChapters;
-  const assignments = sampleAssignments;
   const style = {
     position: "absolute",
     top: "50%",

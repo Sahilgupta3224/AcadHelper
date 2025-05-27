@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import Link from '@mui/material/Link';
 import Challenge from "@/Interfaces/challenge";
+import Submission from "@/Interfaces/submission";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -43,7 +44,7 @@ function Profile() {
   const [username, setUsername] = useState<string | null>(null);
   const [tasksRequired, setTasksRequired] = useState<Task[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([])
-  const [submissions, setSubmissions] = useState([])
+  const [submissions, setSubmissions] = useState<Submission[]>([])
   const [totalChallenges, setTotalChallenges] = useState([])
   const [points, setPoints] = useState<number>(0)
   const [currentBadgeIndex, setCurrentBadgeIndex] = useState(0);
@@ -407,10 +408,11 @@ function Profile() {
               <ArrowBackIosIcon />
             </IconButton>
             <Grid container spacing={2} justifyContent="center">
-              {(user.badges.length > 0) ? user.badges.slice(
-                currentBadgeIndex,
-                currentBadgeIndex + badgesToShow
-              ).map((badge, index) => (
+              {(user?.badges?.length ?? 0) > 0
+                ? (user?.badges ?? []).slice(
+                    currentBadgeIndex,
+                    currentBadgeIndex + badgesToShow
+                  ).map((badge, index) => (
                 <Grid item xs={12} md={4} key={index}>
                   <Card
                     sx={{
@@ -524,7 +526,7 @@ function Profile() {
                 <Typography variant="subtitle1">
                   Task Complete Per Week
                 </Typography>
-                <CompletedTasksChart tasks={tasksRequired || []} />
+                <CompletedTasksChart tasks={tasksRequired} />
               </Paper>
             </Grid>
             <Grid item xs={12} md={6}>

@@ -28,8 +28,9 @@ export function CredentialsForm(props: CredentialsFormProps) {
       //Redirect to homepage (/timeline)
       router.push("/timeline");
     } else {
-      toast.error(signInResponse);
-      setError("Your Email or Password is wrong!");
+      const errorMessage = signInResponse?.error || "Your email or password is wrong.";
+      toast.error(errorMessage);
+      setError(errorMessage);
     }
   };
 

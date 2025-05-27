@@ -373,3 +373,7 @@ export  const dummyAssignments = [
     status: "Open",
   },
 ];
+
+// Next.js page default export
+const SampleDataPage = () => null;
+export default SampleDataPage;

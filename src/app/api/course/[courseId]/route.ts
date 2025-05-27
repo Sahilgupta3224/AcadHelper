@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 //GET one course from course id
 export async function GET(
   request: NextRequest,
-  context: { params: { courseId: string } }
+  context
 ) {
   try {
     const { courseId } = context.params;
@@ -30,7 +30,10 @@ export async function GET(
 }
 
 // Leave a course
-export async function DELETE(request: NextRequest, context: { params: { courseId: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  context
+) {
     try {
         const { userId } = await request.json();
         const { courseId } = context.params;

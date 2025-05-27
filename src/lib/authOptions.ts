@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   callbacks: {
     async signIn({ user, account }) {
-      if (account.provider === "google") {
+      if (account?.provider === "google") {
         try {
           await connect();
           const existingUser = await User.findOne({ email: user.email });

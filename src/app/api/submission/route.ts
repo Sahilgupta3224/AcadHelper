@@ -1,5 +1,5 @@
 import Challenge from "@/models/challengeModel";
-import User from "@/models/userModel"; // Assuming UserDocument is a type representing a User
+import User from "@/models/userModel";
 import Submission from "@/models/submissionModel";
 import Assignment from "@/models/assignmentModel";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,16 +8,14 @@ import Team from "@/models/teamModel";
 import CourseModel from "@/models/courseModel";
 import { Types } from "mongoose"; // For ObjectId type
 
-connect();
-
 // Type for badge criteria condition function
-type BadgeCondition = (user: UserDocument, courseId: string) => boolean;
+type BadgeCondition = (user: any, courseId: string) => boolean;
 
 // Badge criteria structure
 const badgeCriteria = [
     {
         title: "Consistent_Solver_30",
-        condition: (user: UserDocument, courseId: string) => {
+        condition: (user: any, courseId: string) => {
             const challengesSolved = user.challengessolved
                 .filter((challenge) => challenge.courseId.toString() === courseId)
                 .sort((a, b) => new Date(a.solvedAt).getTime() - new Date(b.solvedAt).getTime());
@@ -44,7 +42,7 @@ const badgeCriteria = [
     },
     {
         title: "Consistent_Solver_90",
-        condition: (user: UserDocument, courseId: string) => {
+        condition: (user: any, courseId: string) => {
             const challengesSolved = user.challengessolved
                 .filter((challenge) => challenge.courseId.toString() === courseId)
                 .sort((a, b) => new Date(a.solvedAt).getTime() - new Date(b.solvedAt).getTime());
@@ -108,6 +106,7 @@ async function checkAndAwardBadges(userId: string, courseId: string) {
 }
 
 export async function POST(request: NextRequest) {
+    await connect();
     try {
         const data = await request.json();
         let { user, assignment, challenge, documentLink,Course,type,groupId} = data;
@@ -176,8 +175,8 @@ export async function POST(request: NextRequest) {
             const updatedAssignment = await Assignment.findByIdAndUpdate(assignment, { $push: { submissions: newSubmission._id } }, { new: true });
 
             if (updatedAssignment) {
-                if (updatedAssignment.dueDate > Date.now()) {
-                    const daysLeft = getDaysBetweenDates(updatedAssignment.dueDate, Date.now());
+                if (updatedAssignment.dueDate.getTime() > Date.now()) {
+                    const daysLeft = getDaysBetweenDates(updatedAssignment.dueDate, new Date());
                     const totalDays = getDaysBetweenDates(updatedAssignment.dueDate, updatedAssignment.uploadedAt);
                     const extraPoints = Math.floor((updatedAssignment.totalPoints / totalDays) * daysLeft * 0.5);
 
@@ -216,13 +215,14 @@ export async function POST(request: NextRequest) {
     }
 }
 
-function getDaysBetweenDates(date1:Date, date2:Date) {
+function getDaysBetweenDates(date1: Date, date2: Date) {
     const oneDay = 1000 * 60 * 60 * 24;
-    const diffInTime= Math.abs(date2 - date1);
+    const diffInTime = Math.abs(date2.getTime() - date1.getTime());
     return Math.floor(diffInTime / oneDay);
 }
 
 export async function GET(request: NextRequest) {
+    await connect();
     try {
         const url = new URL(request.url);
         const Id = url.searchParams.get('Id');

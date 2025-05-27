@@ -20,7 +20,9 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function Notification() {
-  const {user,setUser} = useStore()
+  const {user,setUser} = useStore() as any;
+  const inbox: any[] = user?.inbox ?? [];
+
   const [invitationStatus, setInvitationStatus] = useState<{ [key: string]: 'pending' | 'accepted' | 'rejected' }>({});
   
   const handleInvite = async(approval:Boolean,mail:any)=>{
@@ -50,6 +52,7 @@ export default function Notification() {
   const id = open ? 'simple-popover' : undefined;
 
   const handleDelete = async(notificationId: any)=>{
+    if (!user) return;
     try{
       const {data} = await axios.delete("/api/notification",{params:{userId:user._id,notificationId}})
       if(data.success){
@@ -63,10 +66,10 @@ export default function Notification() {
   return (
     <div>
       <IconButton size="large" color="inherit" onClick={handleClick}>
-              <Badge badgeContent={user?.inbox?.length} color="error">
+              <Badge badgeContent={inbox.length} color="error">
                 <NotificationsIcon />
               </Badge>
-            </IconButton>
+      </IconButton>
       <Popover
         id={id}
         open={open}
@@ -78,7 +81,7 @@ export default function Notification() {
         }}
       >
     <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-        {user?.inbox?.length>0 ? user.inbox.map(notif=>(
+        {inbox.length > 0 ? inbox.map((notif:any)=>(
             <ListItem>
             <ListItemAvatar>
             <Avatar>
