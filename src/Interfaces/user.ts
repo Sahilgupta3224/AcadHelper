@@ -64,6 +64,7 @@ interface User {
         type: Date,
     }
   }];
+  institute:string;
   isEmailVerified:boolean
   pendingAssignments?: UserPendingAssignment[] | [];
   completedAssignments?: UserCompletedAssignment[] | [];
