@@ -69,6 +69,7 @@ export default function Navbar() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
   const [challengeAnchorEl, setChallengeAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [openLogin, setOpenLogin] = React.useState(false)
+  const [loaded,isLoaded] = React.useState(false)
   // const {notifications,setNotifications}=AppWrapper()
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);

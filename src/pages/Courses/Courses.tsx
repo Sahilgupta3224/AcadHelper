@@ -16,8 +16,6 @@ import {
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import Course from "@/Interfaces/course";
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { useStore } from "@/store";

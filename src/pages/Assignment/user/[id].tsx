@@ -125,7 +125,9 @@ const AssignmentDetails: React.FC = () => {
             toast.error("Upload failed or result is invalid.");
         }
     };
-
+    const today = new Date()
+    const due = assignment?.DueDate ? new Date(assignment?.DueDate) : null
+    const status = due && due >= today ? 'Open' : 'Closed';
     if (!assignment) return <Layout><LinearProgress /></Layout>
     return (
         <Layout>
@@ -144,7 +146,7 @@ const AssignmentDetails: React.FC = () => {
                     </div>
                     <div className="flex flex-col items-end">
                         <div className="mb-4">
-                            <span className="font-semibold">Frequency :</span> {assignment.status}
+                            <span className="font-semibold">Status :</span> {status}
                         </div>
                         <div className="mb-4">
                             <span className="font-semibold">Points :</span> {assignment.totalPoints}

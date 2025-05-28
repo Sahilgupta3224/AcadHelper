@@ -137,7 +137,7 @@ function Profile() {
       setSubmissions(response.data.submissions);
 
     } catch (error: any) {
-      toast.error("Error while fetching the submissions");
+      // toast.error("Error while fetching the submissions");
       if (error.response) {
         console.error("Server Error:", error.response.data);
       } else if (error.request) {
@@ -217,8 +217,29 @@ function Profile() {
               InputLabelProps={{ shrink: true }}
               variant="outlined"
             />
+
+            <TextField
+              label="Institute"
+              value={(fetchedUser)?fetchedUser.institute:"institute"}
+              fullWidth
+              margin="normal"
+              InputProps={{
+                readOnly: true,
+              }}
+              InputLabelProps={{ shrink: true }}
+              variant="outlined"
+            />
+            
+            <TextField
+              label="Total Points"
+              value={totalPoints}
+              fullWidth
+              margin="normal" 
+              InputProps={{ readOnly: true }}
+              variant="outlined"
+            />
           </Box>
-          <Avatar sx={{ width: 200, height: 200 }} src="/profile.png" />
+          <Avatar sx={{ width: 300, height: 300, marginLeft: "4rem" }} src="/image.png" />
         </Box>
 
         <Divider />
@@ -231,15 +252,11 @@ function Profile() {
             alignItems="center"
             gap={6}
           >
-            <Typography variant="h4" gutterBottom>
-              My Statistics
+            <Typography variant="h5" gutterBottom>
+              My Work
             </Typography>
-            {/* <Avatar
-              sx={{ width: 220, height: 220 }}
-              src="/rectangleGraph.png"
-            /> */}
           </Box>
-          <Grid container mt={2} spacing={3}>
+          <Grid container mt={0} spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper elevation={3} sx={{ p: 2, textAlign: "center" }}>
                 <Box
@@ -361,7 +378,7 @@ function Profile() {
         </Box>
 
         {/* Points Section */}
-        <Box mt={2}>
+        {/* <Box mt={2}>
           <Typography variant="h4">Points</Typography>
 
           <Box
@@ -389,7 +406,7 @@ function Profile() {
               variant="outlined"
             />
           </Box>
-        </Box>
+        </Box> */}
 
         <Divider sx={{ my: 4 }} />
 

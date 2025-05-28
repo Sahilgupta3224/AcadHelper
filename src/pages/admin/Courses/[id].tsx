@@ -2,21 +2,14 @@
 import * as React from "react";
 import { useState } from "react"
 import { Box, Button, TextField, Typography, Modal, Pagination,Select, MenuItem, Chip } from "@mui/material";
-import dynamic from 'next/dynamic';
-const Layout = dynamic(() => import('@/components/layout'), {
-  ssr: false,
-});
 import "../../../app/globals.css";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { AdminAuth } from "@/components/AdminAuth";
 import Challenge from "@/Interfaces/challenge";
 import Assignment from "@/Interfaces/assignment";
-import { dummyAssignments, dummyChallenges } from "@/pages/SampleData/Sample";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Link from "next/link";
-import ButtonComp from "@/components/button";
 import { useStore } from "@/store";
 import { CldUploadWidget } from "next-cloudinary";
 import AssignmentModal from "@/components/AssignmentModal";
@@ -26,7 +19,10 @@ import Course from "@/Interfaces/course";
 import Auth from '@/components/Auth'
 import User from "@/Interfaces/user";
 import toast, { Toaster } from "react-hot-toast";
-import { TreeItem2Label } from "@mui/x-tree-view";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 
 const AdminPage: React.FC = () => {
   const router = useRouter();
@@ -57,7 +53,7 @@ const AdminPage: React.FC = () => {
   const [endDate, setEndDate] = useState("");
   const [challengeDoc, setChallengeDoc] = useState("");
   const [type, setType] = useState("individual");
-  const [frequency, setFrequency] = useState("daily");
+  const [frequency, setFrequency] = useState("daily"); 
   const [points, setPoints] = useState<number | undefined>();
   const [openUploadModal, setOpenUploadModal] = useState(false);
   const [openUploadAssignmentModal, setOpenUploadAssignmentModal] =
@@ -372,12 +368,16 @@ const fetchChallenges = async () => {
               </Box>
 
               {paginatedAssignments.length > 0 ? (
-                        paginatedAssignments.map((assignment) => (
+                        paginatedAssignments.map((assignment) => {
+                          const today = new Date()
+                          const due = assignment.DueDate ? new Date(assignment.DueDate) : null
+                          const status = due && due >= today ? 'Open' : 'Closed';
+                          return (
                           <div className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer"  onClick={() => router.push(`/Assignment/admin/${assignment._id}`)}>
                           <h1 className="text-3xl font-bold mb-4 flex justify-between">
                            <div className="truncate w-[80%]">{assignment.title}</div>
                            <div>
-                            <Chip label={assignment.status} sx={{marginRight:"1rem"}} color={assignment.status=='Open' ? "success" : "error"} variant="outlined"/>
+                            <Chip label={status} sx={{marginRight:"1rem"}} color={status=='Open' ? "success" : "error"} variant="outlined"/>
                             <Chip label={assignment.totalPoints} />
                             </div>
                            </h1>
@@ -386,7 +386,7 @@ const fetchChallenges = async () => {
                           </p>
                       </div>
 
-                    ))
+                    )})
                 ) : (
                     <div className="m-4">
                             No assignments available.
@@ -589,7 +589,7 @@ const fetchChallenges = async () => {
                 <div className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer" onClick={() => router.push(`/Challenge/${challenge._id}`)}>
                   <h1 className="text-3xl font-bold mb-4 flex justify-between">
                    <div className="truncate w-[80%]">{challenge.title}</div>
-                   <div>
+                   <div className="flex">
                    <Chip label={challenge.type} sx={{marginRight:"1rem"}} color="secondary" variant="outlined"/>
                     <Chip label={challenge.frequency} sx={{marginRight:"1rem"}} color={challenge.frequency=='daily' ? "primary" : "success"} variant="outlined"/>
                     <Chip label={challenge.points} />

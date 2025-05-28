@@ -1,7 +1,6 @@
 "use client"
 import * as React from "react";
 import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem, treeItemClasses } from "@mui/x-tree-view/TreeItem";
@@ -14,34 +13,19 @@ import "../app/globals.css";
 import {
   sampleAssignments,
   sampleChapters,
-  UserLoggedIn,
 } from "../utils/Sample Data/Sample";
 import Link from "next/link";
 import Auth from '@/components/Auth'
 import {
-  FilledTextFieldProps,
-  FormControl,
-  IconButton,
-  InputLabel,
-  MenuItem,
   Modal,
-  OutlinedTextFieldProps,
-  Select,
-  StandardTextFieldProps,
   TextField,
-  TextFieldVariants,
   Typography,
 } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import EditAssignmentModal from "@/components/EditAssignment";
-import SidebarDrawer from "@/components/SidebarDrawer";
 import { Dayjs } from "dayjs";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Course from "@/Interfaces/course";
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { useStore } from "@/store";

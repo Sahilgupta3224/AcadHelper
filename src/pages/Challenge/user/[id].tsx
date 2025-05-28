@@ -201,8 +201,8 @@ const ChallengeDetails: React.FC = () => {
         </button>
         <div className="m-4">
           <div className="flex justify-between mb-6">
-            <div className="flex flex-col">
-              <h1 className="text-3xl font-bold">Title: {challenge.title}</h1>
+            <div className="flex flex-col max-w-[70%]">
+              <h1 className="text-3xl font-bold break-words">Title: {challenge.title}</h1>
               <p className="text-gray-700 p-1 max-w-500px break-words">Description: {challenge.description}</p>
             </div>
             <div className="flex flex-col items-end">

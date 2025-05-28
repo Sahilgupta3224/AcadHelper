@@ -228,8 +228,18 @@ const Calendar: React.FC = () => {
                 currentEvents.map((event) => (
                   <ListItem key={event.id} divider>
                     <ListItemText
+                      
                       primary={event.title}
-                      primaryTypographyProps={{ fontWeight: "bold", fontSize: "1rem" }}
+                      primaryTypographyProps={{
+                        sx: {
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          maxWidth: 200,
+                          fontWeight: 'bold',
+                          fontSize: '1rem',
+                          display: 'block',
+                        }
+                      }}
                       secondary={formatDate(event.end!, {
                         year: "numeric",
                         month: "short",
