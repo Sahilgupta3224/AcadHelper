@@ -10,7 +10,10 @@ import { CldUploadWidget } from 'next-cloudinary';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Skeleton, LinearProgress } from '@mui/material';
 import { useStore } from "@/store";
 import Auth from '@/components/Auth'
-import Layout from "@/components/layout";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 
@@ -44,7 +47,6 @@ const AssignmentDetails: React.FC = () => {
                 try {
                     const response = await axios.get(`/api/assignment/getassignmentById?Id=${assignmentId}`);
                     setassignment(response.data.data);
-                    // toast.success("Fetched assignments")
                 } catch (error) {
                     toast.error("Error fetching the assignments")
                 }
@@ -59,7 +61,6 @@ const AssignmentDetails: React.FC = () => {
                 try {
                     const submissionsResponse = await axios.get(`/api/submission/getsubmissionbyassignmentanduser?assignmentId=${assignmentId}&userId=${user?._id}`);
                     setSubmissions(submissionsResponse.data.data);
-                    // toast.success("Successfully fetched Submissions")
                 } catch (error) {
                     toast.error("Error fetching submission")
                 }

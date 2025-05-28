@@ -23,16 +23,16 @@ import {
   TableBody,
   LinearProgress
 } from "@mui/material";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import Auth from '@/components/Auth'
 import { AdminAssignmentAuth } from "@/components/AdminAssignmentAuth";
-import dynamic from 'next/dynamic';
-const Layout = dynamic(() => import('@/components/layout'), {
-  ssr: false,
-});
 
 interface EditAssignment {
   title: string;
@@ -67,7 +67,6 @@ const AssignmentDetails: React.FC = () => {
             `/api/assignment/getassignmentById?Id=${assignmentId}`
           );
           setassignment(response.data.data);
-          toast.success("Fetched the challenge details")
         } catch (error: any) {
           toast.error(error.response.data.error)
         }
@@ -84,7 +83,6 @@ const AssignmentDetails: React.FC = () => {
             `/api/submission/getsubmissionbyassignment?assignmentId=${assignmentId}`
           );
           setSubmissions(submissionsResponse.data.data);
-          toast.success("Fetched the submissions");
         } catch (error: any) {
           toast.error(error.response.data.error)
         }
@@ -153,8 +151,8 @@ const AssignmentDetails: React.FC = () => {
       const response = await axios.patch(
         `/api/submission/approve-a-submission?Id=${id}`
       );
-      setyo(!yo);
       toast.success("Approved")
+      setyo(!yo);
     } catch (e: any) {
       if (e.response && e.response.status === 400) {
         toast.error(e.response.data.message);
@@ -183,8 +181,8 @@ const AssignmentDetails: React.FC = () => {
       const response = await axios.patch(
         `/api/submission/disapprove-submission?Id=${id}`
       );
-      setyo(!yo);
       toast.success("Disapproved successfully")
+      setyo(!yo);
     } catch (e: any) {
       if (e.response && e.response.status === 400) {
         toast.error(e.response.data.message);
@@ -476,6 +474,7 @@ const AssignmentDetails: React.FC = () => {
 
         </div>
       </div>
+      <Toaster/>
     </Layout>
   );
 };

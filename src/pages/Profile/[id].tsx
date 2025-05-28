@@ -13,7 +13,9 @@ import {
   CardContent,
   Card,
 } from "@mui/material";
+import Link from '@mui/material/Link';
 import Challenge from "@/Interfaces/challenge";
+import Submission from "@/Interfaces/submission";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -34,57 +36,56 @@ const Layout = dynamic(() => import('@/components/layout'), {
   ssr: false,
 });
 function Profile() {
-  
-  const [loading,setLoading]=useState<boolean>(false);
-  const {user,setUser} = useStore()
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const { user, setUser } = useStore()
   const [fetchedUser, setFetchedUser] = React.useState<User | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [tasksRequired, setTasksRequired] = useState<Task[]>([]);
-  const [challenges,setChallenges]=useState<Challenge[]>([])
-  const [submissions,setSubmissions]=useState([])
-  const [totalChallenges,setTotalChallenges]=useState([])
-  const [points,setPoints]=useState<number>(0)
+  const [challenges, setChallenges] = useState<Challenge[]>([])
+  const [submissions, setSubmissions] = useState<Submission[]>([])
+  const [totalChallenges, setTotalChallenges] = useState([])
+  const [points, setPoints] = useState<number>(0)
   const [currentBadgeIndex, setCurrentBadgeIndex] = useState(0);
   const badgesToShow = 3;
   const badges = Badges;
   const router = useRouter();
   const id = router.query.id;
   const calculateTotalPoints = (user: any) => {
-    if(!user?.Totalpoints){
+    if (!user?.Totalpoints) {
       return 0;
     }
     if (Array.isArray(user.Totalpoints)) {
-      return user.Totalpoints.reduce((total, course) => total + course.points, 0);
+      return user.Totalpoints.reduce((total: any, course: any) => total + course.points, 0);
     }
     return 0;
   };
   const totalPoints = calculateTotalPoints(user);
 
-  const calTotalPoints=()=>{
-    let points:number=0;
-    
-    if(!fetchedUser)
-    {
+  const calTotalPoints = () => {
+    let points: number = 0;
+
+    if (!fetchedUser) {
       return;
     }
 
-    const totalPointsArray=fetchedUser.Totalpoints 
+    const totalPointsArray = fetchedUser.Totalpoints
 
-    totalPointsArray.map((item)=>{
+    totalPointsArray.map((item) => {
       points = points + (item.points.default || 0);
     })
 
     setPoints(points);
   }
 
-  const calPointsOfChallenges=async()=>{
+  const calPointsOfChallenges = async () => {
     try {
-      
-      let points=0;
 
-      
-   
+      let points = 0;
+
+
+
     } catch (error) {
       toast.error("Error while calculating the points")
     }
@@ -100,7 +101,7 @@ function Profile() {
         setUsername(fetchedUser.username);
         setChallenges(response.data.data.challengessolved)
       }
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error(error.response.data.error)
       return;
     }
@@ -115,20 +116,48 @@ function Profile() {
         },
       });
       setTasksRequired(response.data.tasks);
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error(error.response.data.error)
     }
   };
 
+  const fetchSubmissions = async () => {
+    try {
+      if (!id) {
+        throw new Error("User ID is not defined");
+      }
+
+      const response = await axios.get('/api/submission/get-all-submissions', {
+        params: {
+          userId: id,
+        },
+      });
+
+      console.log(response.data.submissions);
+      setSubmissions(response.data.submissions);
+
+    } catch (error: any) {
+      // toast.error("Error while fetching the submissions");
+      if (error.response) {
+        console.error("Server Error:", error.response.data);
+      } else if (error.request) {
+        console.error("Network Error:", error.request);
+      } else {
+        console.error("Error while fetching the submission:", error.message);
+      }
+    }
+  };
+
   useEffect(() => {
-   
-      console.log(router)
-      fetchUserDetails();
-      fetchTasks();
-      calTotalPoints();
-      calPointsOfChallenges();
-      setLoading(true)
-  }, [router.isReady,router.query.id]);
+
+    console.log(router)
+    fetchUserDetails();
+    fetchTasks();
+    calTotalPoints();
+    calPointsOfChallenges();
+    setLoading(true)
+    fetchSubmissions();
+  }, [router.isReady, router.query.id]);
 
   const handleNext = () => {
     setCurrentBadgeIndex(
@@ -167,7 +196,7 @@ function Profile() {
 
             <TextField
               label="Username"
-              value={(fetchedUser)?fetchedUser.username:"username" }
+              value={(fetchedUser) ? fetchedUser.username : "username"}
               fullWidth
               margin="normal"
               InputProps={{
@@ -179,7 +208,7 @@ function Profile() {
 
             <TextField
               label="Email"
-              value={(fetchedUser)?fetchedUser.email:"email"}
+              value={(fetchedUser) ? fetchedUser.email : "email"}
               fullWidth
               margin="normal"
               InputProps={{
@@ -200,7 +229,7 @@ function Profile() {
               InputLabelProps={{ shrink: true }}
               variant="outlined"
             />
-
+            
             <TextField
               label="Total Points"
               value={totalPoints}
@@ -226,10 +255,6 @@ function Profile() {
             <Typography variant="h5" gutterBottom>
               My Work
             </Typography>
-            {/* <Avatar
-              sx={{ width: 220, height: 220 }}
-              src="/rectangleGraph.png"
-            /> */}
           </Box>
           <Grid container mt={0} spacing={3}>
             <Grid item xs={12} md={6}>
@@ -246,49 +271,49 @@ function Profile() {
                   mt={2}
                   sx={{
                     minHeight: "500px",
-                    maxHeight: "500px", 
+                    maxHeight: "500px",
                     overflowY: "auto",
                     textAlign: "left",
                   }}
                 >
                   {tasksRequired.length > 0 && tasksRequired.map((task) => {
-                  const color = task.color; 
+                    const color = task.color;
 
-                  return (
-                    <Paper
-                      key={task._id.toString()}
-                      sx={{
-                        p: 2,
-                        mb: 1,
-                        backgroundColor: '#f2f9ff', 
-                        border: `2px solid ${color}`,
-                        borderRadius: '8px',
-                        display: 'flex',
-                        flexDirection: 'row', 
-                        alignItems: 'stretch',
-                        textAlign: 'left',
-                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', 
-                      }}
-                    >
-                   
-                      <div
-                        style={{
-                          width: '8px',
-                          backgroundColor: color, 
-                          borderRadius: '8px 0 0 8px', 
+                    return (
+                      <Paper
+                        key={task._id.toString()}
+                        sx={{
+                          p: 2,
+                          mb: 1,
+                          backgroundColor: '#f2f9ff',
+                          border: `2px solid ${color}`,
+                          borderRadius: '8px',
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'stretch',
+                          textAlign: 'left',
+                          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                         }}
-                      ></div>
-                    
-                      <div style={{ flexGrow: 1, paddingLeft: '8px' }}>
-                        <Typography variant="subtitle1">{task.title}</Typography>
-                        <Typography variant="body2">{task.course}</Typography>
-                        <Typography variant="caption">
-                          Deadline: {task.dueDate? new Date(task.dueDate).toLocaleString() : "N/A"}
-                        </Typography>
-                      </div>
-                    </Paper>
-                  );
-                })}
+                      >
+
+                        <div
+                          style={{
+                            width: '8px',
+                            backgroundColor: color,
+                            borderRadius: '8px 0 0 8px',
+                          }}
+                        ></div>
+
+                        <div style={{ flexGrow: 1, paddingLeft: '8px' }}>
+                          <Typography variant="subtitle1">{task.title}</Typography>
+                          <Typography variant="body2">{task.course}</Typography>
+                          <Typography variant="caption">
+                            Deadline: {task.dueDate ? new Date(task.dueDate).toLocaleString() : "N/A"}
+                          </Typography>
+                        </div>
+                      </Paper>
+                    );
+                  })}
 
                 </Box>
               </Paper>
@@ -304,25 +329,49 @@ function Profile() {
                   mt={2}
                   sx={{
                     minHeight: "500px",
-                    maxHeight: "500px", 
-                    overflowY: "auto", 
+                    maxHeight: "500px",
+                    overflowY: "auto",
+                    textAlign: "left",
                   }}
                 >
-                  {challenges.length > 0 &&
-                    challenges.map((challenge, index) => (
+                  {submissions.length > 0 ? (
+                    submissions.map((submission, index) => (
                       <Paper
                         key={index}
-                        sx={{ p: 2, mb: 1, backgroundColor: "#FFA872" }}
+                        sx={{
+                          p: 2,
+                          mb: 1,
+                          borderRadius: '8px',
+                          backgroundColor: "#FAF3E0", // Lighter shade for visibility
+                          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', // Subtle shadow
+                        }}
                       >
-                        <Typography variant="subtitle1">
-                          {challenge.title}
-                        </Typography>
-                        <Typography variant="body2">
-                          {challenge.description}
+                        <Box display="flex" justifyContent="space-between">
+                          <Typography variant="subtitle1" fontWeight="bold">
+                            {submission?.documentLink ? (
+                              <Link href={submission.documentLink} target="_blank" rel="noopener noreferrer" underline="hover">
+                                Document Link
+                              </Link>
+                            ) : (
+                              "Document not available"
+                            )}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {new Date(submission.submittedAt).toLocaleString() || "Date"}
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" mt={1}>
+                          Marks Obtained: {submission.marksObtained || 0}
                         </Typography>
                       </Paper>
-                    ))}
+                    ))
+                  ) : (
+                    <Typography variant="body2" color="textSecondary">
+                      No submissions available.
+                    </Typography>
+                  )}
                 </Box>
+
               </Paper>
             </Grid>
           </Grid>
@@ -343,11 +392,11 @@ function Profile() {
               label="Total Points"
               value={totalPoints}
               fullWidth
-              margin="normal" 
+              margin="normal"
               InputProps={{ readOnly: true }}
               variant="outlined"
             />
-           
+
             <TextField
               label="Username"
               value={user?.username}
@@ -365,6 +414,65 @@ function Profile() {
         <Box mt={4}>
           <Typography variant="h5" gutterBottom>
             My Rewards
+          </Typography>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            mt={2}
+          >
+            <IconButton onClick={handlePrevious}>
+              <ArrowBackIosIcon />
+            </IconButton>
+            <Grid container spacing={2} justifyContent="center">
+              {(user?.badges?.length ?? 0) > 0
+                ? (user?.badges ?? []).slice(
+                    currentBadgeIndex,
+                    currentBadgeIndex + badgesToShow
+                  ).map((badge, index) => (
+                <Grid item xs={12} md={4} key={index}>
+                  <Card
+                    sx={{
+                      p: 2,
+                      textAlign: "center",
+                      borderRadius: 2,
+                      boxShadow: 3,
+                      minHeight: 250,
+                      maxHeight: 250,
+                    }}
+                  >
+                    <CardContent>
+                      <Avatar
+                        sx={{
+                          bgcolor: "#FFD700",
+                          width: 60,
+                          height: 60,
+                          mx: "auto",
+                          mb: 2,
+                        }}
+                        src={`/` + badge.photo}
+                      />
+                      <Typography variant="h6">{badge.title}</Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {badge.description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))
+                : (<Box>
+                  No Badge earned till now
+                </Box>)}
+            </Grid>
+            <IconButton onClick={handleNext}>
+              <ArrowForwardIosIcon />
+            </IconButton>
+          </Box>
+        </Box>
+
+        <Box mt={4}>
+          <Typography variant="h5" gutterBottom>
+            All Rewards
           </Typography>
           <Box
             display="flex"
@@ -435,7 +543,7 @@ function Profile() {
                 <Typography variant="subtitle1">
                   Task Complete Per Week
                 </Typography>
-                <CompletedTasksChart tasks={tasksRequired || [] } />
+                <CompletedTasksChart tasks={tasksRequired} />
               </Paper>
             </Grid>
             <Grid item xs={12} md={6}>

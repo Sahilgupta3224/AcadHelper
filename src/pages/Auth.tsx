@@ -6,19 +6,14 @@ import {
   GithubSignInButton,
   GoogleSignInButton,
 } from "@/components/authButtons";
-import { getServerSession } from "next-auth";
-import { options } from '../components/options'
-import { redirect } from "next/navigation";
-import { CredentialsForm } from "@/components/credentialsForm"
-import { getCsrfToken } from "next-auth/react";
+import { CredentialsForm } from "@/components/credentialsForm";
+import { GetServerSideProps } from 'next';
+import { getServerSession } from 'next-auth';
+import { options } from '@/components/options';
+import { getCsrfToken } from 'next-auth/react';
 
-export default async function Auth() {
-  const session = await getServerSession(options);
-
-  console.log("Session: ", session);
-
-  if (session) return redirect("/timeline");
-
+// Page component
+const AuthPage: React.FC = () => {
   return (
     <div className="w-full flex flex-col items-center justify-center min-h-screen py-2">
       <div className="flex flex-col items-center mt-10 p-10 shadow-md">
@@ -28,9 +23,23 @@ export default async function Auth() {
         <span className="text-2xl font-semibold text-white text-center mt-8">
           Or
         </span>
-        {/* <CredentialsSignInButton /> */}
         <CredentialsForm />
       </div>
     </div>
   );
-}
+};
+
+export default AuthPage;
+
+// Server-side session check and redirect
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getServerSession(context.req, context.res, options);
+  if (session) {
+    return {
+      redirect: { destination: '/timeline', permanent: false },
+    };
+  }
+  // Provide CSRF token if needed for CredentialsForm
+  const csrfToken = await getCsrfToken(context);
+  return { props: { csrfToken } };
+};

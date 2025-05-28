@@ -6,12 +6,14 @@ import {
   EventInput,
   EventClickArg,
   EventApi,
+  EventDropArg,
 } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin, { EventDropArg } from "@fullcalendar/interaction";
-import Auth from '@/components/Auth'
+import interactionPlugin from "@fullcalendar/interaction";
+import Auth from '@/components/Auth';
+import Layout from '@/components/layout';
 import {
   Dialog,
   DialogTitle,
@@ -26,10 +28,6 @@ import {
   Box,
   Paper,
 } from "@mui/material";
-import dynamic from 'next/dynamic';
-const Layout = dynamic(() => import('@/components/layout'), {
-  ssr: false,
-});
 import axios from "axios";
 import { useStore } from "@/store";
 import toast, { Toaster } from 'react-hot-toast';
@@ -106,10 +104,11 @@ const Calendar: React.FC = () => {
   const handleEventDrop = async (dropInfo: EventDropArg) => {
     try {
       const { event } = dropInfo;
-
-      console.log(event)
-
-      const DueDate = event._instance.range.end;
+      // Guard against null instance
+      if (!event._instance) return;
+      console.log(event);
+      const inst = event._instance; // non-null after guard
+      const DueDate = inst.range.end;
       const DueDateISO = new Date(DueDate).toISOString();
       console.log(DueDateISO);
       
@@ -119,11 +118,11 @@ const Calendar: React.FC = () => {
         DueDate: DueDate,
         eventId: event.id,
       });
-      console.log(response)
-      setchange(!change)
-      // // Optionally refetch all events or update the state manually
+      console.log(response);
+      setchange(!change);
+      // Optionally refetch all events or update the state manually
       fetchAllEvents();
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error(error.message);
     }
   };
@@ -217,7 +216,7 @@ const Calendar: React.FC = () => {
         {/* Sidebar for event list */}
         <Box width={{ xs: "100%", md: "30%" }} padding="20px">
           <Typography variant="h4" fontWeight="bold" gutterBottom>
-            Add Event, Stay Tuned Always :)
+            Add Event, Stay Tuned Always !
           </Typography>
           <Paper elevation={3} style={{ maxHeight: "70vh", overflow: "auto", padding: "10px" }}>
             <List>
@@ -252,7 +251,8 @@ const Calendar: React.FC = () => {
                     />
                   </ListItem>
                 ))
-              )}
+              )                  // extra add kiya hai
+              }
             </List>
           </Paper>
         </Box>
@@ -266,7 +266,8 @@ const Calendar: React.FC = () => {
               left: "prev,next today",
               center: "title",
               right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
-            }}
+            }
+            }
             initialView="dayGridMonth"
             editable={true}
             selectable={true}

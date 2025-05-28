@@ -5,12 +5,11 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import CloseIcon from '@mui/icons-material/Close';
 import { useStore } from '@/store';
-import mongoose from 'mongoose';
 
 interface AssignmentModalProps {
   open: boolean;
   handleClose: () => void;
-  courseId: mongoose.Schema.Types.ObjectId;
+  courseId?: string;
 }
 
 const AssignmentModal: React.FC<AssignmentModalProps>  = ({ open, handleClose, courseId }) => {

@@ -9,13 +9,14 @@ export default function EditAssignmentModal({
   open,
   handleClose,
   assignmentData,
-  // onSave,
-}:{
-  open:any,
-  handleClose:any,
-  assignmentDate:any 
-}):any {
-  const [dueDate, setDueDate] = React.useState<Dayjs | null>(assignmentData.dueDate || null);
+}: {
+  open: any;
+  handleClose: any;
+  assignmentData: any;
+}): any {
+  const [dueDate, setDueDate] = React.useState<Dayjs | null>(
+    assignmentData.dueDate ? dayjs(assignmentData.dueDate) : null
+  );
   const [fileName, setFileName] = React.useState<string>(assignmentData.fileName || "");
   const [points, setPoints] = React.useState<number>(assignmentData.points || 0);
   const [file, setFile] = React.useState<File | null>(null);
@@ -60,7 +61,7 @@ export default function EditAssignmentModal({
             label="Due Date"
             value={dueDate}
             onChange={(newDate) => setDueDate(newDate)}
-            renderInput={(params:any) => <TextField {...params} fullWidth margin="normal" />}
+            slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
           />
         </LocalizationProvider>
 
@@ -92,7 +93,7 @@ export default function EditAssignmentModal({
         />
 
         {/* Status Selector */}
-        <FormControl fullWidth margin="normal" display="flex" flexDirection="column" gap="2">
+        <FormControl fullWidth margin="normal" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <InputLabel>Status</InputLabel>
           <Select
             value={status}

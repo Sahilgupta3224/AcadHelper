@@ -7,7 +7,7 @@ import sendEmail from '@/utils/mailhandler'
 
 function generateVerificationToken(userId: string) {
   return jwt.sign({ userId }, process.env.TOKEN_SECRET!, {
-    expiresIn: '1h', // Token expires in 1 hour
+    expiresIn: '1h', 
   });
 }
 

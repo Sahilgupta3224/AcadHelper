@@ -8,7 +8,7 @@ interface Params {
     id: string;
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Params }) {
+export async function DELETE(request: NextRequest) {
     try {
         const url = new URL(request.url);
         const id = url.searchParams.get('Id');

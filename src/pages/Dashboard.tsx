@@ -26,7 +26,6 @@ import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Assignment from '@/Interfaces/assignment';
 import Course from '@/utils/Interfaces/coursesInterface';
-import { LinearProgress } from '@mui/material';
 
 import dynamic from 'next/dynamic';
 const Layout = dynamic(() => import('@/components/layout'), {
@@ -55,7 +54,7 @@ const Dashboard = () => {
   const router = useRouter()
   const { user, setUser } = useStore()
   const [courses, setCourses] = useState([])
-  const [pendingassignment, setpendingassignment] = useState<Assignment[] | null>(null);
+  const [pendingassignment, setpendingassignment] = useState<Assignment[]>([]);
   const [taskInput, setTaskInput] = useState({ title: "", color: "", course: "", dueDate: "", completed: false })
   const [editInput, setEditInput] = useState({ title: "", color: "", course: "", dueDate: "" })
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -201,7 +200,11 @@ const Dashboard = () => {
   };
 
 
-  const handleEditTask = async (id:mongoose.Schema.Types.ObjectId) => {
+  const handleEditTask = async (id?: mongoose.Schema.Types.ObjectId) => {
+    if(editInput.title==''){
+      toast.error("title should not be empty")
+      return;
+    }
     try {
       const { data } = await axios.put("/api/task", { taskId: id, task: editInput, type: "edit" })
 
@@ -220,7 +223,8 @@ const Dashboard = () => {
   };
 
 
-  const handleDeleteTask = async (id: mongoose.Schema.Types.ObjectId) => {
+  const handleDeleteTask = async (id?: mongoose.Schema.Types.ObjectId) => {
+    if (!id) return;
     try {
       const { data } = await axios.delete("/api/task", { params: { taskId: id, userId: user?._id } })
       if (data.success) {
@@ -433,9 +437,9 @@ const Dashboard = () => {
             <div className="text-slate-800 font-bold mb-4 text-2xl text-center">
               Pending Assignments
             </div>
-            {pendingassignment ? (
+            {pendingassignment.length > 0 ? (
               <div>
-                {pendingassignment.map((assignment:Assignment) => (
+                {pendingassignment.map((assignment: Assignment) => (
                   <div key={assignment._id} className="p-3 mb-2 shadow-md rounded-lg border border-gray-300">
                     <Typography
                       onClick={() => router.push(`/Assignment/user/${assignment._id}`)}
@@ -446,12 +450,13 @@ const Dashboard = () => {
                       {assignment.title}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                      Due Date:{" "}
-                      {new Date(assignment.DueDate).toLocaleDateString(undefined, {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                      Due Date: {assignment.DueDate
+                        ? new Date(assignment.DueDate).toLocaleDateString(undefined, {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })
+                        : "N/A"}
                     </Typography>
                     {/* <Typography variant="body2" color="textSecondary" className="truncate">
                       Description: {assignment.description}
@@ -460,7 +465,7 @@ const Dashboard = () => {
                 ))}
               </div>
             ) : (
-              <Typography variant="body2" color="textSecondary">
+              <Typography variant="body2" color="textSecondary" sx={{display:"flex" , justifyContent:'center'}}>
                 No pending assignments
               </Typography>
             )}

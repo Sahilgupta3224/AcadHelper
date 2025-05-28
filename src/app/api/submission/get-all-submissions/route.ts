@@ -17,10 +17,16 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: "No submissions found for the user" }, { status: 400 });
     }
 
-    const submissions = [];
+    const submissions: any[] = [];
 
     for (const submissionId of user.submissions) {
-      const submission = await Submission.findById(submissionId);
+      // Use `findById()` with `populate()` to populate fields in the `Submission` model.
+      const submission = await Submission.findById(submissionId)
+        .populate('User')
+        .populate('Course')
+        .populate('Assignment')
+        .populate('Challenge')
+
       if (submission) {
         submissions.push(submission);
       }
@@ -30,7 +36,7 @@ export async function GET(request: Request) {
       { message: "Successfully fetched the submissions", submissions },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error:any) {
     console.error("Error while fetching the submissions of user:", error);
     return NextResponse.json(
       { message: "Error while fetching the submissions of user", error: error.message || error },

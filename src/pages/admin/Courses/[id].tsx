@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { useState } from "react";
+import { useState } from "react"
 import { Box, Button, TextField, Typography, Modal, Pagination,Select, MenuItem, Chip } from "@mui/material";
 import "../../../app/globals.css";
 import { useRouter } from "next/router";
@@ -26,8 +26,9 @@ const Layout = dynamic(() => import('@/components/layout'), {
 
 const AdminPage: React.FC = () => {
   const router = useRouter();
-  const { query } = router
-  const { id } = router.query;
+  // Extract a single string ID from the router query (handles string[] case)
+  const rawId = router.query.id;
+  const courseId: string | undefined = Array.isArray(rawId) ? rawId[0] : rawId;
   const [enrolledUsers,setEnrolledUsers]=React.useState<User[]>([])
   const [openSearch,setOpenSearch]=React.useState<boolean>(false);
   const [openKick,setOpenKick]=React.useState<boolean>(false);
@@ -64,7 +65,6 @@ const AdminPage: React.FC = () => {
   const [assignmentPoints, setAssignmentPoints] = useState<number | undefined>();
   const [yo, setyo] = useState(false)
   const { user, setUser } = useStore()
-  const courseId=id
   const itemsPerPage = 5;
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {

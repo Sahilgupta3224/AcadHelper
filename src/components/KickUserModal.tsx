@@ -17,9 +17,9 @@ const modalStyle = {
 };
 
 function KickUserModal({ open, setOpen, courseId }) {
-  const [username, setUsername] = useState('');
-  const [userData, setUserData] = useState(null);
-  const [error, setError] = useState(null);
+  const [username, setUsername] = useState<string>('');
+  const [userData, setUserData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {

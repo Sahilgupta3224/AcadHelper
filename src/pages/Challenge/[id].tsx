@@ -49,7 +49,6 @@ const ChallengeDetails: React.FC = () => {
         try {
           const response = await axios.get(`/api/challenge/getchallengeById?Id=${challengeId}`);
           setChallenge(response.data.data);
-          toast.success("Fetched Challenges")
         } catch (error:any) {
           toast.error(error.response.data.error)
         }
@@ -64,7 +63,6 @@ const ChallengeDetails: React.FC = () => {
         try {
           const submissionsResponse = await axios.get(`/api/submission/getsubmissionbychallenge?challengeId=${challengeId}`);
           setSubmissions(submissionsResponse.data.data);
-          toast.success("Fetched submissions")
         } catch (error:any) {
           toast.error(error.response.data.error)
         }

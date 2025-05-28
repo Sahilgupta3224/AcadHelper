@@ -2,6 +2,9 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
+import { TreeItem, treeItemClasses } from "@mui/x-tree-view/TreeItem";
+import CloseIcon from "@mui/icons-material/Close";
 import dynamic from 'next/dynamic';
 const Layout = dynamic(() => import('@/components/layout'), {
   ssr: false,
@@ -21,6 +24,7 @@ import {
 import { Dayjs } from "dayjs";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Course from "@/Interfaces/course";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
@@ -62,12 +66,19 @@ function a11yProps(index: number) {
 
   function Courses() {
   const {user,setUser} = useStore()
-  const [enrolledCourses,setEnrolledCourses] = React.useState([])
-  const [adminCourses,setAdminCourses] = React.useState([])
+  const [enrolledCourses,setEnrolledCourses] = React.useState<Course[]>([])
+  const [adminCourses,setAdminCourses] = React.useState<Course[]>([])
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [selectedChapter, setSelectedChapter] = React.useState(null);
+  const [selectedAssignment, setSelectedAssignment] = React.useState(null);
+  const [assignmentType, setAssignmentType] = React.useState("normal");
+  const [dueDate, setDueDate] = React.useState<Dayjs | null>(null);
+  const [fileName, setFileName] = React.useState("");
+  const [file, setFile] = React.useState<File|null>(null);
   const [open, setOpen] = React.useState(false);
   const [openJoin,setOpenJoin]=React.useState(false);
   const [value, setValue] = React.useState(0);
-  const [courseInput,setCourseInput] = React.useState({name:"",description:"",userId:user._id})
+  const [courseInput,setCourseInput] = React.useState({name:"",description:"",userId:user?._id})
   const [code,setCode] = React.useState("")
   const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
@@ -76,21 +87,22 @@ function a11yProps(index: number) {
 
   const handleJoinCourse = async(e: React.MouseEvent<HTMLButtonElement>) =>{
     e.preventDefault()
-    console.log(code)
       try {
         if(!code){
           toast.error("Course code cannot be empty")
           return
         }
     
-        const {data} = await axios.post("/api/course",{code,userId:user._id})
+        const {data} = await axios.post("/api/course",{code,userId:user?._id})
   
         if (data.success) {
-          setCourseInput({name:"",description:"",userId:user._id});
+          setCourseInput({name:"",description:"",userId:user?._id});
           handleCloseJoin()
   
+        } else {
+          toast.error(data.error)
         }
-      } catch (error) {
+      } catch (error:any) {
         toast.error(error.response.data.error)
       }
   }
@@ -107,11 +119,13 @@ function a11yProps(index: number) {
         }
         const {data} = await axios.post("/api/course/createcourse",courseInput)
         if (data.success) {
-          setCourseInput({name:"",description:"",userId:user._id});
+          setCourseInput({name:"",description:"",userId:user?._id});
           handleClose()
   
-        } 
-      } catch (error) {
+        } else {
+          toast.error(data.error || "Course addition failed");
+        }
+      } catch (error:any) {
         toast.error(error.response.data.error)
       }
     };
@@ -128,28 +142,50 @@ function a11yProps(index: number) {
   useEffect(()=>{
     const fetchEnrolledCourse = async()=>{
       try{
-        const {data} = await axios.post("/api/course/getCourses",{type:"enrolled",userId:user._id})
+        const {data} = await axios.post("/api/course/getCourses",{type:"enrolled",userId:user?._id})
         if(data.success){
           setEnrolledCourses(data.courses)
         }
-    }catch(e){
+    }catch(e:any){
         toast.error(e.response.data.error)
       }
     }
     const fetchAdminCourse = async()=>{
       try{
-        const {data} = await axios.post("/api/course/getCourses",{type:"admin",userId:user._id})
+        const {data} = await axios.post("/api/course/getCourses",{type:"admin",userId:user?._id})
         if(data.success){
           setAdminCourses(data.courses)
         }
-    }catch(e){
-        console.log(e.response.data.error)
-      }
+    }catch(e:any){
+      toast.error(e.response.data.error)
+    }
     }
     fetchEnrolledCourse()
     fetchAdminCourse()
   },[])
 
+
+  // Toggle drawer function
+  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setDrawerOpen(open);
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const uploadedFile = event.target.files[0];
+      setFile(uploadedFile);
+      setFileName(uploadedFile.name);
+    }
+  };
+  
+  const chapters = sampleChapters;
+  const assignments = sampleAssignments;
   const style = {
     position: "absolute",
     top: "50%",
@@ -164,7 +200,6 @@ function a11yProps(index: number) {
     flexDirection: "column",
     gap: 2,
   };
-
   return (
     <Layout>
     <Box sx={{ width: '100%' }}>

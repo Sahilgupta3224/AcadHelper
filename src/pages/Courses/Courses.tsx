@@ -24,7 +24,6 @@ import axios from "axios";
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import toast, { Toaster } from "react-hot-toast";
-import Course from "@/utils/Interfaces/coursesInterface";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -63,7 +62,7 @@ function a11yProps(index: number) {
   const [selectedChapter, setSelectedChapter] = React.useState(null);
   const [selectedAssignment, setSelectedAssignment] = React.useState(null);
   const [assignmentType, setAssignmentType] = React.useState("normal");
-  const [dueDate, setDueDate] = React.useState<Dayjs | null>(null);
+  const [dueDate, setDueDate] = React.useState<Date | null>(null);
   const [fileName, setFileName] = React.useState("");
   const [file, setFile] = React.useState<File|null>(null);
   const [open, setOpen] = React.useState(false);
@@ -95,9 +94,7 @@ function a11yProps(index: number) {
           toast.error(data.error || "Course addition failed");
         }
       } catch (error:any) {
-      } catch (error:any) {
         toast.error(error.response.data.error)
-        toast.error("Error adding course", error);
       }
   }
   
@@ -124,7 +121,6 @@ function a11yProps(index: number) {
         } else {
           toast.error(data.error || "Course addition failed");
         }
-      } catch (error:any) {
       } catch (error:any) {
         toast.error(error.response.data.error)
       }
@@ -190,8 +186,6 @@ function a11yProps(index: number) {
     }
   };
 
-  const chapters = sampleChapters;
-  const assignments = sampleAssignments;
   const style = {
     position: "absolute",
     top: "50%",

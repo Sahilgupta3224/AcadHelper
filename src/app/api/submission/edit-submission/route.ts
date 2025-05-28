@@ -30,10 +30,9 @@ export async function PATCH(request: NextRequest) {
             data: newAssignment,
         });
     } catch (error: any) {
-        return {
-            success: false,
-            message: "Failed to edit assignment",
-            error: error.message,
-        };
+        return NextResponse.json(
+            { success: false, message: "Failed to edit assignment", error: error.message },
+            { status: 500 }
+        );
     }
 }

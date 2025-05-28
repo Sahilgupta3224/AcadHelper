@@ -23,6 +23,7 @@ interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
+  [x: string]: any;
 }
 
 function CustomTabPanel(props: TabPanelProps) {
@@ -50,13 +51,14 @@ function a11yProps(index: number) {
 
 
 export default function Fire() {
-  const {user} = useStore()
-  const [daily,setDaily] = useState([])
-  const [weekly,setWeekly] = useState([])
+  const { user } = useStore();
+  const [daily, setDaily] = useState<any[]>([]);
+  const [weekly, setWeekly] = useState<any[]>([]);
   const [loading,setLoading]=useState<boolean>(false);
  
   
   useEffect(()=>{
+    if (!user) return;
     const fetchDaily = async()=>{
       try{
         const {data} = await axios.post("/api/challenge/get-challengeByFreq",{frequency:"daily",userId:user._id})
@@ -80,7 +82,7 @@ export default function Fire() {
     fetchDaily()
     fetchWeekly()
     setLoading(true)
-  },[])
+  },[user])
   
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);

@@ -37,7 +37,7 @@ export async function POST(request: Request) {
         course.assignments.push(newAssignment._id);
         await course.save();
 
-        const eventPromises = course.StudentsEnrolled.map(async (studentId:any) => {        //saving this assignment to events
+        const eventPromises = course.StudentsEnrolled.map(async (studentId:string) => {        //saving this assignment to events
             const newEvent = new Event({
                 title,
                 User: studentId,
@@ -54,8 +54,9 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ message: "Assignment uploaded successfully.", Assignment: newAssignment }, { status: 201 });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
         console.error("Error uploading assignment:", error);
-        return NextResponse.json({ message: "An error occurred while uploading the assignment.", error: error.message }, { status: 500 });
+        return NextResponse.json({ message: "An error occurred while uploading the assignment.", error: errorMessage }, { status: 500 });
     }
 }

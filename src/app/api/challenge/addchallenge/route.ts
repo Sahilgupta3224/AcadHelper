@@ -36,10 +36,14 @@ export async function POST(request: NextRequest) {
             data: savedChallenge,
         });
     } catch (error: any) {
-        return {
-            success: false,
-            message: "Failed to create challenge",
-            error: error.message,
-        };
-    }
+  return NextResponse.json(
+    {
+      success: false,
+      message: "Failed to create challenge",
+      error: error.message,
+    },
+    { status: 500 }
+  );
+}
+
 }

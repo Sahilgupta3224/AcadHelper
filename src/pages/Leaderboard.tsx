@@ -1,8 +1,4 @@
 "use client"
-import dynamic from 'next/dynamic';
-const Layout = dynamic(() => import('@/components/layout'), {
-  ssr: false,
-});
 import React, { useEffect, useState } from 'react'
 import '../app/globals.css';
 import axios from 'axios';
@@ -15,6 +11,10 @@ import { institutes } from '@/utils/Sample Data/Sample';
 import toast, { Toaster } from 'react-hot-toast';
 import Auth from '@/components/Auth'
 import User from '@/utils/Interfaces/userInterface';
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 
 interface UserWithPoints extends User {
   totalPoints: number;

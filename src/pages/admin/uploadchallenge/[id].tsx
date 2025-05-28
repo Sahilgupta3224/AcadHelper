@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import Auth from '@/components/Auth'
 import { useStore } from "@/store";
 import { AdminAuth } from "@/components/AdminAuth";
+import dynamic from 'next/dynamic';
 
 const UploadChallenge: React.FC = () => {
   const router = useRouter();

@@ -21,6 +21,9 @@ export async function POST(request: NextRequest){
         if(!validPassword){
             return NextResponse.json({error: "Invalid password"}, {status: 400})
         }
+        // if(!user.isEmailVerified){
+        //     return NextResponse.json({error: "Please verify your email first"}, {status: 400})
+        // }
         const tokenData = {                                                                     // Create the payload for the JWT token
             id: user._id,
             username: user.username,

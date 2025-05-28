@@ -18,10 +18,9 @@ export interface User {
   teams: string[];
   createdAt: string;
   updatedAt: string;
-  inbox: [Object]
+  inbox: any[]; // Array of notifications
   __v: number;
-  Totalpoints:{courseId:mongoose.Schema.Types.ObjectId,points:Number}
+  Totalpoints: { courseId: mongoose.Schema.Types.ObjectId; points: number }[]; // Array of point entries
 }
-
 
 export default User;
