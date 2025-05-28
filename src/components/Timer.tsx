@@ -206,6 +206,41 @@ const Timer = () => {
         setValue(newValue);
       };
 
+      // Load timer state from localStorage on mount
+useEffect(() => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('acadhelperTimer');
+    if (saved) {
+      try {
+        const { value: sv, timer: st, time: stime, isActive: sa, paused: sp, savedAt: sat } = JSON.parse(saved);
+        const now = Date.now();
+        const elapsed = Math.floor((now - (sat || now)) / 1000);
+        // Only adjust the currently active timer by elapsed time
+        if (!sp) {
+          const tabName = sv === 0 ? 'pomodoro' : sv === 1 ? 'short' : 'long';
+          if (sa[tabName]) {
+            stime[tabName] = Math.max(stime[tabName] - elapsed, 0);
+          }
+        }
+        setValue(sv);
+        setTimer(st);
+        setTime(stime);
+        setIsActive(sa);
+        setPaused(sp);
+      } catch {};
+    }
+  }
+}, []);
+
+// Persist timer state to localStorage on changes
+useEffect(() => {
+  // Persist snapshot when start, pause/resume or timer config changes
+  if (typeof window !== 'undefined') {
+    const state = { value, timer, time, isActive, paused, savedAt: Date.now() };
+    localStorage.setItem('acadhelperTimer', JSON.stringify(state));
+  }
+}, [value, timer, isActive, paused]);
+
   return (
     <div className='pomodoro'>
            <div className='bg-gradient-to-r from-blue-200 to-cyan-200 rounded-md h-[100vh] w-[100%]'>
