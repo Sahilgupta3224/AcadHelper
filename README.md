@@ -1,3 +1,5 @@
+# AcadHelper
+
 AcadHelper is a comprehensive academic assistance platform built using Next.js, designed to streamline educational management and enhance the learning experience. The platform offers a variety of features including course management, assignment tracking, and user submissions, making it a valuable tool for both educators and students.
 
 AcadHelper was developed as part of the Codesangam Hackathon, under the event named Webster. This project showcases innovative solutions for education technology and exemplifies the power of team collaboration and coding proficiency demonstrated during the hackathon.
@@ -10,11 +12,17 @@ AcadHelper was developed as part of the Codesangam Hackathon, under the event na
 ---
 ## Table of Contents
 
+- [Deployment](#deployment)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
+- [Contributing](#contributing)
 - [Project Pictures](#Project_Pictures)
 
+## Deployment
+
+The project is live and can be accessed here:  
+🔗 [https://acadhelper.vercel.app/](https://acadhelper.vercel.app/)
 
 ## Features
 
@@ -89,38 +97,21 @@ Contributions are welcome! To contribute:
 
 ## Project_Pictures
 
-![WhatsApp Image 2025-05-28 at 12 34 04 PM](https://github.com/user-attachments/assets/ae0537b9-52c1-444f-a8f2-926562454814)
-
-![WhatsApp Image 2025-05-28 at 12 34 04 PM (1)](https://github.com/user-attachments/assets/31325f96-5ce6-4b19-8996-3154d49cb729)
-
-![WhatsApp Image 2025-05-28 at 12 34 04 PM (2)](https://github.com/user-attachments/assets/28cd36d9-d4de-4814-9673-8440a66beb42)
-
-![WhatsApp Image 2025-05-28 at 12 34 05 PM](https://github.com/user-attachments/assets/16b6e350-a680-4945-a9ef-2f77600d01d5)
-
-![WhatsApp Image 2025-05-28 at 12 34 05 PM (1)](https://github.com/user-attachments/assets/421fc6cb-7b4a-411f-84ae-2786899fdf51)
-
-![WhatsApp Image 2025-05-28 at 12 34 05 PM (2)](https://github.com/user-attachments/assets/b3c7c272-250f-47fa-a718-94ef515190ce)
-
-![WhatsApp Image 2025-05-28 at 12 34 06 PM](https://github.com/user-attachments/assets/8a760c99-32b9-4baf-b278-407037251b69)
-
-![WhatsApp Image 2025-05-28 at 12 34 06 PM (1)](https://github.com/user-attachments/assets/d59b4384-7946-4345-9d8e-7471e02a5cea)
-
-![WhatsApp Image 2025-05-28 at 12 34 06 PM (2)](https://github.com/user-attachments/assets/aa7e093f-94a9-4bdd-9f44-63d19d75eb3c)
-
-![WhatsApp Image 2025-05-28 at 12 34 07 PM](https://github.com/user-attachments/assets/20831a43-a079-4d62-8cc8-15a3d633f952)
-
-![WhatsApp Image 2025-05-28 at 12 34 07 PM (1)](https://github.com/user-attachments/assets/f31a5378-e877-4dab-8f7c-0e6d1cd25671)
-
-![WhatsApp Image 2025-05-28 at 12 34 08 PM](https://github.com/user-attachments/assets/9e54a2f8-1a92-4a67-a421-ce37bbdc6809)
-
-![WhatsApp Image 2025-05-28 at 12 34 08 PM (1)](https://github.com/user-attachments/assets/dd1e1728-3b97-455f-8da0-73794b964f40)
-
-![WhatsApp Image 2025-05-28 at 12 34 08 PM (2)](https://github.com/user-attachments/assets/f251e173-ff71-4ec7-b783-4c280ce5a1f8)
-
-![WhatsApp Image 2025-05-28 at 12 34 09 PM](https://github.com/user-attachments/assets/278d4bf5-a6f3-4f47-84be-663904711839)
-
-![WhatsApp Image 2025-05-28 at 12 34 09 PM (1)](https://github.com/user-attachments/assets/902dd566-997a-4b4a-b161-2c1ca3dc4ab9)
-
-![WhatsApp Image 2025-05-28 at 12 34 10 PM](https://github.com/user-attachments/assets/0bd9e893-37f7-41c4-8ee7-ce3fd90a9b6e)
-
-![WhatsApp Image 2025-05-28 at 12 34 10 PM (1)](https://github.com/user-attachments/assets/fa73157c-a65d-43f0-856d-781ec0a4f230)
+<img src="https://github.com/user-attachments/assets/ae0537b9-52c1-444f-a8f2-926562454814" width="300" />
+<img src="https://github.com/user-attachments/assets/31325f96-5ce6-4b19-8996-3154d49cb729" width="300" />
+<img src="https://github.com/user-attachments/assets/28cd36d9-d4de-4814-9673-8440a66beb42" width="300" />
+<img src="https://github.com/user-attachments/assets/16b6e350-a680-4945-a9ef-2f77600d01d5" width="300" />
+<img src="https://github.com/user-attachments/assets/421fc6cb-7b4a-411f-84ae-2786899fdf51" width="300" />
+<img src="https://github.com/user-attachments/assets/b3c7c272-250f-47fa-a718-94ef515190ce" width="300" />
+<img src="https://github.com/user-attachments/assets/8a760c99-32b9-4baf-b278-407037251b69" width="300" />
+<img src="https://github.com/user-attachments/assets/d59b4384-7946-4345-9d8e-7471e02a5cea" width="300" />
+<img src="https://github.com/user-attachments/assets/aa7e093f-94a9-4bdd-9f44-63d19d75eb3c" width="300" />
+<img src="https://github.com/user-attachments/assets/20831a43-a079-4d62-8cc8-15a3d633f952" width="300" />
+<img src="https://github.com/user-attachments/assets/f31a5378-e877-4dab-8f7c-0e6d1cd25671" width="300" />
+<img src="https://github.com/user-attachments/assets/9e54a2f8-1a92-4a67-a421-ce37bbdc6809" width="300" />
+<img src="https://github.com/user-attachments/assets/dd1e1728-3b97-455f-8da0-73794b964f40" width="300" />
+<img src="https://github.com/user-attachments/assets/f251e173-ff71-4ec7-b783-4c280ce5a1f8" width="300" />
+<img src="https://github.com/user-attachments/assets/278d4bf5-a6f3-4f47-84be-663904711839" width="300" />
+<img src="https://github.com/user-attachments/assets/902dd566-997a-4b4a-b161-2c1ca3dc4ab9" width="300" />
+<img src="https://github.com/user-attachments/assets/0bd9e893-37f7-41c4-8ee7-ce3fd90a9b6e" width="300" />
+<img src="https://github.com/user-attachments/assets/fa73157c-a65d-43f0-856d-781ec0a4f230" width="300" />
