@@ -8,7 +8,10 @@ import toast, { Toaster } from 'react-hot-toast';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Modal, Typography, Box, FormControl, Select, InputLabel, Divider, LinearProgress } from '@mui/material';
 import { useStore } from "@/store";
 import { CldUploadWidget } from 'next-cloudinary';
-import Layout from "@/components/layout";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import Team from "@/Interfaces/team";
 interface EditChallenge {
   title: string;
@@ -198,8 +201,8 @@ const ChallengeDetails: React.FC = () => {
         </button>
         <div className="m-4">
           <div className="flex justify-between mb-6">
-            <div className="flex flex-col">
-              <h1 className="text-3xl font-bold">Title: {challenge.title}</h1>
+            <div className="flex flex-col max-w-[70%]">
+              <h1 className="text-3xl font-bold break-words">Title: {challenge.title}</h1>
               <p className="text-gray-700 p-1 max-w-500px break-words">Description: {challenge.description}</p>
             </div>
             <div className="flex flex-col items-end">
@@ -250,7 +253,7 @@ const ChallengeDetails: React.FC = () => {
                   }
                 }
               }}
-              className="bg-blue-600 px-4 mt-4 ml-2 text-white rounded hover:bg-blue-700 transition"
+              className="bg-blue-600 px-4 ml-2 text-white rounded hover:bg-blue-700 transition"
             >
               {submissions.length > 0 ? "Edit Submission" : "Submit Challenge"}
             </button>

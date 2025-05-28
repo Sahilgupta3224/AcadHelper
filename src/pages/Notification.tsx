@@ -2,7 +2,10 @@
 import React, { useState } from "react";
 import { Box, Typography, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Badge, Divider } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Layout from "@/components/layout";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import Auth from '@/components/Auth'
 
 interface Notification {

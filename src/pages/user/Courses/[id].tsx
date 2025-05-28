@@ -5,7 +5,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
-import Layout from "@/components/layout";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import "../../../app/globals.css";
 import { Dayjs } from "dayjs";
 import { useRouter } from "next/router";
@@ -249,19 +252,23 @@ const AdminPage: React.FC = () => {
           <>
             <div className="">
               {assignments.length > 0 ? (
-                assignments.map((assignment) => (
+                assignments.map((assignment) => {
+                  const today = new Date()
+                  const due = assignment.DueDate ? new Date(assignment.DueDate) : null
+                  const status = due && due >= today ? 'Open' : 'Closed';
+                  return (
                      <div className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer"  onClick={() => router.push(`/Assignment/user/${assignment._id}`)}>
                          <h1 className="text-3xl font-bold mb-4 flex justify-between">
                           {assignment.title}
                           <div>
-                           <Chip label={assignment.status} sx={{marginRight:"1rem"}} color={assignment.status=='Open' ? "success" : "error"} variant="outlined"/>
+                           <Chip label={status} sx={{marginRight:"1rem"}} color={status=='Open' ? "success" : "error"} variant="outlined"/>
                            <Chip label={assignment.totalPoints} />
                            </div>
                           </h1>
                          <p><strong>Assigned on:</strong> {new Date(assignment.uploadedAt).toISOString().split("T")[0]}</p>
                          <p><strong>Due date:</strong> {assignment.DueDate? new Date(assignment.DueDate).toISOString().split("T")[0] :"N/A" }</p>
                      </div>
-                ))
+                )})
               ) : (
                 <div className="w-full flex justify-center">No assignments found for this course.</div>
               )}
@@ -274,9 +281,9 @@ const AdminPage: React.FC = () => {
             <Box sx={{ mt: 2 }}>
               {challenges.length > 0 ? (
                 challenges.map((challenge) => (
-                  <div className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer" onClick={() => router.push(`/Challenge/user/${challenge._id}`)}>
-                  <h1 className="text-3xl font-bold mb-4 flex justify-between">
-                   {challenge.title}
+                  <div className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer " onClick={() => router.push(`/Challenge/user/${challenge._id}`)}>
+                  <h1 className="text-3xl font-bold mb-4 flex justify-between ">
+                   <span className="truncate block max-w-[70%]">{challenge.title}</span>
                    <div>
                     <Chip label={challenge.type} sx={{marginRight:"1rem"}} color="secondary" variant="outlined"/>
                     <Chip label={challenge.frequency} sx={{marginRight:"1rem"}} color={challenge.frequency=='daily' ? "primary" : "success"} variant="outlined"/>

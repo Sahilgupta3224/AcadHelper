@@ -6,7 +6,10 @@ import Submission from "@/Interfaces/submission";
 import '../../app/globals.css';
 import toast, { Toaster } from 'react-hot-toast';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, TableBody, TableHead, TableCell, TableRow, LinearProgress } from '@mui/material';
-import Layout from "@/components/layout";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
@@ -16,6 +19,7 @@ import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import { AdminChallengeAuth } from "@/components/AdminChallengeAuth";
 import Auth from '@/components/Auth'
+
 interface EditChallenge {
   title: string;
   description: string;

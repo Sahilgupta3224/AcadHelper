@@ -3,7 +3,7 @@ import { useState,useEffect} from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { Button } from '@mui/material';
+import { Button, Modal, TextField } from '@mui/material';
 import '../app/globals.css';
 
 const style = {
@@ -11,7 +11,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 500,
+    width: 700,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -255,6 +255,37 @@ const Timer = () => {
                       <Button onClick={handleOpen}>Edit Timer</Button>
                   </div>
           </CustomTabPanel>
+          <Modal open={open} onClose={handleClose} aria-labelledby="edit-timer-modal">
+        <Box sx={style}>
+            <div className='flex'>
+          <TextField
+            label="Pomodoro (minutes)"
+            type="number"
+            name="pomodoro"
+            value={timer.pomodoro}
+            onChange={handleTimerChange}
+            sx={{marginRight:2}}
+          />
+          <TextField
+            label="Short Break (minutes)"
+            type="number"
+            name="short"
+            value={timer.short}
+            onChange={handleTimerChange}
+            sx={{marginRight:2}}
+          />
+          <TextField
+            label="Long Break (minutes)"
+            type="number"
+            name="long"
+            value={timer.long}
+            onChange={handleTimerChange}
+            sx={{marginRight:2}}
+          />
+          <Button variant="outlined" onClick={handleClose}>Save</Button>
+          </div>
+        </Box>
+      </Modal>
         </div>
         </div>
   )

@@ -44,7 +44,7 @@ const AssignmentDetails: React.FC = () => {
                 try {
                     const response = await axios.get(`/api/assignment/getassignmentById?Id=${assignmentId}`);
                     setassignment(response.data.data);
-                    toast.success("Fetched assignments")
+                    // toast.success("Fetched assignments")
                 } catch (error) {
                     toast.error("Error fetching the assignments")
                 }
@@ -59,7 +59,7 @@ const AssignmentDetails: React.FC = () => {
                 try {
                     const submissionsResponse = await axios.get(`/api/submission/getsubmissionbyassignmentanduser?assignmentId=${assignmentId}&userId=${user?._id}`);
                     setSubmissions(submissionsResponse.data.data);
-                    toast.success("Successfully fetched Submissions")
+                    // toast.success("Successfully fetched Submissions")
                 } catch (error) {
                     toast.error("Error fetching submission")
                 }
@@ -124,7 +124,9 @@ const AssignmentDetails: React.FC = () => {
             toast.error("Upload failed or result is invalid.");
         }
     };
-
+    const today = new Date()
+    const due = assignment?.DueDate ? new Date(assignment?.DueDate) : null
+    const status = due && due >= today ? 'Open' : 'Closed';
     if (!assignment) return <Layout><LinearProgress /></Layout>
     return (
         <Layout>
@@ -143,7 +145,7 @@ const AssignmentDetails: React.FC = () => {
                     </div>
                     <div className="flex flex-col items-end">
                         <div className="mb-4">
-                            <span className="font-semibold">Frequency :</span> {assignment.status}
+                            <span className="font-semibold">Status :</span> {status}
                         </div>
                         <div className="mb-4">
                             <span className="font-semibold">Points :</span> {assignment.totalPoints}

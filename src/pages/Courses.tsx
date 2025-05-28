@@ -1,43 +1,27 @@
 "use client"
 import * as React from "react";
 import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
-import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
-import { TreeItem, treeItemClasses } from "@mui/x-tree-view/TreeItem";
-import CloseIcon from "@mui/icons-material/Close";
-import Layout from "@/components/layout";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import "../app/globals.css";
 import {
   sampleAssignments,
   sampleChapters,
-  UserLoggedIn,
 } from "../utils/Sample Data/Sample";
 import Link from "next/link";
 import Auth from '@/components/Auth'
 import {
-  FilledTextFieldProps,
-  FormControl,
-  IconButton,
-  InputLabel,
-  MenuItem,
   Modal,
-  OutlinedTextFieldProps,
-  Select,
-  StandardTextFieldProps,
   TextField,
-  TextFieldVariants,
   Typography,
 } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import EditAssignmentModal from "@/components/EditAssignment";
-import SidebarDrawer from "@/components/SidebarDrawer";
 import { Dayjs } from "dayjs";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { useStore } from "@/store";
@@ -80,13 +64,6 @@ function a11yProps(index: number) {
   const {user,setUser} = useStore()
   const [enrolledCourses,setEnrolledCourses] = React.useState([])
   const [adminCourses,setAdminCourses] = React.useState([])
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const [selectedChapter, setSelectedChapter] = React.useState(null);
-  const [selectedAssignment, setSelectedAssignment] = React.useState(null);
-  const [assignmentType, setAssignmentType] = React.useState("normal");
-  const [dueDate, setDueDate] = React.useState<Dayjs | null>(null);
-  const [fileName, setFileName] = React.useState("");
-  const [file, setFile] = React.useState<File|null>(null);
   const [open, setOpen] = React.useState(false);
   const [openJoin,setOpenJoin]=React.useState(false);
   const [value, setValue] = React.useState(0);
@@ -109,23 +86,16 @@ function a11yProps(index: number) {
         const {data} = await axios.post("/api/course",{code,userId:user._id})
   
         if (data.success) {
-          console.log(data)
           setCourseInput({name:"",description:"",userId:user._id});
           handleCloseJoin()
   
-        } else {
-
-          console.error(data.error || "Course addition failed");
         }
       } catch (error) {
         toast.error(error.response.data.error)
-        console.error("Error adding course", error);
       }
   }
   
   const handleAddCourse = async() => {
-    // e.preventDefault()
-    // console.log(courseInput)
       try {
         if(!courseInput.name){
           toast.error("Course name cannot be empty")
@@ -136,18 +106,13 @@ function a11yProps(index: number) {
           return
         }
         const {data} = await axios.post("/api/course/createcourse",courseInput)
-        console.log(data)
         if (data.success) {
-          console.log(data)
           setCourseInput({name:"",description:"",userId:user._id});
           handleClose()
   
-        } else {
-          console.error(data.error || "Course addition failed");
-        }
+        } 
       } catch (error) {
         toast.error(error.response.data.error)
-        console.error("Error adding course", error);
       }
     };
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -168,7 +133,7 @@ function a11yProps(index: number) {
           setEnrolledCourses(data.courses)
         }
     }catch(e){
-        console.log(e)
+        toast.error(e.response.data.error)
       }
     }
     const fetchAdminCourse = async()=>{
@@ -178,38 +143,13 @@ function a11yProps(index: number) {
           setAdminCourses(data.courses)
         }
     }catch(e){
-        console.log(e)
+        console.log(e.response.data.error)
       }
     }
     fetchEnrolledCourse()
     fetchAdminCourse()
   },[])
 
-  console.log(enrolledCourses,adminCourses)
-
-  // Toggle drawer function
-  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setDrawerOpen(open);
-  };
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      const uploadedFile = event.target.files[0];
-      setFile(uploadedFile);
-      setFileName(uploadedFile.name);
-    }
-  };
-
-  // Sample data
-  // const user = UserLoggedIn;
-  const chapters = sampleChapters;
-  const assignments = sampleAssignments;
   const style = {
     position: "absolute",
     top: "50%",
@@ -224,7 +164,7 @@ function a11yProps(index: number) {
     flexDirection: "column",
     gap: 2,
   };
-  console.log(adminCourses)
+
   return (
     <Layout>
     <Box sx={{ width: '100%' }}>

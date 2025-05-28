@@ -1,5 +1,4 @@
 "use client"
-import Layout from '@/components/layout'
 import {useState,useEffect} from 'react'
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
@@ -83,7 +82,6 @@ export const Settings = () => {
            const {data} = await axios.get(`/api/team/${params?.groupId}`,{params:{type:"Members"}})
            if(data.success){
                 setMembers(data.members)
-                toast.success("Loaded members")
            }
          }catch(e:any){
           toast.error(e.response.data.error)
@@ -134,8 +132,7 @@ export const Settings = () => {
               toast.error("Maximum group size cannot be empty")
               return
           }
-          
-            if (isNaN(groupInput.maxteamsize) || groupInput.maxteamsize <= 0 ||groupInput.maxteamsize<=10) {
+            if (groupInput.maxteamsize <= 0 ||groupInput.maxteamsize>=10) {
                   toast.error("Maximum group size must be a positive integer and should be less than or equal to 10");
                   return;
              }

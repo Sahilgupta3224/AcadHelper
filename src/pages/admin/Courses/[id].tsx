@@ -2,7 +2,6 @@
 import * as React from "react";
 import { useState } from "react";
 import { Box, Button, TextField, Typography, Modal, Pagination,Select, MenuItem, Chip } from "@mui/material";
-import Layout from "@/components/layout";
 import "../../../app/globals.css";
 import { useRouter } from "next/router";
 import axios from "axios";
@@ -20,6 +19,10 @@ import Course from "@/Interfaces/course";
 import Auth from '@/components/Auth'
 import User from "@/Interfaces/user";
 import toast, { Toaster } from "react-hot-toast";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 
 const AdminPage: React.FC = () => {
   const router = useRouter();
@@ -197,7 +200,6 @@ const fetchChallenges = async () => {
         `/api/assignment/getassignmentsbycourse?CourseId=${courseId}`
       );
       setassignments(response.data.data);
-      toast.success("Assignments fetched");
     } catch (error:any) {
       toast.error(error.response.data.error);
     }
@@ -212,7 +214,6 @@ const fetchChallenges = async () => {
       });
 
       setEnrolledUsers(response.data.users);
-      toast.success("Fetched enrolled users");
     } catch (error:any) {
       toast.error(error.response.data.error);
       return;
@@ -367,12 +368,16 @@ const fetchChallenges = async () => {
               </Box>
 
               {paginatedAssignments.length > 0 ? (
-                        paginatedAssignments.map((assignment) => (
+                        paginatedAssignments.map((assignment) => {
+                          const today = new Date()
+                          const due = assignment.DueDate ? new Date(assignment.DueDate) : null
+                          const status = due && due >= today ? 'Open' : 'Closed';
+                          return (
                           <div className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer"  onClick={() => router.push(`/Assignment/admin/${assignment._id}`)}>
                           <h1 className="text-3xl font-bold mb-4 flex justify-between">
                            <div className="truncate w-[80%]">{assignment.title}</div>
                            <div>
-                            <Chip label={assignment.status} sx={{marginRight:"1rem"}} color={assignment.status=='Open' ? "success" : "error"} variant="outlined"/>
+                            <Chip label={status} sx={{marginRight:"1rem"}} color={status=='Open' ? "success" : "error"} variant="outlined"/>
                             <Chip label={assignment.totalPoints} />
                             </div>
                            </h1>
@@ -381,7 +386,7 @@ const fetchChallenges = async () => {
                           </p>
                       </div>
 
-                    ))
+                    )})
                 ) : (
                     <div className="m-4">
                             No assignments available.
@@ -584,7 +589,7 @@ const fetchChallenges = async () => {
                 <div className="bg-white rounded-lg shadow-lg p-6 w-[95%] m-6 cursor-pointer" onClick={() => router.push(`/Challenge/${challenge._id}`)}>
                   <h1 className="text-3xl font-bold mb-4 flex justify-between">
                    <div className="truncate w-[80%]">{challenge.title}</div>
-                   <div>
+                   <div className="flex">
                    <Chip label={challenge.type} sx={{marginRight:"1rem"}} color="secondary" variant="outlined"/>
                     <Chip label={challenge.frequency} sx={{marginRight:"1rem"}} color={challenge.frequency=='daily' ? "primary" : "success"} variant="outlined"/>
                     <Chip label={challenge.points} />

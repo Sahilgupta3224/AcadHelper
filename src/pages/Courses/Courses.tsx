@@ -1,7 +1,10 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Layout from "@/components/layout";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import '../../app/globals.css';
 import Auth from '@/components/Auth'
 import Link from "next/link";
@@ -13,8 +16,6 @@ import {
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import Course from "@/Interfaces/course";
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { useStore } from "@/store";

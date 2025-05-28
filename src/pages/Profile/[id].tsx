@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import Challenge from "@/Interfaces/challenge";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import Layout from "@/components/layout";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import demoChallenges, { Badges, tasks } from "@/utils/Sample Data/Sample";
@@ -29,10 +28,15 @@ import User from "@/Interfaces/user";
 import toast from "react-hot-toast";
 import Auth from "@/components/Auth";
 import Task from "@/utils/Interfaces/taskInterface";
-
+import { useStore } from "@/store";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 function Profile() {
   
   const [loading,setLoading]=useState<boolean>(false);
+  const {user,setUser} = useStore()
   const [fetchedUser, setFetchedUser] = React.useState<User | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
@@ -46,6 +50,16 @@ function Profile() {
   const badges = Badges;
   const router = useRouter();
   const id = router.query.id;
+  const calculateTotalPoints = (user: any) => {
+    if(!user?.Totalpoints){
+      return 0;
+    }
+    if (Array.isArray(user.Totalpoints)) {
+      return user.Totalpoints.reduce((total, course) => total + course.points, 0);
+    }
+    return 0;
+  };
+  const totalPoints = calculateTotalPoints(user);
 
   const calTotalPoints=()=>{
     let points:number=0;
@@ -70,7 +84,7 @@ function Profile() {
       let points=0;
 
       
-      
+   
     } catch (error) {
       toast.error("Error while calculating the points")
     }
@@ -129,12 +143,12 @@ function Profile() {
   };
 
 
-  if(loading===false)
-  {
-    return (
-      <LinearProgress color="secondary" />
-    )
-  }
+  // if(loading===false)
+  // {
+  //   return (
+  //     <LinearProgress color="secondary" />
+  //   )
+  // }
 
   return (
     <Layout>
@@ -174,8 +188,29 @@ function Profile() {
               InputLabelProps={{ shrink: true }}
               variant="outlined"
             />
+
+            <TextField
+              label="Institute"
+              value={(fetchedUser)?fetchedUser.institute:"institute"}
+              fullWidth
+              margin="normal"
+              InputProps={{
+                readOnly: true,
+              }}
+              InputLabelProps={{ shrink: true }}
+              variant="outlined"
+            />
+
+            <TextField
+              label="Total Points"
+              value={totalPoints}
+              fullWidth
+              margin="normal" 
+              InputProps={{ readOnly: true }}
+              variant="outlined"
+            />
           </Box>
-          <Avatar sx={{ width: 200, height: 200 }} src="/profile.png" />
+          <Avatar sx={{ width: 300, height: 300, marginLeft: "4rem" }} src="/image.png" />
         </Box>
 
         <Divider />
@@ -188,15 +223,15 @@ function Profile() {
             alignItems="center"
             gap={6}
           >
-            <Typography variant="h4" gutterBottom>
-              My Statistics
+            <Typography variant="h5" gutterBottom>
+              My Work
             </Typography>
-            <Avatar
+            {/* <Avatar
               sx={{ width: 220, height: 220 }}
               src="/rectangleGraph.png"
-            />
+            /> */}
           </Box>
-          <Grid container mt={2} spacing={3}>
+          <Grid container mt={0} spacing={3}>
             <Grid item xs={12} md={6}>
               <Paper elevation={3} sx={{ p: 2, textAlign: "center" }}>
                 <Box
@@ -294,7 +329,7 @@ function Profile() {
         </Box>
 
         {/* Points Section */}
-        <Box mt={2}>
+        {/* <Box mt={2}>
           <Typography variant="h4">Points</Typography>
 
           <Box
@@ -306,7 +341,7 @@ function Profile() {
           >
             <TextField
               label="Total Points"
-              value={points}
+              value={totalPoints}
               fullWidth
               margin="normal" 
               InputProps={{ readOnly: true }}
@@ -315,21 +350,21 @@ function Profile() {
            
             <TextField
               label="Username"
-              value="shikhar"
+              value={user?.username}
               fullWidth
               margin="normal"
               InputProps={{ readOnly: true }}
               variant="outlined"
             />
           </Box>
-        </Box>
+        </Box> */}
 
         <Divider sx={{ my: 4 }} />
 
         {/* Rewards Section with Card Slider */}
         <Box mt={4}>
           <Typography variant="h5" gutterBottom>
-            Rewards
+            My Rewards
           </Typography>
           <Box
             display="flex"

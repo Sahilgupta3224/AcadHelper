@@ -23,13 +23,17 @@ import {
   TableBody,
   LinearProgress
 } from "@mui/material";
-import Layout from "@/components/layout";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import Auth from '@/components/Auth'
 import { AdminAssignmentAuth } from "@/components/AdminAssignmentAuth";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
+
 interface EditAssignment {
   title: string;
   description?: string;
@@ -254,7 +258,9 @@ const AssignmentDetails: React.FC = () => {
       toast.error("Upload failed")
     }
   };
-
+  const today = new Date()
+  const due = assignment?.DueDate ? new Date(assignment.DueDate) : null
+  const status = due && due >= today ? 'Open' : 'Closed';
   if (!assignment) return <Layout><LinearProgress /></Layout>;
 
   return (
@@ -274,7 +280,7 @@ const AssignmentDetails: React.FC = () => {
             </div>
             <div className="flex flex-col items-end">
               <div className="mb-4">
-                <span className="font-semibold">Frequency :</span> {assignment.status}
+                <span className="font-semibold">Status :</span> {status}
               </div>
               <div className="mb-4">
                 <span className="font-semibold">Points :</span> {assignment.totalPoints}

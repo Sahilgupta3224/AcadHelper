@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 //Get team details from team id
 export async function GET(request:NextRequest,context:{params:any}){
-    const teamId = context.params.teamid
+    const teamId = context.params.teamId
     const {searchParams} = new URL(request.url)
     const type = searchParams.get('type') 
 
@@ -78,7 +78,7 @@ export async function DELETE(request:NextRequest,context:{params:any}){
 export async function POST(request:NextRequest,context:{params:any}){
     try{
         const {email} = await request.json()
-        const teamId = await context.params.teamid?.toString();
+        const teamId = await context.params.teamId?.toString();
 
         await connect()
 
@@ -126,7 +126,7 @@ export async function POST(request:NextRequest,context:{params:any}){
 
 // Edit team
 export async function PUT(request:NextRequest,context:{params:any}){
-    const teamId = context.params.teamid
+    const teamId = context.params.teamId
     try{
         const {team} = await request.json()
 

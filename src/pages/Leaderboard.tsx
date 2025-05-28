@@ -1,5 +1,8 @@
 "use client"
-import Layout from '@/components/layout'
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import React, { useEffect, useState } from 'react'
 import '../app/globals.css';
 import axios from 'axios';

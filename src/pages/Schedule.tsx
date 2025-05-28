@@ -26,7 +26,10 @@ import {
   Box,
   Paper,
 } from "@mui/material";
-import Layout from "@/components/layout";
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 import axios from "axios";
 import { useStore } from "@/store";
 import toast, { Toaster } from 'react-hot-toast';
@@ -226,8 +229,18 @@ const Calendar: React.FC = () => {
                 currentEvents.map((event) => (
                   <ListItem key={event.id} divider>
                     <ListItemText
+                      
                       primary={event.title}
-                      primaryTypographyProps={{ fontWeight: "bold", fontSize: "1rem" }}
+                      primaryTypographyProps={{
+                        sx: {
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          maxWidth: 200,
+                          fontWeight: 'bold',
+                          fontSize: '1rem',
+                          display: 'block',
+                        }
+                      }}
                       secondary={formatDate(event.end!, {
                         year: "numeric",
                         month: "short",

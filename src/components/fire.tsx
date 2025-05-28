@@ -151,7 +151,7 @@ export default function Fire() {
                     <EmojiEventsIcon/>
                 </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={challenge.title} secondary={new Date(challenge.endDate).toISOString().split('T')[0]} />
+                <ListItemText primary={<span className='truncate block max-w-[100px]'>{challenge.title}</span>} secondary={new Date(challenge.endDate).toISOString().split('T')[0]} />
                 <Chip label={`${challenge.points} points`} />
               </ListItem>
               </Link>

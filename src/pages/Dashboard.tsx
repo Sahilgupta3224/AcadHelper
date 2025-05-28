@@ -1,5 +1,5 @@
 "use client"
-import Layout from '@/components/layout'
+// import Layout from '@/components/layout'
 import React, { useEffect, useState } from 'react'
 import '../app/globals.css';
 import Checkbox from '@mui/material/Checkbox';
@@ -28,6 +28,10 @@ import Assignment from '@/Interfaces/assignment';
 import Course from '@/utils/Interfaces/coursesInterface';
 import { LinearProgress } from '@mui/material';
 
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 const style = {
   position: 'absolute',
   top: '50%',
@@ -60,7 +64,6 @@ const Dashboard = () => {
   const [progress, setProgress] = useState<number>(0)
   const [selected, setSelected] = useState<Task|null>(null)
   const [dueTodayCount, setDueTodayCount] = useState(0);
-  const [loading,setLoading]=useState<boolean>(false);
  
   const handleOpen = (task: any) => {
     setSelected(task)
@@ -138,7 +141,6 @@ const Dashboard = () => {
     fetchTasks()
     fetchCourses()
     fectchpendingassignments()
-    setLoading(true)
   }, [])
 
   const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
@@ -237,13 +239,7 @@ const Dashboard = () => {
       toast.error("Error deleting task:", error.response.data.error);
     }
   };
-    if(loading===false)
-      {
-        return (
-          <LinearProgress color="primary" />
-        )
-      }
-    
+
   return (
     <>
     
@@ -457,9 +453,9 @@ const Dashboard = () => {
                         day: "numeric",
                       })}
                     </Typography>
-                    <Typography variant="body2" color="textSecondary" className="truncate">
+                    {/* <Typography variant="body2" color="textSecondary" className="truncate">
                       Description: {assignment.description}
-                    </Typography>
+                    </Typography> */}
                   </div>
                 ))}
               </div>

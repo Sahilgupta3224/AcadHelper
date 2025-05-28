@@ -38,16 +38,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const mainItems = [
     { text: "Dashboard", icon: <DashboardIcon /> },
-    { text:"Courses",icon: <MenuBookIcon/>},
+    { text: "Courses",icon: <MenuBookIcon/>},
     { text: "Groups", icon: <GroupIcon /> },
     { text: "Leaderboard", icon: <LeaderboardIcon /> },
     { text: "Focus", icon: <VideoCallIcon /> },
     { text: "Schedule", icon: <ScheduleIcon /> },
   ];
 
-  const secondaryItems = [
-    { text: "Rewards", icon: <RedeemIcon /> },
-  ];
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -69,20 +66,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <ListItemButton>
                   <ListItemIcon>{item.icon}</ListItemIcon>
                   <ListItemText primary={item.text} />
-                </ListItemButton>
+                </ListItemButton> 
               </ListItem>
             ))}
           </List>
           <Divider />
           <List>
-            {secondaryItems.map((item) => (
-              <ListItem key={item.text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
            <ListItem key="Logout" disablePadding>
                 <ListItemButton onClick={handleLogout}>
                   <ListItemIcon><ExitToAppIcon /></ListItemIcon>
