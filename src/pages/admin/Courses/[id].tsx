@@ -12,7 +12,7 @@ import axios from "axios";
 import { AdminAuth } from "@/components/AdminAuth";
 import Challenge from "@/Interfaces/challenge";
 import Assignment from "@/Interfaces/assignment";
-import { dummyAssignments, dummyChallenges } from "@/pages/SampleData/Sample";
+import { dummyAssignments, dummyChallenges } from "@/components/SampleData/Sample";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Link from "next/link";

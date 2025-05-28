@@ -12,6 +12,8 @@ import {
   LinearProgress,
   CardContent,
   Card,
+  Button,
+  CircularProgress,
 } from "@mui/material";
 import Link from '@mui/material/Link';
 import Challenge from "@/Interfaces/challenge";
@@ -45,9 +47,14 @@ function Profile() {
   const [tasksRequired, setTasksRequired] = useState<Task[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([])
   const [submissions, setSubmissions] = useState<Submission[]>([])
-  const [totalChallenges, setTotalChallenges] = useState([])
+    const [saving, setSaving] = useState<boolean>(false);
+  // const [totalChallenges, setTotalChallenges] = useState([])
+  const [institute,setInstitute]=useState("");
   const [points, setPoints] = useState<number>(0)
   const [currentBadgeIndex, setCurrentBadgeIndex] = useState(0);
+  const [editInstitute, setEditInstitute] = useState<boolean>(false);
+  const [editUsername,setEditUsername]=useState<boolean>(false);
+  const [savingUsername,setSavingUsername]=useState<boolean>(false);
   const badgesToShow = 3;
   const badges = Badges;
   const router = useRouter();
@@ -98,6 +105,7 @@ function Profile() {
 
       if (fetchedUser) {
         setEmail(fetchedUser.email);
+        setInstitute(fetchedUser.institute);
         setUsername(fetchedUser.username);
         setChallenges(response.data.data.challengessolved)
       }
@@ -148,9 +156,10 @@ function Profile() {
     }
   };
 
+
   useEffect(() => {
 
-    console.log(router)
+    // console.log(router)
     fetchUserDetails();
     fetchTasks();
     calTotalPoints();
@@ -170,6 +179,48 @@ function Profile() {
       (prevIndex) => (prevIndex - badgesToShow + badges.length) % badges.length
     );
   };
+  
+  const updateInstitute = async () => {
+    setSaving(true);
+    try {
+      const res = await axios.put('/api/user/update-institute', {
+        institute: institute, 
+        userId:(fetchedUser!==null) ?fetchedUser._id:null     
+      });
+      // console.log(res);
+      setFetchedUser(res.data.user);
+      setInstitute(res.data.user.institute);
+      toast.success("Institute updated!");
+    } catch (error:any) {
+      console.log(error);
+      toast.error(
+          error?.response?.data?.error || "Failed to update institute"
+        );
+    }
+    finally{
+      setSaving(false);
+    }
+  };
+
+  const updateUsername=async ()=>{
+    setSavingUsername(true);
+    try {
+      const res=await axios.patch('/api/user',{
+        username,userId:(fetchedUser!==null)?fetchedUser._id:null
+      });
+
+      setFetchedUser(res.data.user);
+      setUsername(res.data.user.username);
+
+      toast.success(res.data.message);
+    } catch (error:any) {
+      toast.error("Failed to update the insitute");
+      console.log(error);
+    }
+    finally{
+      setSavingUsername(false);
+    }
+  }
 
 
   // if(loading===false)
@@ -194,17 +245,44 @@ function Profile() {
               Profile
             </Typography>
 
-            <TextField
-              label="Username"
-              value={(fetchedUser) ? fetchedUser.username : "username"}
-              fullWidth
-              margin="normal"
-              InputProps={{
-                readOnly: true,
-              }}
-              InputLabelProps={{ shrink: true }}
-              variant="outlined"
-            />
+            <Box display="flex" alignItems="center" gap={2} mt={2} mb={2}>
+              <TextField
+                label="Username"
+                value={(fetchedUser)?fetchedUser.username:""}
+                onChange={(e) => setUsername(e.target.value)}
+                InputProps={{
+                  readOnly: !editUsername,
+                }}
+                InputLabelProps={{ shrink: true }}
+                variant="outlined"
+                sx={{ flex: 1 }}
+              />
+
+              {!editUsername ? (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => setEditUsername(true)}
+                  sx={{ py: 1.7 }}
+                >
+                  Edit
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={async () => {
+                    await updateUsername();
+                    setEditUsername(false);
+                  }}
+                  sx={{ py: 1.7 }}
+                  disabled={saving}
+                >
+                  {savingUsername ? <CircularProgress size={22} /> : "Save"}
+                </Button>
+              )}
+            </Box>
+
 
             <TextField
               label="Email"
@@ -217,7 +295,49 @@ function Profile() {
               InputLabelProps={{ shrink: true }}
               variant="outlined"
             />
+
+           <Box display="flex" alignItems="center" gap={2} mt={2} mb={2}>
+                <TextField
+                  label="Institute"
+                  value={fetchedUser?.institute}
+                  onChange={(e) => setInstitute(e.target.value)}
+                  InputProps={{
+                    readOnly: !editInstitute,
+                  }}
+                  InputLabelProps={{ shrink: true }}
+                  variant="outlined"
+                  sx={{ flex: 1 }} // Makes the input take available space
+                />
+
+                {!editInstitute ? (
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => setEditInstitute(true)}
+                    sx={{py:1.7}}
+                  >
+                    Edit
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={async () => {
+                      await updateInstitute();
+                      setEditInstitute(false);
+                    }}
+                    sx={{py:1.7}}
+                    disabled={saving}
+                  >
+                    {saving ? <CircularProgress size={22} /> : "Save"}
+                  </Button>
+                )}
+              </Box>
+
+
           </Box>
+                  
+
           <Avatar sx={{ width: 200, height: 200 }} src="/profile.png" />
         </Box>
 

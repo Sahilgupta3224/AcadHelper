@@ -142,7 +142,7 @@ const userSchema = new mongoose.Schema({
         image:String
     }],
     NoOfEarlySubmits: {type:Number,default:0},
-    institute:{type:String}
+    institute:{type:String,defualt:"Set Insititute"}
     },{timestamps: true})
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
