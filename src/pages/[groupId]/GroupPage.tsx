@@ -4,10 +4,6 @@ import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import dynamic from 'next/dynamic';
-const Layout = dynamic(() => import('@/components/layout'), {
-  ssr: false,
-});
 import Settings from './Settings'; // Adjusted for default import
 import { useParams } from 'next/navigation'
 import axios from 'axios';
@@ -17,6 +13,10 @@ import { useStore } from '@/store';
 import { Types } from 'mongoose';
 import Auth from '@/components/Auth'
 import toast from 'react-hot-toast';
+import dynamic from 'next/dynamic';
+const Layout = dynamic(() => import('@/components/layout'), {
+  ssr: false,
+});
 interface Task {
   _id: Types.ObjectId
   text: string;

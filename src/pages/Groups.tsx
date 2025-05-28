@@ -115,14 +115,17 @@ const Groups = () => {
                   title="green iguana"
               />
               <CardContent>
-                  <Typography gutterBottom variant="h5" component="div" sx={{  
+                  <Typography gutterBottom variant="h5" component="div"
+                   sx={{  
                     overflow: 'hidden', 
                     textOverflow: 'ellipsis', 
                     whiteSpace: 'nowrap' 
-                  }}>
+                  }}
+                  >
                   {group.teamname}
                   </Typography>
-                  <Typography variant="body2" sx={{ 
+                  <Typography variant="body2"
+                   sx={{ 
                     color: 'text.secondary', 
                     overflow: 'hidden', 
                     textOverflow: 'ellipsis', 

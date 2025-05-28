@@ -16,8 +16,6 @@ import {
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import Course from "@/Interfaces/course";
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { useStore } from "@/store";
@@ -26,6 +24,7 @@ import axios from "axios";
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import toast, { Toaster } from "react-hot-toast";
+import Course from "@/Interfaces/course";
 
 interface TabPanelProps {
   children?: React.ReactNode;

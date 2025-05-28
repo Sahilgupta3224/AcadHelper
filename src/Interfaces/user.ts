@@ -43,6 +43,7 @@ interface User {
   username: string;
   email: string;
   password: string;
+  institute: string;
   avatar?: string;
   isVerified: boolean;
   isAdmin: boolean;

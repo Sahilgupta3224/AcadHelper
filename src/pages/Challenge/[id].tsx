@@ -19,6 +19,7 @@ import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import { AdminChallengeAuth } from "@/components/AdminChallengeAuth";
 import Auth from '@/components/Auth'
+
 interface EditChallenge {
   title: string;
   description: string;

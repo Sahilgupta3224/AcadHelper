@@ -22,11 +22,17 @@ import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const router = useRouter();
-  const { user } = useStore();
+  const { user,setUser } = useStore();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [openLogin, setOpenLogin] = React.useState(false);
   const [guestLogin, setGuestLogin] = React.useState(false);
 
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [openLogin, setOpenLogin] = React.useState(false)
+  // const [loaded,isLoaded] = React.useState(false)
+  // const {notifications,setNotifications}=AppWrapper()
+  const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const handleMobileMenuClose = () => {

@@ -136,8 +136,7 @@ export const Settings = () => {
               toast.error("Maximum group size cannot be empty")
               return
           }
-          
-            if (isNaN(groupInput.maxteamsize) || groupInput.maxteamsize <= 0 ||groupInput.maxteamsize<=10) {
+            if (groupInput.maxteamsize <= 0 ||groupInput.maxteamsize>=10) {
                   toast.error("Maximum group size must be a positive integer and should be less than or equal to 10");
                   return;
              }

@@ -33,6 +33,7 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import Auth from '@/components/Auth'
 import { AdminAssignmentAuth } from "@/components/AdminAssignmentAuth";
+
 interface EditAssignment {
   title: string;
   description?: string;
@@ -255,7 +256,9 @@ const AssignmentDetails: React.FC = () => {
       toast.error("Upload failed")
     }
   };
-
+  const today = new Date()
+  const due = assignment?.DueDate ? new Date(assignment.DueDate) : null
+  const status = due && due >= today ? 'Open' : 'Closed';
   if (!assignment) return <Layout><LinearProgress /></Layout>;
 
   return (
@@ -275,7 +278,7 @@ const AssignmentDetails: React.FC = () => {
             </div>
             <div className="flex flex-col items-end">
               <div className="mb-4">
-                <span className="font-semibold">Status :</span> {assignment.status}
+                <span className="font-semibold">Status :</span> {status}
               </div>
               <div className="mb-4">
                 <span className="font-semibold">Points :</span> {assignment.totalPoints}
