@@ -78,6 +78,7 @@ const LoginForm: React.FC = () => {
 
   // Handle login function
   const handleLogin = async () => {
+
     try {
       if (!validateEmail(email)) {
         toast.error("Please enter a valid email address.");
@@ -108,7 +109,7 @@ const LoginForm: React.FC = () => {
     <div className="bg-gray-200 flex justify-center items-center h-screen w-screen">
       <div className="border-t-8 rounded-sm border-gray-600 bg-white p-12 shadow-2xl w-96">
         <h1 className="font-bold text-center block text-2xl">Log In</h1>
-        <form>
+        <form onSubmit={(e)=>e.preventDefault()}>
           <Input
             type="email"
             id="email"
