@@ -9,7 +9,6 @@ AcadHelper was developed as part of the Codesangam Hackathon, under the event na
 - [Khanak Patwari](https://github.com/Khanak21)
 - [Sahil Gupta](https://github.com/Sahilgupta3224)
 
----
 ## Table of Contents
 
 - [Deployment](#deployment)
