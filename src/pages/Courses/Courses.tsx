@@ -24,6 +24,7 @@ import axios from "axios";
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import toast, { Toaster } from "react-hot-toast";
+import Course from "@/Interfaces/course";
 
 interface TabPanelProps {
   children?: React.ReactNode;
