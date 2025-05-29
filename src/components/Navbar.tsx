@@ -23,8 +23,6 @@ import { useRouter } from "next/navigation";
 export default function Navbar() {
   const router = useRouter();
   const { user,setUser } = useStore();
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-  const [openLogin, setOpenLogin] = React.useState(false);
   const [guestLogin, setGuestLogin] = React.useState(false);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -193,7 +191,7 @@ export default function Navbar() {
                 >
                   Login / Signup
                 </Button>
-                <Button
+                {/* <Button
                   variant="contained"
                   color="secondary"
                   size="small"
@@ -205,7 +203,7 @@ export default function Navbar() {
                   onClick={handleGuestLogin}
                 >
                   Guest Entry
-                </Button>
+                </Button> */}
               </>
             )}
           </Box>
