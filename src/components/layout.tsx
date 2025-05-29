@@ -29,7 +29,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const handleLogout = ()=>{
     clearUser()
-    router.push('/Login')
+    router.push('/home')
   }
 
   const handleNavigation = (text: string) => {

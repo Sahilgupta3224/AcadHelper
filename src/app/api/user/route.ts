@@ -1,4 +1,4 @@
-import Challenge from "@/models/challengeModel";
+// import Challenge from "@/models/challengeModel";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import {connect} from '@/dbConfig/dbConfig'
