@@ -6,14 +6,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
 //Get team details from team id
 export async function GET(request:NextRequest,context:{params:any}){
-    const teamId = context.params.teamId
+    const teamId = context.params.teamid
     const {searchParams} = new URL(request.url)
     const type = searchParams.get('type') 
 
     if(type=="Team"){
         try{
             await connect()
-
             const team = await Team.findOne({_id:teamId})
 
             if(!team)return NextResponse.json({error:"Team not found"},{status:400})
@@ -78,7 +77,8 @@ export async function DELETE(request:NextRequest,context:{params:any}){
 export async function POST(request:NextRequest,context:{params:any}){
     try{
         const {email} = await request.json()
-        const teamId = await context.params.teamId?.toString();
+        const params = await context.params;
+        const teamId = params.teamid;
 
         await connect()
 

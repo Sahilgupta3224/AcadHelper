@@ -8,17 +8,19 @@ function sendEmail(receiverMail,token) {
             const transporter = nodemailer.createTransport({
                 service: "gmail",
                 auth: {
-                    user: "gupsahil2005@gmail.com", 
-                    pass: "panc ckqx wixp nlaa"
+                    user: process.env.EMAIL, 
+                    // pass: "panc ckqx wixp nlaa"
+                    pass: "loojsoqsjstfsyrk"
                 },
             });
+            console.log(transporter);
             const verificationUrl = `http://localhost:3000/api/verify?token=${token}`;
-        const mailConfigs = {
-            from: process.env.Email,
-            to: receiverMail,
-            subject: 'Verify Your Email',
-            html: `<p>Click <a href="${verificationUrl}">here</a> to verify your email.</p>`,
-        };
+            const mailConfigs = {
+                from: process.env.Email,
+                to: receiverMail,
+                subject: 'Verify Your Email',
+                html: `<p>Click <a href="${verificationUrl}">here</a> to verify your email.</p>`,
+            };
 
         transporter.sendMail(mailConfigs, function (error, info) {
             if (error) {
