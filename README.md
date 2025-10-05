@@ -4,11 +4,6 @@ AcadHelper is a comprehensive academic assistance platform built using Next.js, 
 
 AcadHelper was developed as part of the Codesangam Hackathon, under the event named Webster. This project showcases innovative solutions for education technology and exemplifies the power of team collaboration and coding proficiency demonstrated during the hackathon.
 
-## Team Members
-- [Shikhar Pandya](https://github.com/shikharpandya0487)
-- [Khanak Patwari](https://github.com/Khanak21)
-- [Sahil Gupta](https://github.com/Sahilgupta3224)
-
 ## Table of Contents
 
 - [Deployment](#deployment)
